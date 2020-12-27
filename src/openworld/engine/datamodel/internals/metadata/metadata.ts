@@ -1,5 +1,5 @@
 import { Class, Constructor } from '../../../utils/types';
-import { Instance } from '../../core/instance';
+import { Instance } from '../../elements/core/instance';
 import { BasePropType } from './properties/base-prop-type';
 
 import * as _ from "lodash";

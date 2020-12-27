@@ -1,6 +1,6 @@
 import { TaskSchedulerImpl } from '../../../openworld/engine/datamodel/services/scheduling/impl/task-scheduler-impl';
 import { WorldRenderSystemImpl } from '../../../openworld/engine/datamodel/services/world/impl/world-render-system-impl';
-import { getService } from '../../../shared/datamodel/internals/service-locator';
+import { getService } from '../../../openworld/engine/datamodel/internals/service-locator';
 
 import * as THREE from 'three';
 import { Signal } from "typed-signals";
@@ -13,14 +13,10 @@ export class BrowserTaskScheduler extends TaskSchedulerImpl
     private _clock = new THREE.Clock(false);
     private _renderSystem: WorldRenderSystemImpl;
 
-    private _preRender: Signal<(deltaTime: number, elapsedTime: number) => void> = 
-        new Signal<(deltaTime: number, elapsedTime: number) => void>();
-    private _postRender: Signal<(deltaTime: number, elapsedTime: number) => void> =
-        new Signal<(deltaTime: number, elapsedTime: number) => void>();
-    private _preSimulation: Signal<(deltaTime: number, elapsedTime: number) => void> =
-        new Signal<(deltaTime: number, elapsedTime: number) => void>();
-    private _postSimulation: Signal<(deltaTime: number, elapsedTime: number) => void> =
-        new Signal<(deltaTime: number, elapsedTime: number) => void>();
+    private _preRender = new Signal<(deltaTime: number, elapsedTime: number) => void>();
+    private _postRender = new Signal<(deltaTime: number, elapsedTime: number) => void>();
+    private _preSimulation = new Signal<(deltaTime: number, elapsedTime: number) => void>();
+    private _postSimulation = new Signal<(deltaTime: number, elapsedTime: number) => void>();
 
     //
     // Constructor

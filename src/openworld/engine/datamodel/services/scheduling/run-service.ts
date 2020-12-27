@@ -1,8 +1,8 @@
-import { DataModelClass } from '../../../../../shared/datamodel/internals/metadata/metadata';
-import { Instance } from '../../../../../shared/datamodel/core/instance';
-import { getService } from '../../../../../shared/datamodel/internals/service-locator';
+import { DataModelClass } from '../../internals/metadata/metadata';
+import { Instance } from '../../elements/core/instance';
+import { getService } from '../../internals/service-locator';
 import { TaskSchedulerImpl } from './impl/task-scheduler-impl';
-import { ForwardingSignal } from '../../../../../shared/datamodel/internals/forwarding-signal';
+import { ForwardingSignal } from '../../internals/forwarding-signal';
 
 import { Signal } from 'typed-signals';
 

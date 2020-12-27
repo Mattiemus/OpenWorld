@@ -1,9 +1,9 @@
-import { IDestroyable } from '../../utils/interfaces';
-import { Class } from '../../utils/types';
-import { Uuid } from '../../utils/uuid';
-import { DataModelClass, DataModelClassMetaData, getMetaData } from "../internals/metadata/metadata";
-import { PropType } from "../internals/metadata/properties/prop-type";
-import { InstanceManager } from '../internals/instance-manager';
+import { IDestroyable } from '../../../utils/interfaces';
+import { Class } from '../../../utils/types';
+import { Uuid } from '../../../utils/uuid';
+import { DataModelClass, DataModelClassMetaData, getMetaData } from "../../internals/metadata/metadata";
+import { PropType } from "../../internals/metadata/properties/prop-type";
+import { InstanceManager } from '../../internals/instance-manager';
 
 import { Signal } from "typed-signals";
 import * as _ from "lodash";
@@ -25,13 +25,15 @@ import * as _ from "lodash";
         },
         parent: {
             name: 'parent',
-            type: PropType.instanceRefT('Instance'),
+            type: PropType.instanceRef('Instance'),
             attributes: []
         }
     }
 })
 export abstract class Instance implements IDestroyable
-{  
+{
+    private static _allowCreateService = false;
+
     private _metadata: DataModelClassMetaData;
     private _refId: Uuid;
     private _name: string;
@@ -39,23 +41,23 @@ export abstract class Instance implements IDestroyable
     private _children: Instance[] = [];
     private _isDestroyed: boolean = false;
     
-    private _ancestryChanged: Signal<(child: Instance, parent: Instance | null) => void> =
-        new Signal<(child: Instance, parent: Instance | null) => void>();
-    private _propertyChanged: Signal<(propertyName: string) => void> =
-        new Signal<(propertyName: string) => void>();
-    private _childAdded: Signal<(child: Instance) => void> =
-        new Signal<(child: Instance) => void>();
-    private _childRemoved: Signal<(child: Instance) => void> =
-        new Signal<(child: Instance) => void>();
-    private _descendantAdded: Signal<(child: Instance) => void> =
-        new Signal<(descendant : Instance) => void>();
-    private _descendantRemoving: Signal<(child: Instance) => void> =
-            new Signal<(descendant : Instance) => void>();
+    private _ancestryChanged = new Signal<(child: Instance, parent: Instance | null) => void>();
+    private _propertyChanged = new Signal<(propertyName: string) => void>();
+    private _childAdded = new Signal<(child: Instance) => void>();
+    private _childRemoved = new Signal<(child: Instance) => void>();
+    private _descendantAdded = new Signal<(descendant : Instance) => void>();
+    private _descendantRemoving = new Signal<(descendant : Instance) => void>();
 
     constructor() {
         const selfMetadata = getMetaData(this);
         if (selfMetadata === undefined) {
             throw new Error(`Could not find metadata for class "${this.constructor.name}"`);
+        }
+
+        if (selfMetadata.hasAttribute('Service')) {
+            if (!Instance._allowCreateService) {
+                throw new Error(`Cannot directly construct service class "${selfMetadata.className}", must use the findService() or getService() methods on a ServiceProvider instead`);
+            }
         }
 
         this._metadata = selfMetadata;
@@ -119,7 +121,7 @@ export abstract class Instance implements IDestroyable
 
         this._name = newName;
         this.onNameChanged(newName);
-        this.firePropertyChanged('name');
+        this.processChangedProperty('name');
     }
 
     public get parent(): Instance | null {
@@ -263,6 +265,11 @@ export abstract class Instance implements IDestroyable
         }
     }
 
+    protected processChangedProperty(propertyName: string): void {
+        this.onPropertyChanged(propertyName);
+        this.firePropertyChanged(propertyName);
+    }
+
     protected onParentChanged(newParent: Instance | null): void {
         // No-op
     }
@@ -377,7 +384,7 @@ export abstract class Instance implements IDestroyable
         return this._parent.findFirstAncestorRecursiveInternal(predicate, maxDepth, nextDepth);
     }
 
-    protected firePropertyChanged(propertyName: string): void {
+    private firePropertyChanged(propertyName: string): void {
         this.onPropertyChanged(propertyName);
         this._propertyChanged.emit(propertyName);
     }

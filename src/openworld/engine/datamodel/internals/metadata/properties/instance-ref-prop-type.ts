@@ -1,7 +1,7 @@
 import { InstanceManager } from '../../instance-manager';
 import { BasePropType } from './base-prop-type';
 import { Class } from '../../../../utils/types';
-import { Instance } from '../../../core/instance';
+import { Instance } from '../../../elements/core/instance';
 
 export class InstanceRefPropType extends BasePropType
 {

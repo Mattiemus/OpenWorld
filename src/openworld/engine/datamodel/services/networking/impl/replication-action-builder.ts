@@ -1,6 +1,6 @@
-import { Instance } from '../../../../shared/datamodel/core/instance';
-import { getMetaData } from '../../../../shared/datamodel/internals/metadata/metadata';
-import { InstanceManager } from '../../../../shared/datamodel/internals/instance-manager';
+import { Instance } from '../../../elements/core/instance';
+import { getMetaData } from '../../../internals/metadata/metadata';
+import { InstanceManager } from '../../../internals/instance-manager';
 import { ReplicationCreateAction } from './replication-create-action';
 import { ReplicationDestroyAction } from './replication-destroy-action';
 

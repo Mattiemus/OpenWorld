@@ -1,6 +1,6 @@
 import { Instance } from './instance';
-import { DataModelClass, getMetaData, getConstructor } from '../internals/metadata/metadata';
-import { Class, Constructor } from '../../utils/types';
+import { DataModelClass, getMetaData, getConstructor } from '../../internals/metadata/metadata';
+import { Class, Constructor } from '../../../utils/types';
 
 import * as _ from "lodash";
 
@@ -35,13 +35,27 @@ export abstract class ServiceProvider extends Instance
         }
         
         // TODO: Ensure not already under another object
-        // TODO: Ensure Service instances can only be created from here
 
-        const constructor = _.isString(className) ? getConstructor(className) : className as Constructor<T>;
+        const constructor: Constructor<Instance> =
+            _.isString(className) 
+                ? getConstructor(className)
+                : className as Constructor<Instance>;
 
-        const instance = new constructor();
-        instance.parent = this;
+        const serviceInstance = this.constructService(constructor);
+        serviceInstance.parent = this;
 
-        return instance;
+        return serviceInstance as T;
+    }
+
+    private constructService<T extends Instance>(constructor: Constructor<T>): T {
+        try {
+            Instance['_allowCreateService'] = true;
+
+            const instance = new constructor();
+            return instance;
+        } catch (e) { 
+            Instance['_allowCreateService'] = false;
+            throw e;
+        }
     }
 }

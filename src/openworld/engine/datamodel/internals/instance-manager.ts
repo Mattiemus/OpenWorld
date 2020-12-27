@@ -1,4 +1,4 @@
-import { Instance } from '../core/instance';
+import { Instance } from '../elements/core/instance';
 import { Uuid } from '../../utils/uuid';
 
 export class InstanceManager

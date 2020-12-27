@@ -1,4 +1,4 @@
-import { IDestroyable } from '../../../../../../shared/utils/interfaces';
+import { IDestroyable } from '../../../../utils/interfaces';
 
 import { injectable } from 'inversify';
 import { Signal } from 'typed-signals';

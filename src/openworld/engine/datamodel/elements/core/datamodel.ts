@@ -1,12 +1,12 @@
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../../internals/metadata/metadata';
 import { ServiceProvider } from './service-provider';
 
 @DataModelClass({
-    className: 'OpenWorld',
+    className: 'DataModel',
     parent: ServiceProvider,
     attributes: [],
     properties: {}
 })
-export class OpenWorld extends ServiceProvider
+export class DataModel extends ServiceProvider
 {    
 }

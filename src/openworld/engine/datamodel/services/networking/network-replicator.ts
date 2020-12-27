@@ -1,5 +1,5 @@
-import { Instance } from '../core/instance';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { Instance } from '../../elements/core/instance';
+import { DataModelClass } from '../../internals/metadata/metadata';
 import { SignalConnection } from 'typed-signals';
 
 @DataModelClass({
