@@ -3,7 +3,7 @@ import "reflect-metadata";
 import './index.css';
 import { World } from './openworld/engine/datamodel/services/world/world';
 import { DataModel } from "./openworld/engine/datamodel/elements/core/datamodel";
-import { initialiseServiceLocator } from './openworld/engine/datamodel/internals/service-locator';
+import { installServices } from './openworld/engine/datamodel/internals/services/service-locator';
 import { WorldRenderSystemImpl } from './openworld/engine/datamodel/services/world/impl/world-render-system-impl';
 import { BrowserThreeJsWorldRenderSystem } from "./client/systems/rendering/browser-threejs-world-render-system";
 import { ClientReplicator } from './openworld/engine/datamodel/services/networking/client-replicator';
@@ -22,23 +22,41 @@ import { MathEx } from "./openworld/engine/math/mathex";
 import { CFrame } from "./openworld/engine/math/cframe";
 import { Vector3 } from './openworld/engine/math/vector3';
 import { Vector2 } from "./openworld/engine/math/vector2";
+import { serviceInstanceBinding, ServiceInstance } from './openworld/engine/datamodel/internals/services/service-instance';
+import { Camera } from "./openworld/engine/datamodel/elements/world/camera";
+
+
+
+// TODO: Is this the best way to do services....
 
 function RunOpenworld(func: (datamodel: DataModel, world: World) => void): void {
-    initialiseServiceLocator(c => {
+    const datamodel = new DataModel();
+
+    installServices(c => {
         c.bind(WorldRenderSystemImpl).to(BrowserThreeJsWorldRenderSystem).inSingletonScope();
         c.bind(WorldPhysicsSystemImpl).to(BrowserCannonJsWorldPhysicsSystem).inSingletonScope();
         c.bind(TaskSchedulerImpl).to(BrowserTaskScheduler).inSingletonScope();
         c.bind(MouseInputImpl).to(BrowserMouseInput).inSingletonScope();
         c.bind(ClientReplicatorImpl).to(BrowserClientReplicator).inSingletonScope();
+
+        c.bind(serviceInstanceBinding(datamodel)).toConstantValue(new ServiceInstance(datamodel));
     });
 
-    const datamodel = new DataModel();
+    const world = datamodel.getService(World);
+    
     datamodel.getService(ClientReplicator);
     datamodel.getService(Mouse);
     datamodel.getService(RunService);
 
-    const world = datamodel.getService(World);
     
+
+
+    const cam = new Camera();
+    cam.parent = world;
+
+    world.currentCamera = cam;
+
+
     func(datamodel, world);    
 } 
 
@@ -101,10 +119,12 @@ RunOpenworld((datamodel, world) => {
     });
 
     runService.preSimulation.connect(() => {
-        let cameraPosition = calculateOrbitVector();
-        cameraPosition = Vector3.multiplyScalar(cameraPosition, radius);
-        cameraPosition = Vector3.add(cameraPosition, camTarget);
-        
-        world.currentCamera.cframe = CFrame.createLookAt(cameraPosition, camTarget);
+        for (let i = 0; i < 1000; i++) {
+            let cameraPosition = calculateOrbitVector();
+            cameraPosition = Vector3.multiplyScalar(cameraPosition, radius);
+            cameraPosition = Vector3.add(cameraPosition, camTarget);
+            
+            world.currentCamera!.cframe = CFrame.createLookAt(cameraPosition, camTarget);
+        }
     });
 });

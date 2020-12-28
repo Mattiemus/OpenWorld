@@ -7,7 +7,7 @@ import { Signal } from 'typed-signals';
 export abstract class MouseInputImpl implements IDestroyable
 {
     //
-    // Events
+    // Signals
     //
 
     public abstract get leftButtonDown(): Signal<() => void>;

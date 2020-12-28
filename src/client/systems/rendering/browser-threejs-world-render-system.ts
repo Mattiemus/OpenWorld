@@ -3,197 +3,139 @@ import { Camera } from '../../../openworld/engine/datamodel/elements/world/camer
 import { Instance } from '../../../openworld/engine/datamodel/elements/core/instance';
 import { WorldObject } from '../../../openworld/engine/datamodel/elements/building/world-object';
 import { Primitive } from '../../../openworld/engine/datamodel/elements/building/primitive';
+import { ThreeJsDataModelCameraProxy } from './threejs-data-model-camera-proxy';
+import { World } from '../../../openworld/engine/datamodel/services/world/world';
+import { ServiceInstance, InjectInstance } from '../../../openworld/engine/datamodel/internals/services/service-instance';
 
 import * as THREE from 'three';
 import { injectable } from 'inversify';
-import { Signal, SignalConnection } from 'typed-signals';
+import { SignalConnection } from 'typed-signals';
+import { ThreeJsDataModelPrimitiveProxy } from './threejs-data-model-primitive-proxy';
 
 @injectable()
 export class BrowserThreeJsWorldRenderSystem extends WorldRenderSystemImpl
 {    
+    private _world: World;
     private _scene: THREE.Scene = new THREE.Scene();
     private _renderer: THREE.WebGLRenderer;
-    private _camera: THREE.Camera;
-
-    private _currentCamera: Camera;
-    private _currentCameraChanged = new Signal<() => void>();
-    private _currentCameraPropChanged: SignalConnection;
+    private _currentCameraProxy: ThreeJsDataModelCameraProxy | undefined;
+    private _currentCameraChangedConnection: SignalConnection;
+    private _descendentAddedConnection: SignalConnection;
+    private _descendantRemovingConnection: SignalConnection;
 
     //
     // Constructor
     //
 
-    constructor() {
+    constructor(@InjectInstance(World) world: ServiceInstance<World>) {
         super();
+
+        this._world = world.instance;
 
         this._renderer = new THREE.WebGLRenderer({ antialias: false });
         this._renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this._renderer.domElement);
 
-        this._currentCamera = new Camera();
-        //this._currentCamera.parent;
-        this._currentCameraPropChanged = this._currentCamera.propertyChanged.connect(this.onCurrentCameraPropertyChanged);
-        this._camera = this.getOrCreateCachedThreeJsCamera(this._currentCamera);
-        this.updateCameraPositionRotation();
-    }
+        this.addThreeSceneToWorld(world.instance, this._scene);
 
-    //
-    // Events
-    //
+        this._currentCameraChangedConnection =
+            this._world.getPropertyChangedSignal('currentCamera')!.connect(this.onWorldCurrentCameraChanged.bind(this));
 
-    public get currentCameraChanged(): Signal<() => void> {
-        return this._currentCameraChanged;
-    }
+        this._descendentAddedConnection =
+            this._world.descendantAdded.connect(this.onWorldDataModelDescendantAdded.bind(this));
 
-    //
-    // Properties
-    //
-
-    public get currentCamera(): Camera {
-        return this._currentCamera;
-    }
-
-    public set currentCamera(newCamera: Camera) {
-        if (this._currentCamera === newCamera) {
-            return;
-        }
-        
-        this._currentCameraPropChanged.disconnect();
-
-        // TODO
-        //if (newCamera.parent === null) {
-        //    newCamera.parent = this;
-        //}
-
-        this._currentCamera = newCamera;
-        this._currentCameraPropChanged = this._currentCamera.propertyChanged.connect(this.onCurrentCameraPropertyChanged);        
-        this._camera = this.getOrCreateCachedThreeJsCamera(newCamera);
-        this.updateCameraPositionRotation();
-
-        this.fireCurrentCameraChanged();
+        this._descendantRemovingConnection =
+            this._world.descendantRemoving.connect(this.onWorldDataModelDescendantRemoving.bind(this));
     }
 
     //
     // Methods
     //
 
-    public onInstanceRemovedFromWorld(child: Instance): void {
-        if (child instanceof WorldObject) {
-            const childScene = this.getCachedThreeJsScene(child);
-            if (childScene !== undefined) {
-                this._scene.remove(childScene);
-            }
-        }
-    }
-
-    public onInstanceAddedToWorld(child: Instance): void {
-        if (child instanceof WorldObject) {
-            const childScene = this.getOrCreateCachedThreeJsScene(child);
-            this._scene.add(childScene);
-        }
-    }
-
     public render(): void {
-        if (this._camera === undefined) {
-            this._renderer.clear();
+        if (this._currentCameraProxy !== undefined) {
+            this._renderer.render(this._scene, this._currentCameraProxy.threeObject);
         } else {
-            this._renderer.render(this._scene, this._camera);
+            this._renderer.clear();
         }
     }
 
     public destroy(): void {
+        this._currentCameraChangedConnection.disconnect();
+        this._descendentAddedConnection.disconnect();
+        this._descendantRemovingConnection.disconnect();
+
         this._renderer.dispose();
+        this.removeThreeSceneFromWorld(this._world);
     }
 
-    private fireCurrentCameraChanged(): void {
-        this._currentCameraChanged.emit();
-    }
+    private onWorldCurrentCameraChanged(): void {
+        const newCamera = this._world.currentCamera;
 
-    private onCurrentCameraPropertyChanged = (propertyName: string): void => {
-        if (propertyName === 'cframe') {
-            this.updateCameraPositionRotation();
+        if (this._currentCameraProxy !== undefined && newCamera === this._currentCameraProxy.dataModel) {
+            return;
+        }
+
+        if (this._currentCameraProxy !== undefined) {
+            this._currentCameraProxy.destroy();
+            this._currentCameraProxy = undefined;
+        }
+
+        if (newCamera !== null) {
+            this._currentCameraProxy = new ThreeJsDataModelCameraProxy(newCamera);
         }
     }
 
-    private getCachedThreeJsCamera(camera: Camera): THREE.PerspectiveCamera | undefined {
-        const unsafeCamera = camera as any;
-
-        const cachedCamera = unsafeCamera['__cachedCamera'] as THREE.PerspectiveCamera | undefined;
-        return cachedCamera;
-    }
-
-    private getOrCreateCachedThreeJsCamera(camera: Camera): THREE.PerspectiveCamera {
-        const cachedCamera = this.getCachedThreeJsCamera(camera);
-        if (cachedCamera !== undefined) {
-            return cachedCamera;
+    private onWorldDataModelDescendantAdded(child: Instance): void {
+        if (child instanceof Camera) {
+            // No-op: We only care about the current camera
+            return;
         }
 
-        const unsafeCamera = camera as any;
-
-        const createdCamera = new THREE.PerspectiveCamera(camera.fieldOfView, window.innerWidth / window.innerHeight, 0.1, 1000);
-        unsafeCamera['__cachedCamera'] = createdCamera;
-
-        return createdCamera;
+        if (child instanceof Primitive) {
+            const proxy = new ThreeJsDataModelPrimitiveProxy(child);
+            this.addProxyToDataModel(child, proxy);
+        }
     }
 
-    private getCachedThreeJsScene(obj: WorldObject): THREE.Scene | undefined {
-        const unsafeObj = obj as any;
-
-        const cachedScene = unsafeObj['__cachedScene'] as THREE.Scene | undefined;
-        return cachedScene;
-    }
-
-    private getOrCreateCachedThreeJsScene(obj: WorldObject): THREE.Scene {
-        const cachedScene = this.getCachedThreeJsScene(obj);
-        if (cachedScene !== undefined) {
-            return cachedScene;
+    private onWorldDataModelDescendantRemoving(child: Instance): void {
+        if (child instanceof Camera) {
+            // No-op: We only care about the current camera
+            return;
         }
 
-        const unsafeObj = obj as any;
+        if (child instanceof Primitive) {
+            this.removeProxyFromDataModel(child);
+        }
+    }
 
-        const createdScene = new THREE.Scene();
-        createdScene.position.set(
-            obj.cframe.x,
-            obj.cframe.y,
-            obj.cframe.z);
-
-            createdScene.quaternion.set(
-            obj.cframe.qx,
-            obj.cframe.qy,
-            obj.cframe.qz,
-            obj.cframe.qw);
-
-        if (obj instanceof Primitive) {
-
-            const mesh =
-                new THREE.Mesh(
-                    new THREE.BoxGeometry(1, 1, 1),
-                    new THREE.MeshNormalMaterial()
-                );
-
-            createdScene.add(mesh);
-
+    private addThreeSceneToWorld(dataModel: World, threeScene: THREE.Scene): void {
+        const unsafeDataModel = dataModel as any;
+        unsafeDataModel.__cachedThreeObject = threeScene;     
+    }
+    
+    private removeThreeSceneFromWorld(dataModel: World): boolean {
+        const unsafeDataModel = dataModel as any;
+        if (unsafeDataModel.__cachedThreeObject !== undefined) {
+            delete unsafeDataModel.__cachedThreeObject;
+            return true;
         }
 
-        unsafeObj['__cachedScene'] = createdScene;
-
-        return createdScene;
+        return false;
     }
 
-    private updateCameraPositionRotation(): void {
-        const threeCamera = this._camera;
-
-        threeCamera.position.set(
-            this._currentCamera.cframe.x,
-            this._currentCamera.cframe.y,
-            this._currentCamera.cframe.z);
-
-        threeCamera.quaternion.set(
-            this._currentCamera.cframe.qx,
-            this._currentCamera.cframe.qy,
-            this._currentCamera.cframe.qz,
-            this._currentCamera.cframe.qw);
+    private addProxyToDataModel(dataModel: Instance, proxy: ThreeJsDataModelPrimitiveProxy): void {
+        const unsafeDataModel = dataModel as any;
+        unsafeDataModel.__threeProxy = proxy;
     }
+    
+    private removeProxyFromDataModel(dataModel: Instance): boolean {
+        const unsafeDataModel = dataModel as any;
+        if (unsafeDataModel.__threeProxy !== undefined) {
+            delete unsafeDataModel.__threeProxy;
+            return true;
+        }
 
-
+        return false;
+    }
 }

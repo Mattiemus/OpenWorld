@@ -40,6 +40,7 @@ export abstract class Instance implements IDestroyable
     private _parent: Instance | null = null;
     private _children: Instance[] = [];
     private _isDestroyed: boolean = false;
+    private _propertyChangedSignals: Map<string, Signal<(propertyName: string) => void>> | undefined = undefined;
     
     private _ancestryChanged = new Signal<(child: Instance, parent: Instance | null) => void>();
     private _propertyChanged = new Signal<(propertyName: string) => void>();
@@ -66,7 +67,7 @@ export abstract class Instance implements IDestroyable
     }
 
     //
-    // Events
+    // Signals
     //
 
     public get ancestryChanged(): Signal<(child: Instance, parent: Instance | null) => void> {
@@ -192,6 +193,26 @@ export abstract class Instance implements IDestroyable
         return descendants;
     } 
 
+    public getPropertyChangedSignal(propertyName: string): Signal<(propertyName: string) => void> | undefined {
+        if (this._propertyChangedSignals === undefined) {
+            this._propertyChangedSignals = new Map<string, Signal<(propertyName: string) => void>>();
+        }
+
+        const existingSignal = this._propertyChangedSignals.get(propertyName);
+        if (existingSignal !== undefined) {
+            return existingSignal;
+        }
+
+        if (!this._metadata.properties.has(propertyName)) {
+            return undefined;
+        }
+
+        const newSignal = new Signal<(propertyName: string) => void>();
+        this._propertyChangedSignals.set(propertyName, newSignal);
+
+        return newSignal;
+    }
+
     public findFirstChildNamed(name: string, isRecursive: boolean = true): Instance | undefined {
         return this.findFirstChildInternal(i => i.name === name, isRecursive);
     }
@@ -214,7 +235,7 @@ export abstract class Instance implements IDestroyable
 
     public findFirstAncestorWhichIsA<T extends Instance>(className: string | Class<T>): T | undefined {
         return this.findFirstAncestorInternal(i => i.isA(className)) as T;
-    }
+    }   
 
     public isA<T extends Instance>(className: string | Class<T>): boolean {
         if (!_.isString(className)) {
@@ -266,7 +287,6 @@ export abstract class Instance implements IDestroyable
     }
 
     protected processChangedProperty(propertyName: string): void {
-        this.onPropertyChanged(propertyName);
         this.firePropertyChanged(propertyName);
     }
 
@@ -386,6 +406,14 @@ export abstract class Instance implements IDestroyable
 
     private firePropertyChanged(propertyName: string): void {
         this.onPropertyChanged(propertyName);
+
+        if (this._propertyChangedSignals !== undefined) {
+            const signal = this._propertyChangedSignals.get(propertyName);
+            if (signal !== undefined) {
+                signal.emit(propertyName);
+            }
+        }
+
         this._propertyChanged.emit(propertyName);
     }
 

@@ -7,7 +7,7 @@ import { Signal } from 'typed-signals';
 export abstract class TaskSchedulerImpl implements IDestroyable
 {
     //
-    // Events
+    // Signals
     //
 
     public abstract get preRender(): Signal<(deltaTime: number, elapsedTime: number) => void>;

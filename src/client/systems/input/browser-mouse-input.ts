@@ -41,7 +41,7 @@ export class BrowserMouseInput extends MouseInputImpl
     }
 
     // 
-    // Events
+    // Signals
     //
 
     public get leftButtonDown(): Signal<() => void> {

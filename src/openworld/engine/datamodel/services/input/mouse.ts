@@ -2,7 +2,7 @@ import { DataModelClass } from '../../internals/metadata/metadata';
 import { Instance } from '../../elements/core/instance';
 import { PropType } from '../../internals/metadata/properties/prop-type';
 import { MouseInputImpl } from './impl/mouse-input-impl';
-import { getService } from '../../internals/service-locator';
+import { getServiceFor } from '../../internals/services/service-locator';
 import { ForwardingSignal } from '../../internals/forwarding-signal';
 
 import { Signal } from 'typed-signals';
@@ -60,7 +60,7 @@ export class Mouse extends Instance
     constructor() {
         super();
 
-        this._mouseInput = getService(MouseInputImpl);
+        this._mouseInput = getServiceFor(MouseInputImpl, this);
 
         this._leftButtonDown = new ForwardingSignal(this._mouseInput.leftButtonDown);
         this._leftButtonUp = new ForwardingSignal(this._mouseInput.leftButtonUp);
@@ -69,10 +69,12 @@ export class Mouse extends Instance
         this._move = new ForwardingSignal(this._mouseInput.move);
         this._wheelDown = new ForwardingSignal(this._mouseInput.wheelDown);
         this._wheelUp = new ForwardingSignal(this._mouseInput.wheelUp);
+
+        // TODO: Fire the relevent propertyChanged signals!
     }   
 
     // 
-    // Events
+    // Signals
     //
 
     public get leftButtonDown(): Signal<() => void> {

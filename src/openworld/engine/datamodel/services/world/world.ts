@@ -2,7 +2,7 @@ import { Instance } from '../../elements/core/instance';
 import { DataModelClass } from '../../internals/metadata/metadata';
 import { PropType } from "../../internals/metadata/properties/prop-type";
 import { WorldRenderSystemImpl } from './impl/world-render-system-impl';
-import { getService } from '../../internals/service-locator';
+import { getServiceFor } from '../../internals/services/service-locator';
 import { Camera } from '../../elements/world/camera';
 import { WorldPhysicsSystemImpl } from './impl/world-physics-system-impl';
 
@@ -25,40 +25,31 @@ export class World extends Instance
     private _worldRenderSystem: WorldRenderSystemImpl;
     private _worldPhysicsSystem: WorldPhysicsSystemImpl;
 
-    private _currentCameraChangedConnection: SignalConnection;
+    private _currentCamera: Camera | null = null;
 
     constructor() {
         super();
         
-        this._worldRenderSystem = getService(WorldRenderSystemImpl);
-        this._worldPhysicsSystem = getService(WorldPhysicsSystemImpl);
-
-        this._currentCameraChangedConnection = this._worldRenderSystem.currentCameraChanged.connect(() => {
-            this.processChangedProperty('currentCamera');
-        });
+        this._worldRenderSystem = getServiceFor(WorldRenderSystemImpl, this);
+        this._worldPhysicsSystem = getServiceFor(WorldPhysicsSystemImpl, this);
     }
 
-    public get currentCamera(): Camera {
+    //
+    // Properties
+    //
+
+    public get currentCamera(): Camera | null {
         this.throwIfDestroyed();
-        return this._worldRenderSystem.currentCamera;
+        return this._currentCamera;
     }
-    public set currentCamera(newCamera: Camera) {
+    public set currentCamera(newCamera: Camera | null) {
         this.throwIfDestroyed();
-        this._worldRenderSystem.currentCamera = newCamera;
-    }
+        
+        if (this._currentCamera === newCamera) {
+            return;
+        }
 
-    protected onChildRemoved(child: Instance): void {
-        super.onChildRemoved(child);
-        this._worldRenderSystem.onInstanceRemovedFromWorld(child);
-    }
-
-    protected onChildAdded(child: Instance): void {
-        super.onChildAdded(child);
-        this._worldRenderSystem.onInstanceAddedToWorld(child);
-    }
-
-    protected onDestroy(): void {
-        super.onDestroy();
-        this._currentCameraChangedConnection.disconnect();
+        this._currentCamera = newCamera;
+        this.processChangedProperty('currentCamera');
     }
 }

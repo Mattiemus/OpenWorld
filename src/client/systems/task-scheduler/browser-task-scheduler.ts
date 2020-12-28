@@ -1,6 +1,6 @@
 import { TaskSchedulerImpl } from '../../../openworld/engine/datamodel/services/scheduling/impl/task-scheduler-impl';
 import { WorldRenderSystemImpl } from '../../../openworld/engine/datamodel/services/world/impl/world-render-system-impl';
-import { getService } from '../../../openworld/engine/datamodel/internals/service-locator';
+import { getService } from '../../../openworld/engine/datamodel/internals/services/service-locator';
 
 import * as THREE from 'three';
 import { Signal } from "typed-signals";
@@ -28,11 +28,11 @@ export class BrowserTaskScheduler extends TaskSchedulerImpl
         this._renderSystem = getService(WorldRenderSystemImpl);
 
         this._clock.start();
-        requestAnimationFrame(() => this.renderLoop());
+        requestAnimationFrame(this.renderLoop);
     }
 
     //
-    // Events
+    // Signals
     //
 
     public get preRender(): Signal<(deltaTime: number, elapsedTime: number) => void> {
@@ -63,7 +63,7 @@ export class BrowserTaskScheduler extends TaskSchedulerImpl
         this._postSimulation.disconnectAll();
     }
 
-    private renderLoop(): void {
+    private renderLoop = (): void => {
         if (!this._isRunning) {
             return;
         }
@@ -77,7 +77,7 @@ export class BrowserTaskScheduler extends TaskSchedulerImpl
         this.firePostRender();
 
         if (this._isRunning) {
-            requestAnimationFrame(() => this.renderLoop());
+            requestAnimationFrame(this.renderLoop);
         }
     }
 

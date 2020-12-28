@@ -1,6 +1,6 @@
 import { DataModelClass } from '../../internals/metadata/metadata';
 import { Instance } from '../../elements/core/instance';
-import { getService } from '../../internals/service-locator';
+import { getServiceFor } from '../../internals/services/service-locator';
 import { TaskSchedulerImpl } from './impl/task-scheduler-impl';
 import { ForwardingSignal } from '../../internals/forwarding-signal';
 
@@ -24,7 +24,7 @@ export class RunService extends Instance
     constructor() {
         super();
 
-        this._taskScheduler = getService(TaskSchedulerImpl);
+        this._taskScheduler = getServiceFor(TaskSchedulerImpl, this);
         
         this._preRender = new ForwardingSignal(this._taskScheduler.preRender);
         this._postRender = new ForwardingSignal(this._taskScheduler.postRender);
@@ -33,7 +33,7 @@ export class RunService extends Instance
     }
 
     //
-    // Events
+    // Signals
     //
 
     public get preRender(): Signal<(deltaTime: number, elapsedTime: number) => void> {

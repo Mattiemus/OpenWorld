@@ -1,5 +1,5 @@
 import { IDestroyable } from '../../../../utils/interfaces';
-import { Instance } from '../../../elements/core/instance';
+import { DataModel } from '../../../elements/core/datamodel';
 
 import { injectable } from 'inversify';
 
@@ -10,8 +10,5 @@ export abstract class ClientReplicatorImpl implements IDestroyable
     // Methods
     //
 
-    public abstract onInstanceAdded(instance: Instance): void;
-    public abstract onInstanceRemoving(instance: Instance): void;
-    public abstract onInstancePropertyChanged(instance: Instance, propertyName: string): void;
     public abstract destroy(): void;
 }
