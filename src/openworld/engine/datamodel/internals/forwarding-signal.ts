@@ -1,7 +1,7 @@
 import { IDestroyable } from '../../utils/interfaces';
 import { Signal, SignalConnection } from 'typed-signals';
 
-export class ForwardingSignal<THandler extends (...args: any[]) => void> implements IDestroyable
+export default class ForwardingSignal<THandler extends (...args: any[]) => void> implements IDestroyable
 {
     private _connection: SignalConnection;
     private _signal = new Signal<THandler>();

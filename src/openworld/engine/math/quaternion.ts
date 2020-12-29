@@ -1,6 +1,6 @@
-import { Vector3 } from './vector3';
+import Vector3 from './vector3';
 
-export class Quaternion 
+export default class Quaternion 
 {
     public static readonly identity = new Quaternion(0, 0, 0, 1);
     public static readonly one = new Quaternion(1, 1, 1, 1);

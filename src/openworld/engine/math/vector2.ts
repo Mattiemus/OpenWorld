@@ -1,4 +1,4 @@
-export class Vector2
+export default class Vector2
 {
     public static readonly zero = new Vector2(0, 0);
     public static readonly one = new Vector2(1, 1);

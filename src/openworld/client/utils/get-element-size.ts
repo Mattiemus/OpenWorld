@@ -2,7 +2,7 @@ function parseNumber(prop: any): number {
     return parseFloat(prop) || 0;
 }
 
-export function getElementSize(el: Window | Element): [number, number] {
+export default function getElementSize(el: Window | Element): [number, number] {
     if (el instanceof Window || el === document.body) {
         return [window.innerWidth, window.innerHeight];
     }

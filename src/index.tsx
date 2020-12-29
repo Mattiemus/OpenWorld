@@ -4,35 +4,29 @@ import "./index.css"
 
 import * as React from "react";
 import { render } from "react-dom";
-import { DataModel } from "./openworld/engine/datamodel/elements/core/datamodel";
-import { World } from "./openworld/engine/datamodel/services/world/world";
-import { WorldImpl } from "./openworld/engine/services/world/world-impl";
-import { RunServiceImpl } from "./openworld/engine/services/scheduling/run-service-impl";
-import { BrowserRunServiceImpl } from "./openworld/client/services/scheduling/browser-run-service-impl";
-import { BrowserMouseImpl } from "./openworld/client/services/input/browser-mouse-impl";
-import { ClientReplicatorImpl } from "./openworld/engine/services/networking/client-replicator-impl";
-import { BrowserClientReplicatorImpl } from "./openworld/client/services/networking/browser-client-replicator-impl";
-import { ClientReplicator } from "./openworld/engine/datamodel/services/networking/client-replicator";
-import { Mouse } from "./openworld/engine/datamodel/services/input/mouse";
-import { RunService } from "./openworld/engine/datamodel/services/scheduling/run-service";
-import { Camera } from "./openworld/engine/datamodel/elements/world/camera";
-import { Primitive, PrimitiveType } from "./openworld/engine/datamodel/elements/building/primitive";
-import { CFrame } from "./openworld/engine/math/cframe";
-import { Vector3 } from "./openworld/engine/math/vector3";
-import { Vector2 } from "./openworld/engine/math/vector2";
-import { MathEx } from "./openworld/engine/math/mathex";
-import { RenderCanvas } from './openworld/client/services/rendering/render-canvas';
-import { Instance } from "./openworld/engine/datamodel/elements/core/instance";
-import { ServiceBase } from './openworld/engine/services/service-base';
+import DataModel from "./openworld/engine/datamodel/elements/datamodel";
+import World from "./openworld/engine/datamodel/services/world";
+import RunServiceImpl from "./openworld/engine/services/run-service-impl";
+import BrowserRunServiceImpl from "./openworld/client/services/browser/browser-run-service-impl";
+import BrowserMouseImpl from "./openworld/client/services/browser/browser-mouse-impl";
+import ClientReplicatorImpl from "./openworld/engine/services/client-replicator-impl";
+import BrowserClientReplicatorImpl from "./openworld/client/services/browser/browser-client-replicator-impl";
+import ClientReplicator from "./openworld/engine/datamodel/services/client-replicator";
+import Mouse from "./openworld/engine/datamodel/services/mouse";
+import RunService from "./openworld/engine/datamodel/services/run-service";
+import Camera from "./openworld/engine/datamodel/elements/camera";
+import Primitive, { PrimitiveType } from "./openworld/engine/datamodel/elements/primitive";
+import CFrame from "./openworld/engine/math/cframe";
+import Vector3 from "./openworld/engine/math/vector3";
+import Vector2 from "./openworld/engine/math/vector2";
+import MathEx from "./openworld/engine/math/mathex";
+import RenderCanvas from './openworld/client/services/browser/graphics/render-canvas';
+import Instance from "./openworld/engine/datamodel/elements/instance";
+import ServiceBase from './openworld/engine/services/base/service-base';
 import { Class } from "./openworld/engine/utils/types";
-import { MouseImpl } from './openworld/engine/services/input/mouse-impl';
-import { DataModelWatcher } from './openworld/client/services/datamodel-watcher.ts/data-model-watcher';
-import { BrowserWorldImpl } from './openworld/client/services/world/browser-world-impl';
-
-
-
-
-
+import MouseImpl from './openworld/engine/services/mouse-impl';
+import BrowserWorldImpl from './openworld/client/services/browser/browser-world-impl';
+import WorldImpl from "./openworld/engine/services/world-impl";
 
 export class OpenWorldCanvas extends React.Component
 {    
@@ -57,8 +51,7 @@ export class OpenWorldCanvas extends React.Component
         const browserMouseService = new BrowserMouseImpl();
         const browserTaskScheduler = new BrowserRunServiceImpl(renderCanvas);
         const browserClientReplicator = new BrowserClientReplicatorImpl(datamodel);
-        const dataModelWatcher = new DataModelWatcher(datamodel, renderCanvas);
-        const worldImpl = new BrowserWorldImpl();
+        const browserWorldImpl = new BrowserWorldImpl(renderCanvas);
 
         Instance['_getServiceImpl'] = ((serviceBase: Class<ServiceBase>): ServiceBase => {
             if (serviceBase === MouseImpl) {
@@ -68,7 +61,7 @@ export class OpenWorldCanvas extends React.Component
             } else if (serviceBase === ClientReplicatorImpl) {
                 return browserClientReplicator;
             } else if (serviceBase === WorldImpl) {
-                return worldImpl;
+                return browserWorldImpl;
             }
 
             throw new Error('Cannot find service implementation');
@@ -172,22 +165,6 @@ export class OpenWorldCanvas extends React.Component
                     }
                 }
             });
-
-
-
-
-            function buildTreeFromDataModel(instance: Instance): any {
-                return {
-                    className: instance.className,
-                    name: instance.name,
-                    children: instance.getChildren().map(buildTreeFromDataModel)
-                }
-            }
-
-
-            console.log(buildTreeFromDataModel(datamodel));
-
-
     }
 
     public render() {

@@ -5,7 +5,7 @@ function createRandomUuid(): string {
     });
   }
 
-export class Uuid
+export default class Uuid
 {
     private _uuid: string;
 

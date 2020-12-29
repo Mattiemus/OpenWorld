@@ -1,6 +1,6 @@
-import { BasePropType } from './base-prop-type';
+import BasePropType from './base-prop-type';
 
-export class EnumPropType<T> extends BasePropType
+export default class EnumPropType<T> extends BasePropType
 {
     constructor(private _e: { [K in keyof T]: any; }) {
         super();

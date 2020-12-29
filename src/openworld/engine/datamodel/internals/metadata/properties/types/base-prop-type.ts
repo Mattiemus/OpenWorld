@@ -1,4 +1,4 @@
-export abstract class BasePropType
+export default abstract class BasePropType
 {
     public abstract toJson(instance: any, propName: string): any;
     

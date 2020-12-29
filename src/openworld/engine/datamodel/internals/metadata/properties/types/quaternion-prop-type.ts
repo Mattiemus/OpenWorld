@@ -1,6 +1,6 @@
-import { BasePropType } from './base-prop-type';
+import BasePropType from './base-prop-type';
 
-export class QuaternionPropType extends BasePropType
+export default class QuaternionPropType extends BasePropType
 {
     public toJson(instance: any, propName: string): [number, number, number, number] {
         return (instance[propName] as THREE.Quaternion).toArray() as [number, number, number, number];

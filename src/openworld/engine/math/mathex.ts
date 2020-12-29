@@ -1,4 +1,4 @@
-export class MathEx 
+export default class MathEx 
 {
     public static readonly deg2rad = Math.PI / 180.0;
 

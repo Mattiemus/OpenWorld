@@ -1,7 +1,7 @@
-import { BasePropType } from './types/base-prop-type';
+import BasePropType from './types/base-prop-type';
 import { DataModelPropertyAttribute, IDataModelPropertyMetaData } from '../metadata';
 
-export class DataModelPropertyMetaData
+export default class DataModelPropertyMetaData
 {
     private _name: string;
     private _type: BasePropType;

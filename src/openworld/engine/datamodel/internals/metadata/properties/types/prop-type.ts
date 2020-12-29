@@ -1,14 +1,14 @@
 import { Constructor } from '../../../../../utils/types';
-import { BasePropType } from './base-prop-type';
-import { Vector3PropType } from './vector3-prop-type';
-import { QuaternionPropType } from './quaternion-prop-type';
-import { InstanceRefPropType } from './instance-ref-prop-type';
-import { EnumPropType } from './enum-prop-type';
-import { LiteralPropType } from './literal-prop-type';
-import { CFramePropType } from './cframe-prop-type';
-import { Instance } from '../../../../elements/core/instance';
+import BasePropType from './base-prop-type';
+import Vector3PropType from './vector3-prop-type';
+import QuaternionPropType from './quaternion-prop-type';
+import InstanceRefPropType from './instance-ref-prop-type';
+import EnumPropType from './enum-prop-type';
+import LiteralPropType from './literal-prop-type';
+import CFramePropType from './cframe-prop-type';
+import Instance from '../../../../elements/instance';
 
-export class PropType
+export default class PropType
 {
     public static get number(): BasePropType {
         return new LiteralPropType<number>();

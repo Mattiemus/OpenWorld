@@ -1,8 +1,8 @@
 import { Class } from '../../../../utils/types';
-import { DataModelPropertyMetaData } from '../properties/data-model-property-metadata';
+import DataModelPropertyMetaData from '../properties/data-model-property-metadata';
 import { DataModelClassAttribute, IDataModelClassMetaData } from '../metadata';
 
-export class DataModelClassMetaData
+export default class DataModelClassMetaData
 {
     private _className: string;
     private _parent: Class<any> | null;

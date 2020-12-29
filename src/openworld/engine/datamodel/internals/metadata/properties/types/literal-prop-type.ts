@@ -1,6 +1,6 @@
-import { BasePropType } from './base-prop-type';
+import BasePropType from './base-prop-type';
 
-export class LiteralPropType<T> extends BasePropType
+export default class LiteralPropType<T> extends BasePropType
 {
     public toJson(instance: any, propName: string): T {
         return instance[propName];

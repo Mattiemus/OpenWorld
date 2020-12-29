@@ -1,9 +1,9 @@
-import { InstanceManager } from '../../../instance-manager';
-import { BasePropType } from './base-prop-type';
+import InstanceManager from '../../../instance-manager';
+import BasePropType from './base-prop-type';
 import { Class } from '../../../../../utils/types';
-import { Instance } from '../../../../elements/core/instance';
+import Instance from '../../../../elements/instance';
 
-export class InstanceRefPropType extends BasePropType
+export default class InstanceRefPropType extends BasePropType
 {
     constructor(private _baseType: string | Class<Instance>) {
         super();

@@ -1,7 +1,7 @@
-import { Vector3 } from "./vector3";
-import { Quaternion } from './quaternion';
+import Vector3 from "./vector3";
+import Quaternion from './quaternion';
 
-export class CFrame
+export default class CFrame
 {
     public static readonly identity = new CFrame(0, 0, 0, 0, 0, 0, 1);
 

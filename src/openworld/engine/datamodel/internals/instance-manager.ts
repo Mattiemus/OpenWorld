@@ -1,7 +1,7 @@
-import { Instance } from '../elements/core/instance';
-import { Uuid } from '../../utils/uuid';
+import Instance from '../elements/instance';
+import Uuid from '../../utils/uuid';
 
-export class InstanceManager
+export default class InstanceManager
 {
     private static _instanceIds = new Map<string, Instance>();
 

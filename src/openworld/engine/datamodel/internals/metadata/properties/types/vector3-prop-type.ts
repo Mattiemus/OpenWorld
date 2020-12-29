@@ -1,6 +1,6 @@
-import { BasePropType } from './base-prop-type';
+import BasePropType from './base-prop-type';
 
-export class Vector3PropType extends BasePropType
+export default class Vector3PropType extends BasePropType
 {
     public toJson(instance: any, propName: string): [number, number, number] {
         return (instance[propName] as THREE.Vector3).toArray();

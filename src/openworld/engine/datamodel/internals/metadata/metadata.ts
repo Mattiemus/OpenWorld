@@ -1,6 +1,6 @@
 import { Class, Constructor } from '../../../utils/types';
-import { BasePropType } from './properties/types/base-prop-type';
-import { DataModelClassMetaData } from './classes/data-model-class-metadata';
+import BasePropType from './properties/types/base-prop-type';
+import DataModelClassMetaData from './classes/data-model-class-metadata';
 
 import * as _ from "lodash";
 
