@@ -7,6 +7,7 @@ import EnumPropType from './enum-prop-type';
 import LiteralPropType from './literal-prop-type';
 import CFramePropType from './cframe-prop-type';
 import Instance from '../../../../elements/instance';
+import Color3PropType from './color3-prop-type';
 
 export default class PropType
 {
@@ -30,13 +31,18 @@ export default class PropType
         return new EnumPropType<T>(e);
     }
 
-
-
     public static get cframe(): BasePropType {
         return new CFramePropType();
     }
 
 
+
+
+    // TODO: Need to fix these as they target THREE types, not our math types...
+
+    public static get color3(): BasePropType {
+        return new Color3PropType();
+    }
 
     public static get vector3(): BasePropType {
         return new Vector3PropType();

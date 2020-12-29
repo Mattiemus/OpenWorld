@@ -9,6 +9,10 @@ export default class Vector3
     public static readonly forward = new Vector3(0, 0, 1);
     public static readonly backward = new Vector3(0, 0, -1);
 
+    //
+    // Constructor
+    //
+
     constructor(
         public readonly x: number,
         public readonly y: number,

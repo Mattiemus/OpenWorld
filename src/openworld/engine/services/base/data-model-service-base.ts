@@ -6,6 +6,14 @@ export default class DataModelServiceBase<TService extends Instance> extends Ser
     private _currentDataModel: TService | undefined = undefined;
 
     //
+    // Properties
+    //
+
+    protected get currentDataModel(): TService | undefined {
+        return this._currentDataModel;
+    }
+
+    //
     // Methods
     //
 
@@ -19,15 +27,27 @@ export default class DataModelServiceBase<TService extends Instance> extends Ser
     }
 
     public detatch(dataModel: TService): void {
-        this.onDetatch(dataModel);
+        if (this._currentDataModel !== dataModel) {
+            throw new Error('Cannot detatch from different data model to the one the service is connected to');
+        }
+
+        this.onDetatch();
         this._currentDataModel = undefined;
+    }
+
+    protected onDestroy(): void {
+        if (this._currentDataModel !== undefined) {
+            this.detatch(this._currentDataModel);
+        }
+
+        super.onDestroy();
     }
 
     protected onAttatch(dataModel: TService): void {
         // No-op
     }
 
-    protected onDetatch(dataModel: TService): void {
+    protected onDetatch(): void {
         // No-op
     }
 }

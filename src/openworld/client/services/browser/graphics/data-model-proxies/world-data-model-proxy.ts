@@ -1,11 +1,15 @@
 import Camera from '../../../../../engine/datamodel/elements/camera';
 import Instance from '../../../../../engine/datamodel/elements/instance';
 import Primitive from '../../../../../engine/datamodel/elements/primitive';
+import PointLight from '../../../../../engine/datamodel/elements/point-light';
 import World from '../../../../../engine/datamodel/services/world';
 import RenderCanvas from '../render-canvas';
 import ServiceBase from '../../../../../engine/services/base/service-base';
 import ThreeJsDataModelCameraProxy from './threejs-data-model-camera-proxy';
 import ThreeJsDataModelPrimitiveProxy from './threejs-data-model-primitive-proxy';
+import ThreeJsDataModelPointLightProxy from './threejs-data-model-point-light-proxy';
+import CFrame from '../../../../../engine/math/cframe';
+import ThreeJsDataModelProxy from './threejs-data-model-proxy';
 
 import * as THREE from 'three';
 import { SignalConnection } from 'typed-signals';
@@ -81,6 +85,11 @@ export default class WorldDataModelProxy extends ServiceBase
             const proxy = new ThreeJsDataModelPrimitiveProxy(child);
             this.addProxyToDataModel(child, proxy);
         }
+
+        if (child instanceof PointLight) {
+            const proxy = new ThreeJsDataModelPointLightProxy(child);
+            this.addProxyToDataModel(child, proxy);            
+        }
     }
 
     private onWorldDataModelDescendantRemoving(child: Instance): void {
@@ -109,7 +118,7 @@ export default class WorldDataModelProxy extends ServiceBase
         return false;
     }
 
-    private addProxyToDataModel(dataModel: Instance, proxy: ThreeJsDataModelPrimitiveProxy): void {
+    private addProxyToDataModel<TDataModel extends Instance & { cframe: CFrame; }, TThreeObject extends THREE.Object3D>(dataModel: Instance, proxy: ThreeJsDataModelProxy<TDataModel, TThreeObject>): void {
         const unsafeDataModel = dataModel as any;
         unsafeDataModel.__threeProxy = proxy;
     }

@@ -23,7 +23,7 @@ export default class ThreeJsDataModelCameraProxy extends ThreeJsDataModelProxy<C
             _renderCanvas.resized.connect(this.onRenderCanvasResized.bind(this));
         
         const fovChangedSignal = dataModel.getPropertyChangedSignal('fieldOfView')!;
-        this._fovChangedConnection = fovChangedSignal.connect(this.onDataModelFieldOfViewUpdated.bind(this));
+        this._fovChangedConnection = fovChangedSignal.connect(this.onDataModelFieldOfViewChanged.bind(this));
     }
 
     // 
@@ -54,7 +54,7 @@ export default class ThreeJsDataModelCameraProxy extends ThreeJsDataModelProxy<C
         this.threeObject.updateProjectionMatrix();
     }
 
-    private onDataModelFieldOfViewUpdated(): void {
+    private onDataModelFieldOfViewChanged(): void {
         this.threeObject.fov = this.dataModel.fieldOfView;
     }
 }

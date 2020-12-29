@@ -19,7 +19,7 @@ export default class ThreeJsDataModelPrimitiveProxy extends ThreeJsDataModelProx
         super(dataModel);
 
         const typeChangedSignal = dataModel.getPropertyChangedSignal('type')!;
-        this._typeChangedConnection = typeChangedSignal.connect(this.onDataModelTypeUpdated.bind(this));
+        this._typeChangedConnection = typeChangedSignal.connect(this.onDataModelTypeChanged.bind(this));
     }
 
     // 
@@ -34,14 +34,14 @@ export default class ThreeJsDataModelPrimitiveProxy extends ThreeJsDataModelProx
     protected createThreeObject(dataModel: Primitive): THREE.Mesh {
         const mesh = new THREE.Mesh();
         mesh.geometry = this.createGeometryForPrimitiveType(dataModel.type);
-        mesh.material = new THREE.MeshNormalMaterial();
+        mesh.material = new THREE.MeshStandardMaterial();
 
         this.copyCFrame(dataModel, mesh);
 
         return mesh;
     }
 
-    private onDataModelTypeUpdated(): void {
+    private onDataModelTypeChanged(): void {
         this.threeObject.geometry = this.createGeometryForPrimitiveType(this.dataModel.type);
     }
 
