@@ -20,7 +20,8 @@ export default class RenderCanvas extends ServiceBase
         super();
         
         this._renderer = new THREE.WebGLRenderer({ canvas: _canvas, antialias: false });
-        
+        this._renderer.shadowMap.enabled = true;
+
         window.addEventListener('resize', this.handleResize, false);
         this.handleResize();
     }

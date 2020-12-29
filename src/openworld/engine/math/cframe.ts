@@ -45,4 +45,14 @@ export default class CFrame
         const rotation = Quaternion.createLookAt(at, lookAt, up);
         return new CFrame(at.x, at.y, at.z, rotation.x, rotation.y, rotation.z, rotation.w);
     }
+
+    public equals(other: CFrame): boolean {
+        return this.x === other.x && 
+               this.y === other.y &&
+               this.z === other.z &&
+               this.qx === other.qx &&
+               this.qy === other.qy &&
+               this.qz === other.qz &&
+               this.qw === other.qw;
+    }
 }

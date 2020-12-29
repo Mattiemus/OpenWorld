@@ -1,6 +1,8 @@
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import WorldObject from './world-object';
 import { DataModelClass } from "../internals/metadata/metadata";
+import MaterialProperties from '../data-types/MaterialProperties';
+import Color3 from '../../math/color3';
 
 export enum PrimitiveType {
     Cube = 'Cube',
@@ -14,7 +16,12 @@ export enum PrimitiveType {
     properties: {
         type: {
             name: 'type',
-            type: PropType.enum(PrimitiveType),
+            type: PropertyType.enum(PrimitiveType),
+            attributes: []
+        },
+        materialProperties: {
+            name: 'materialProperties',
+            type: PropertyType.materialProperties,
             attributes: []
         }
     }
@@ -22,6 +29,8 @@ export enum PrimitiveType {
 export default class Primitive extends WorldObject
 {
     private _primType: PrimitiveType = PrimitiveType.Cube;
+    private _materialProperties: MaterialProperties =
+        MaterialProperties.createBasicColor(Color3.white);
     
     //
     // Properties
@@ -37,5 +46,17 @@ export default class Primitive extends WorldObject
 
         this._primType = newPrimitiveType;
         this.processChangedProperty('type');
+    }
+
+    public get materialProperties(): MaterialProperties {
+        return this._materialProperties;
+    }
+    public set materialProperties(newMaterialProperties: MaterialProperties) {
+        if (this._materialProperties === newMaterialProperties) {
+            return;
+        }
+
+        this._materialProperties = newMaterialProperties;
+        this.processChangedProperty('materialProperties');
     }
 }

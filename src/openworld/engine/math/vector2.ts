@@ -39,4 +39,8 @@ export default class Vector2
     public static subtract(a: Vector2, b: Vector2): Vector2 {
         return new Vector2(a.x - b.x, a.y - b.y);
     }
+
+    public equals(other: Vector2): boolean {
+        return this.x === other.x && this.y === other.y;
+    }
 }

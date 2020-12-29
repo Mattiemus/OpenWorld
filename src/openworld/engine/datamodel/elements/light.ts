@@ -1,4 +1,4 @@
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import WorldObject from './world-object';
 import { DataModelClass } from "../internals/metadata/metadata";
 import Color3 from '../../math/color3';
@@ -10,17 +10,17 @@ import Color3 from '../../math/color3';
     properties: {
         brightness: {
             name: 'brightness',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: []
         },
         color: {
             name: 'color',
-            type: PropType.color3,
+            type: PropertyType.color3,
             attributes: []
         },
         castsShadows: {
             name: 'castsShadows',
-            type: PropType.boolean,
+            type: PropertyType.boolean,
             attributes: []
         }
     }

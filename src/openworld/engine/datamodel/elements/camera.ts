@@ -1,7 +1,7 @@
 import CFrame from '../../math/cframe';
 import { DataModelClass } from "../internals/metadata/metadata";
 import Instance from './instance';
-import PropType from '../internals/metadata/properties/types/prop-type';
+import PropertyType from '../internals/metadata/properties/property-type';
 import MathEx from '../../math/mathex';
 
 @DataModelClass({
@@ -11,22 +11,22 @@ import MathEx from '../../math/mathex';
     properties: {
         cframe: {
             name: 'cframe',
-            type: PropType.cframe,
+            type: PropertyType.cframe,
             attributes: [ 'NotReplicated' ]
         },
         fieldOfView: {
             name: 'fieldOfView',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: [ 'NotReplicated' ]
         },
         nearPlane: {
             name: 'nearPlane',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         farPlane: {
             name: 'farPlane',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         }
     }

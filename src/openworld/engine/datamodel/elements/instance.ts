@@ -4,7 +4,7 @@ import Uuid from '../../utils/uuid';
 import { getMetaData } from "../internals/metadata/metadata";
 import { DataModelClass } from '../internals/metadata/metadata';
 import DataModelClassMetaData from "../internals/metadata/classes/data-model-class-metadata";
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import InstanceManager from '../internals/instance-manager';
 import ServiceBase from '../../services/base/service-base';
 
@@ -18,17 +18,17 @@ import * as _ from "lodash";
     properties: {
         className: {
             name: 'className',
-            type: PropType.string,
+            type: PropertyType.string,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         name: {
             name: 'name',
-            type: PropType.string,
+            type: PropertyType.string,
             attributes: []
         },
         parent: {
             name: 'parent',
-            type: PropType.instanceRef('Instance'),
+            type: PropertyType.instanceRef('Instance'),
             attributes: []
         }
     }

@@ -66,4 +66,8 @@ export default class Vector3
     public static multiplyScalar(a: Vector3, scale: number): Vector3 {
         return new Vector3(a.x * scale, a.y * scale, a.z * scale);
     }
+
+    public equals(other: Vector3): boolean {
+        return this.x === other.x && this.y === other.y && this.z === other.z;
+    }
 }

@@ -1,6 +1,6 @@
 import Instance from './instance';
 import { DataModelClass } from "../internals/metadata/metadata";
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import CFrame from '../../math/cframe';
 
 @DataModelClass({
@@ -10,7 +10,7 @@ import CFrame from '../../math/cframe';
     properties: {
         cframe: {
             name: 'cframe',
-            type: PropType.cframe,
+            type: PropertyType.cframe,
             attributes: []
         }
     }

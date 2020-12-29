@@ -1,6 +1,6 @@
 import { DataModelClass } from "../internals/metadata/metadata";
 import Instance from '../elements/instance';
-import PropType from '../internals/metadata/properties/types/prop-type';
+import PropertyType from '../internals/metadata/properties/property-type';
 import MouseImpl from '../../services/mouse-impl';
 import ForwardingSignal from '../internals/forwarding-signal';
 
@@ -13,32 +13,32 @@ import { Signal } from 'typed-signals';
     properties: {
         isLeftMouseButtonDown: {
             name: 'isLeftMouseButtonDown',
-            type: PropType.boolean,
+            type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         isLeftMouseButtonUp: {
             name: 'isLeftMouseButtonUp',
-            type: PropType.boolean,
+            type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         isRightMouseButtonDown: {
             name: 'isRightMouseButtonDown',
-            type: PropType.boolean,
+            type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         isRightMouseButtonUp: {
             name: 'isRightMouseButtonUp',
-            type: PropType.boolean,
+            type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         x: {
             name: 'x',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         y: {
             name: 'y',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         }
     }

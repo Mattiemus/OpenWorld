@@ -1,6 +1,6 @@
 import { Class, Constructor } from '../../../utils/types';
-import BasePropType from './properties/types/base-prop-type';
 import DataModelClassMetaData from './classes/data-model-class-metadata';
+import PropertyType from './properties/property-type';
 
 import * as _ from "lodash";
 
@@ -117,7 +117,7 @@ export type DataModelPropertyAttribute = "ReadOnly" | "NotReplicated";
 
 export interface IDataModelPropertyMetaData {
     name: string;
-    type: BasePropType;
+    type: PropertyType;
     attributes: DataModelPropertyAttribute[];
 }
 

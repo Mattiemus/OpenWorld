@@ -1,10 +1,10 @@
-import BasePropType from './types/base-prop-type';
 import { DataModelPropertyAttribute, IDataModelPropertyMetaData } from '../metadata';
+import PropertyType from './property-type';
 
 export default class DataModelPropertyMetaData
 {
     private _name: string;
-    private _type: BasePropType;
+    private _type: PropertyType;
     private _attributes: DataModelPropertyAttribute[];
 
     constructor(metadata: IDataModelPropertyMetaData) {
@@ -17,7 +17,7 @@ export default class DataModelPropertyMetaData
         return this._name;
     }
 
-    public get type(): BasePropType {
+    public get type(): PropertyType {
         return this._type;
     }
 

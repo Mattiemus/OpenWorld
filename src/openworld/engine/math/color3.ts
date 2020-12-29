@@ -88,4 +88,8 @@ export default class Color3
 
         return r | g | b | a;
     }
+
+    public equals(other: Color3): boolean {
+        return this.r === other.r && this.g === other.g && this.b === other.b;
+    }
 }

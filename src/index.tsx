@@ -100,9 +100,10 @@ export class OpenWorldCanvas extends React.Component
             }
         }
 
-        // Create a test spot light
+        // Create a test point light
         const pointLight = new PointLight();
-        pointLight.cframe = CFrame.fromPosition(new Vector3(0, (cubeSize * 1.1) + 1.1, 0));
+        pointLight.cframe = CFrame.fromPosition(new Vector3(0, (cubeSize * 1.1) + 2, 0));
+        pointLight.range = 10;
         pointLight.parent = world;
             
         // Basic orbit camera controller

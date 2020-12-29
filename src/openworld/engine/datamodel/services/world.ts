@@ -1,6 +1,6 @@
 import Instance from '../elements/instance';
 import { DataModelClass } from "../internals/metadata/metadata";
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import WorldImpl from '../../services/world-impl';
 import Camera from '../elements/camera';
 
@@ -11,7 +11,7 @@ import Camera from '../elements/camera';
     properties: {
         currentCamera: {
             name: 'currentCamera',
-            type: PropType.instanceRef(Camera),
+            type: PropertyType.instanceRef(Camera),
             attributes: [ 'NotReplicated' ]
         }
     }

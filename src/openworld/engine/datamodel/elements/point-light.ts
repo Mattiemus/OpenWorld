@@ -1,4 +1,4 @@
-import PropType from "../internals/metadata/properties/types/prop-type";
+import PropertyType from "../internals/metadata/properties/property-type";
 import { DataModelClass } from "../internals/metadata/metadata";
 import Light from "./light";
 
@@ -9,7 +9,7 @@ import Light from "./light";
     properties: {
         range: {
             name: 'range',
-            type: PropType.number,
+            type: PropertyType.number,
             attributes: []
         }
     }

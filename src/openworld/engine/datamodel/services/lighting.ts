@@ -2,7 +2,7 @@ import Instance from '../elements/instance';
 import { DataModelClass } from "../internals/metadata/metadata";
 import LightingImpl from '../../services/lighting-impl';
 import Color3 from '../../math/color3';
-import PropType from '../internals/metadata/properties/types/prop-type';
+import PropertyType from '../internals/metadata/properties/property-type';
 
 @DataModelClass({
     className: 'Lighting',
@@ -11,7 +11,7 @@ import PropType from '../internals/metadata/properties/types/prop-type';
     properties: {
         ambient: {
             name: 'ambient',
-            type: PropType.color3,
+            type: PropertyType.color3,
             attributes: []
         }
     }
