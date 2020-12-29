@@ -1,88 +1,16 @@
 import { Class, Constructor } from '../../../utils/types';
-import { Instance } from '../../elements/core/instance';
-import { BasePropType } from './properties/base-prop-type';
+import { BasePropType } from './properties/types/base-prop-type';
+import { DataModelClassMetaData } from './classes/data-model-class-metadata';
 
 import * as _ from "lodash";
-import { injectable } from "inversify";
 
-//
-// Reflection
-//
+// TODO: Fix this!
+type Instance = any;
 
-export class DataModelPropertyMetaData
-{
-    private _name: string;
-    private _type: BasePropType;
-    private _attributes: DataModelPropertyAttribute[];
+export let dataModelConstables = new Map<string, Class<Instance>>();
 
-    constructor(metadata: IDataModelPropertyMetaData) {
-        this._name = metadata.name;
-        this._type = metadata.type;
-        this._attributes = metadata.attributes;
-    }
-
-    public get name(): string {
-        return this._name;
-    }
-
-    public get type(): BasePropType {
-        return this._type;
-    }
-
-    public get attributes(): DataModelPropertyAttribute[] {
-        return this._attributes;
-    }
-
-    public hasAttribute(attribute: DataModelPropertyAttribute): boolean {
-        return this._attributes.some(a => a === attribute);
-    }
-}
-
-export class DataModelClassMetaData
-{
-    private _className: string;
-    private _parent: Class<any> | null;
-    private _attributes: DataModelClassAttribute[];
-    private _properties: Map<string, DataModelPropertyMetaData>;
-
-    constructor(metadata: IDataModelClassMetaData) {
-        this._className = metadata.className;
-        this._parent = metadata.parent;
-        this._attributes = metadata.attributes;
-
-        this._properties = new Map<string, DataModelPropertyMetaData>();
-        for (const prop in metadata.properties) {
-            this._properties.set(
-                prop,
-                new DataModelPropertyMetaData(metadata.properties[prop]));
-        }
-    }
-
-    public get className(): string {
-        return this._className;
-    }
-
-    public get parent(): Class<any> | null {
-        return this._parent;
-    }
-
-    public get attributes(): DataModelClassAttribute[] {
-        return this._attributes;
-    }
-
-    public get properties(): Map<string, DataModelPropertyMetaData> {
-        return this._properties;
-    }
-
-    public hasAttribute(attribute: DataModelClassAttribute): boolean {
-        return this._attributes.some(a => a === attribute);
-    }
-}
-
-let dataModelConstables = new Map<string, Class<Instance>>();
-
-let registeredDataModelTypes = new Map<Class<Instance>, IDataModelClassMetaData>();
-let finalizedDataModelTypes = new Map<Class<Instance>, DataModelClassMetaData>();
+export let registeredDataModelTypes = new Map<Class<Instance>, IDataModelClassMetaData>();
+export let finalizedDataModelTypes = new Map<Class<Instance>, DataModelClassMetaData>();
 
 function getMetaDataByClass<T extends Instance>(instanceClass: Class<T>): DataModelClassMetaData {
     const cachedDataModel = finalizedDataModelTypes.get(instanceClass);
@@ -116,13 +44,9 @@ function getMetaDataByClass<T extends Instance>(instanceClass: Class<T>): DataMo
 }
 
 export function getMetaData<T extends Instance>(instanceTypeOrStringOrInstance: Instance | Class<T> | string): DataModelClassMetaData {
-    if (instanceTypeOrStringOrInstance instanceof Instance) {
-        const cachedResult = instanceTypeOrStringOrInstance['_metadata'];
-        if (cachedResult !== undefined) {
-            return cachedResult;
-        }
-
-        return getMetaDataByClass(instanceTypeOrStringOrInstance.constructor);
+    const cachedResult = instanceTypeOrStringOrInstance['_metadata'];
+    if (cachedResult !== undefined) {
+        return cachedResult;
     }
 
     if (_.isFunction(instanceTypeOrStringOrInstance)) {
@@ -136,6 +60,10 @@ export function getMetaData<T extends Instance>(instanceTypeOrStringOrInstance: 
         }
 
         return getMetaDataByClass(instanceType);
+    }
+
+    if (instanceTypeOrStringOrInstance.constructor !== undefined) {
+        return getMetaDataByClass(instanceTypeOrStringOrInstance.constructor);
     }
 
     throw new Error('Unknown argument passed to getMetaData');
@@ -160,7 +88,7 @@ export type DataModelClassAttribute = "Service" | "NotCreatable" | "NotReplicate
 
 export interface IDataModelClassMetaData {
     className: string;
-    parent: Class<any> | null;
+    parent: Class<Instance> | null;
     attributes: DataModelClassAttribute[];
     properties: { [key: string]: IDataModelPropertyMetaData };
 }
@@ -175,8 +103,6 @@ export function DataModelClass(metadata: IDataModelClassMetaData) {
             throw new Error(`Class "${constructor.name}" duplicates the class name "${metadata.className}"`);
 
         }
-
-        injectable()(constructor);
 
         registeredDataModelTypes.set(constructor, metadata);
         dataModelConstables.set(metadata.className, constructor);

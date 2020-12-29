@@ -1,7 +1,6 @@
-import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClass } from "../../internals/metadata/metadata";
 import { NetworkReplicator } from './network-replicator';
-import { ClientReplicatorImpl } from './impl/client-replicator-impl';
-import { getServiceFor } from '../../internals/services/service-locator';
+import { ClientReplicatorImpl } from '../../../services/networking/client-replicator-impl';
 
 @DataModelClass({
     className: 'ClientReplicator',
@@ -11,7 +10,7 @@ import { getServiceFor } from '../../internals/services/service-locator';
 })
 export abstract class ClientReplicator extends NetworkReplicator
 {
-    private _clientReplicator: ClientReplicatorImpl;
+    private _impl: ClientReplicatorImpl;
 
     //
     // Constructor
@@ -20,6 +19,6 @@ export abstract class ClientReplicator extends NetworkReplicator
     constructor() {
         super();
 
-        this._clientReplicator = getServiceFor(ClientReplicatorImpl, this);
+        this._impl = ClientReplicator._getServiceImpl(ClientReplicatorImpl);
     }
 }

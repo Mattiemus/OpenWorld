@@ -1,12 +1,8 @@
 import { Instance } from '../../elements/core/instance';
-import { DataModelClass } from '../../internals/metadata/metadata';
-import { PropType } from "../../internals/metadata/properties/prop-type";
-import { WorldRenderSystemImpl } from './impl/world-render-system-impl';
-import { getServiceFor } from '../../internals/services/service-locator';
+import { DataModelClass } from "../../internals/metadata/metadata";
+import { PropType } from "../../internals/metadata/properties/types/prop-type";
+import { WorldImpl } from '../../../services/world/world-impl';
 import { Camera } from '../../elements/world/camera';
-import { WorldPhysicsSystemImpl } from './impl/world-physics-system-impl';
-
-import { SignalConnection } from 'typed-signals';
 
 @DataModelClass({
     className: 'World',
@@ -22,16 +18,14 @@ import { SignalConnection } from 'typed-signals';
 })
 export class World extends Instance
 {
-    private _worldRenderSystem: WorldRenderSystemImpl;
-    private _worldPhysicsSystem: WorldPhysicsSystemImpl;
+    private _worldImpl: WorldImpl;
 
     private _currentCamera: Camera | null = null;
 
     constructor() {
         super();
         
-        this._worldRenderSystem = getServiceFor(WorldRenderSystemImpl, this);
-        this._worldPhysicsSystem = getServiceFor(WorldPhysicsSystemImpl, this);
+        this._worldImpl = World._getServiceImpl(WorldImpl);
     }
 
     //

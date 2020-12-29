@@ -1,7 +1,6 @@
-import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClass } from "../../internals/metadata/metadata";
 import { Instance } from '../../elements/core/instance';
-import { getServiceFor } from '../../internals/services/service-locator';
-import { TaskSchedulerImpl } from './impl/task-scheduler-impl';
+import { RunServiceImpl } from '../../../services/scheduling/run-service-impl';
 import { ForwardingSignal } from '../../internals/forwarding-signal';
 
 import { Signal } from 'typed-signals';
@@ -14,7 +13,7 @@ import { Signal } from 'typed-signals';
 })
 export class RunService extends Instance
 {
-    private _taskScheduler: TaskSchedulerImpl;
+    private _impl: RunServiceImpl;
 
     private _preRender: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
     private _postRender: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
@@ -24,12 +23,12 @@ export class RunService extends Instance
     constructor() {
         super();
 
-        this._taskScheduler = getServiceFor(TaskSchedulerImpl, this);
+        this._impl = RunService._getServiceImpl(RunServiceImpl);
         
-        this._preRender = new ForwardingSignal(this._taskScheduler.preRender);
-        this._postRender = new ForwardingSignal(this._taskScheduler.postRender);
-        this._preSimulation = new ForwardingSignal(this._taskScheduler.preSimulation);
-        this._postSimulation = new ForwardingSignal(this._taskScheduler.postSimulation);
+        this._preRender = new ForwardingSignal(this._impl.preRender);
+        this._postRender = new ForwardingSignal(this._impl.postRender);
+        this._preSimulation = new ForwardingSignal(this._impl.preSimulation);
+        this._postSimulation = new ForwardingSignal(this._impl.postSimulation);
     }
 
     //

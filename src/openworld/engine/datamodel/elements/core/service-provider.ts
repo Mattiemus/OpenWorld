@@ -1,5 +1,6 @@
 import { Instance } from './instance';
-import { DataModelClass, getMetaData, getConstructor } from '../../internals/metadata/metadata';
+import { getMetaData, getConstructor } from '../../internals/metadata/metadata';
+import { DataModelClass } from '../../internals/metadata/metadata';
 import { Class, Constructor } from '../../../utils/types';
 
 import * as _ from "lodash";

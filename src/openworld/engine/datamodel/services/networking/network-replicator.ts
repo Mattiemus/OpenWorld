@@ -1,5 +1,5 @@
 import { Instance } from '../../elements/core/instance';
-import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClass } from "../../internals/metadata/metadata";
 
 @DataModelClass({
     className: 'NetworkReplicator',

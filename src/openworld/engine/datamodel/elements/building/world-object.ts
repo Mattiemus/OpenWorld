@@ -1,6 +1,6 @@
 import { Instance } from '../core/instance';
-import { DataModelClass } from '../../internals/metadata/metadata';
-import { PropType } from "../../internals/metadata/properties/prop-type";
+import { DataModelClass } from "../../internals/metadata/metadata";
+import { PropType } from "../../internals/metadata/properties/types/prop-type";
 import { CFrame } from '../../../math/cframe';
 
 @DataModelClass({

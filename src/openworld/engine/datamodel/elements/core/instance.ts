@@ -1,9 +1,12 @@
 import { IDestroyable } from '../../../utils/interfaces';
 import { Class } from '../../../utils/types';
 import { Uuid } from '../../../utils/uuid';
-import { DataModelClass, DataModelClassMetaData, getMetaData } from "../../internals/metadata/metadata";
-import { PropType } from "../../internals/metadata/properties/prop-type";
+import { getMetaData } from "../../internals/metadata/metadata";
+import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClassMetaData } from "../../internals/metadata/classes/data-model-class-metadata";
+import { PropType } from "../../internals/metadata/properties/types/prop-type";
 import { InstanceManager } from '../../internals/instance-manager';
+import { ServiceBase } from '../../../services/service-base';
 
 import { Signal } from "typed-signals";
 import * as _ from "lodash";
@@ -34,11 +37,15 @@ export abstract class Instance implements IDestroyable
 {
     private static _allowCreateService = false;
 
+    protected static _getServiceImpl: <TService extends ServiceBase>(serviceBase: Class<TService>) => TService = () => {
+        throw new Error('Instance._getService has not been setup!');
+    };
+
     private _metadata: DataModelClassMetaData;
     private _refId: Uuid;
     private _name: string;
     private _parent: Instance | null = null;
-    private _children: Instance[] = [];
+    private _children = new Set<Instance>();
     private _isDestroyed: boolean = false;
     private _propertyChangedSignals: Map<string, Signal<(propertyName: string) => void>> | undefined = undefined;
     
@@ -147,13 +154,13 @@ export abstract class Instance implements IDestroyable
         this.firePropertyChanged('parent');
 
         if (oldParent !== null) {
-            _.pull(oldParent._children, this);
+            oldParent._children.delete(this);
             oldParent.fireChildRemoved(this);
             oldParent.fireAncestroyChangedRecursive(this, newParent);
         }
 
         if (newParent !== null) {
-            newParent._children.push(this);
+            newParent._children.add(this);
             newParent.fireChildAdded(this);
             newParent.fireDescendantAddedRecursive(this);
             newParent.fireAncestroyChangedRecursive(this, newParent);
@@ -178,17 +185,17 @@ export abstract class Instance implements IDestroyable
 
     public getChildren(): Instance[] {
         this.throwIfDestroyed();
-        return [ ...this._children ];
+        return Array.from(this._children);
     } 
 
     public getDescendants(): Instance[] {
         this.throwIfDestroyed();
 
-        const descendants = [ ...this._children ];
+        const descendants = Array.from(this._children);
 
-        for (const child of this._children) {
+        this._children.forEach(child => {
             descendants.push(...child.getDescendants());
-        }
+        });
 
         return descendants;
     } 
@@ -262,7 +269,8 @@ export abstract class Instance implements IDestroyable
     public clearAllChildren(): void {
         this.throwIfDestroyed();
 
-        for (const child of this._children) {
+        const childrenClone = Array.from(this._children);
+        for (const child of childrenClone) {
             child.destroy();
         }
     }
@@ -348,8 +356,10 @@ export abstract class Instance implements IDestroyable
         predicate: (inst: Instance) => boolean,
         maxDepth: number | undefined,
         depthCounter: number
-    ): [Instance, number] | undefined {        
-        for (const child of this._children) {
+    ): [Instance, number] | undefined {
+        // TODO: Optimise the use of Array.from here!
+
+        for (const child of Array.from(this._children)) {
             if (predicate(child)) {
                 return [child, depthCounter];
             }
@@ -361,7 +371,7 @@ export abstract class Instance implements IDestroyable
         }
 
         const results: [Instance, number][] = [];
-        for (const child of this._children) {
+        for (const child of Array.from(this._children)) {
             const result = child.findFirstChildRecursiveInternal(predicate, maxDepth, nextDepth);
             if (result !== undefined) {
                 results.push(result);
@@ -431,9 +441,9 @@ export abstract class Instance implements IDestroyable
         this.onAncestroyChanged(child, parent);
         this._ancestryChanged.emit(child, parent);
 
-        for (const childInstance of this._children) {
-            childInstance.fireAncestroyChangedRecursive(child, parent);
-        }
+        this._children.forEach(child => {
+            child.fireAncestroyChangedRecursive(child, parent);
+        });
     }
 
     private fireDescendantRemovingRecursive(descendant: Instance): void {

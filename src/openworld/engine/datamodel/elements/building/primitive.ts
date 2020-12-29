@@ -1,6 +1,6 @@
-import { DataModelClass } from '../../internals/metadata/metadata';
-import { PropType } from "../../internals/metadata/properties/prop-type";
+import { PropType } from "../../internals/metadata/properties/types/prop-type";
 import { WorldObject } from './world-object';
+import { DataModelClass } from "../../internals/metadata/metadata";
 
 export enum PrimitiveType {
     Cube = 'Cube',

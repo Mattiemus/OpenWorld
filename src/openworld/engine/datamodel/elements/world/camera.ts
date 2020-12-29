@@ -1,7 +1,7 @@
 import { CFrame } from '../../../math/cframe';
-import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClass } from "../../internals/metadata/metadata";
 import { Instance } from '../core/instance';
-import { PropType } from '../../internals/metadata/properties/prop-type';
+import { PropType } from '../../internals/metadata/properties/types/prop-type';
 import { MathEx } from '../../../math/mathex';
 
 @DataModelClass({
@@ -12,12 +12,22 @@ import { MathEx } from '../../../math/mathex';
         cframe: {
             name: 'cframe',
             type: PropType.cframe,
-            attributes: []
+            attributes: [ 'NotReplicated' ]
         },
         fieldOfView: {
             name: 'fieldOfView',
             type: PropType.number,
-            attributes: []
+            attributes: [ 'NotReplicated' ]
+        },
+        nearPlane: {
+            name: 'nearPlane',
+            type: PropType.number,
+            attributes: [ 'ReadOnly', 'NotReplicated' ]
+        },
+        farPlane: {
+            name: 'farPlane',
+            type: PropType.number,
+            attributes: [ 'ReadOnly', 'NotReplicated' ]
         }
     }
 })
@@ -52,5 +62,13 @@ export class Camera extends Instance
 
         this._fieldOfView = newFieldOfView;
         this.processChangedProperty('fieldOfView');
+    }
+
+    public get nearPlane(): number {
+        return 0.1;
+    }
+
+    public get farPlane(): number {
+        return 1000;
     }
 }

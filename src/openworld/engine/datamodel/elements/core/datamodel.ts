@@ -1,5 +1,5 @@
-import { DataModelClass } from '../../internals/metadata/metadata';
 import { ServiceProvider } from './service-provider';
+import { DataModelClass } from '../../internals/metadata/metadata';
 
 @DataModelClass({
     className: 'DataModel',

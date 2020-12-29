@@ -41,7 +41,6 @@
     "fs-extra": "^9.0.1",
     "html-webpack-plugin": "4.5.0",
     "identity-obj-proxy": "3.0.0",
-    "inversify": "^5.0.5",
     "jest": "26.6.0",
     "jest-circus": "26.6.0",
     "jest-resolve": "26.6.0",
@@ -156,13 +155,28 @@
   },
   "babel": {
     "plugins": [
-      ["@babel/plugin-proposal-decorators", { "legacy": true }],
-      ["@babel/plugin-proposal-class-properties", { "loose": true }],
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ],
       "babel-plugin-parameter-decorator"
     ],
     "presets": [
       "react-app",
-      ["@babel/preset-typescript", { "onlyRemoveTypeImports": true }]
+      [
+        "@babel/preset-typescript",
+        {
+          "onlyRemoveTypeImports": true
+        }
+      ]
     ]
   },
   "devDependencies": {

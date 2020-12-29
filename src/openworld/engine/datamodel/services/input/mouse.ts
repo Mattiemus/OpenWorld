@@ -1,8 +1,7 @@
-import { DataModelClass } from '../../internals/metadata/metadata';
+import { DataModelClass } from "../../internals/metadata/metadata";
 import { Instance } from '../../elements/core/instance';
-import { PropType } from '../../internals/metadata/properties/prop-type';
-import { MouseInputImpl } from './impl/mouse-input-impl';
-import { getServiceFor } from '../../internals/services/service-locator';
+import { PropType } from '../../internals/metadata/properties/types/prop-type';
+import { MouseImpl } from '../../../services/input/mouse-impl';
 import { ForwardingSignal } from '../../internals/forwarding-signal';
 
 import { Signal } from 'typed-signals';
@@ -47,7 +46,7 @@ import { Signal } from 'typed-signals';
 })
 export class Mouse extends Instance
 {
-    private _mouseInput: MouseInputImpl;
+    private _impl: MouseImpl;
 
     private _leftButtonDown: ForwardingSignal<() => void>;
     private _leftButtonUp: ForwardingSignal<() => void>;
@@ -60,15 +59,15 @@ export class Mouse extends Instance
     constructor() {
         super();
 
-        this._mouseInput = getServiceFor(MouseInputImpl, this);
+        this._impl = Mouse._getServiceImpl(MouseImpl);
 
-        this._leftButtonDown = new ForwardingSignal(this._mouseInput.leftButtonDown);
-        this._leftButtonUp = new ForwardingSignal(this._mouseInput.leftButtonUp);
-        this._rightButtonDown = new ForwardingSignal(this._mouseInput.rightButtonDown);
-        this._rightButtonUp = new ForwardingSignal(this._mouseInput.rightButtonUp);
-        this._move = new ForwardingSignal(this._mouseInput.move);
-        this._wheelDown = new ForwardingSignal(this._mouseInput.wheelDown);
-        this._wheelUp = new ForwardingSignal(this._mouseInput.wheelUp);
+        this._leftButtonDown = new ForwardingSignal(this._impl.leftButtonDown);
+        this._leftButtonUp = new ForwardingSignal(this._impl.leftButtonUp);
+        this._rightButtonDown = new ForwardingSignal(this._impl.rightButtonDown);
+        this._rightButtonUp = new ForwardingSignal(this._impl.rightButtonUp);
+        this._move = new ForwardingSignal(this._impl.move);
+        this._wheelDown = new ForwardingSignal(this._impl.wheelDown);
+        this._wheelUp = new ForwardingSignal(this._impl.wheelUp);
 
         // TODO: Fire the relevent propertyChanged signals!
     }   
@@ -110,27 +109,27 @@ export class Mouse extends Instance
     //
 
     public get isLeftButtonDown(): boolean {
-        return this._mouseInput.isLeftButtonDown;
+        return this._impl.isLeftButtonDown;
     }
 
     public get isLeftButtonUp(): boolean {
-        return this._mouseInput.isLeftButtonUp;
+        return this._impl.isLeftButtonUp;
     }
 
     public get isRightButtonDown(): boolean {
-        return this._mouseInput.isRightButtonDown;
+        return this._impl.isRightButtonDown;
     }
 
     public get isRightButtonUp(): boolean {
-        return this._mouseInput.isRightButtonUp;
+        return this._impl.isRightButtonUp;
     }
 
     public get x(): number {
-        return this._mouseInput.x;
+        return this._impl.x;
     }
 
     public get y(): number {
-        return this._mouseInput.y;
+        return this._impl.y;
     }
 
     //
