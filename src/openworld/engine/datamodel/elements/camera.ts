@@ -49,7 +49,7 @@ export default class Camera extends Instance
         }
 
         this._cframe = newCFrame;
-        this.processChangedProperty('cframe');
+        this.firePropertyChanged('cframe');
     }
 
     public get fieldOfView(): number {
@@ -61,7 +61,7 @@ export default class Camera extends Instance
         }
 
         this._fieldOfView = newFieldOfView;
-        this.processChangedProperty('fieldOfView');
+        this.firePropertyChanged('fieldOfView');
     }
 
     public get nearPlane(): number {

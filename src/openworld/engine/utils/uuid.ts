@@ -7,7 +7,11 @@ function createRandomUuid(): string {
 
 export default class Uuid
 {
-    private _uuid: string;
+    private readonly _uuid: string;
+
+    //
+    // Constructor
+    //
 
     constructor(uuid?: string) {
         if (uuid === undefined) {
@@ -17,7 +21,15 @@ export default class Uuid
         this._uuid = uuid;
     }
 
+    //
+    // Methods
+    //
+
     public toString(): string {
         return this._uuid;
+    }
+
+    public equals(other: Uuid): boolean {
+        return this._uuid == other._uuid;
     }
 }

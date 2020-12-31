@@ -47,7 +47,7 @@ export default abstract class Instance implements IDestroyable
     private _parent: Instance | null = null;
     private _children = new Set<Instance>();
     private _isDestroyed: boolean = false;
-    private _propertyChangedSignals: Map<string, Signal<(propertyName: string) => void>> | undefined = undefined;
+    private _propertyChangedSignals: Map<string, Signal<(propertyName: string) => void>> | null = null;
     
     private _ancestryChanged = new Signal<(child: Instance, parent: Instance | null) => void>();
     private _propertyChanged = new Signal<(propertyName: string) => void>();
@@ -129,7 +129,7 @@ export default abstract class Instance implements IDestroyable
 
         this._name = newName;
         this.onNameChanged(newName);
-        this.processChangedProperty('name');
+        this.firePropertyChanged('name');
     }
 
     public get parent(): Instance | null {
@@ -201,7 +201,7 @@ export default abstract class Instance implements IDestroyable
     } 
 
     public getPropertyChangedSignal(propertyName: string): Signal<(propertyName: string) => void> | undefined {
-        if (this._propertyChangedSignals === undefined) {
+        if (this._propertyChangedSignals === null) {
             this._propertyChangedSignals = new Map<string, Signal<(propertyName: string) => void>>();
         }
 
@@ -300,10 +300,6 @@ export default abstract class Instance implements IDestroyable
         if (this._isDestroyed) {
             throw new Error('Instance has been destroyed');
         }
-    }
-
-    protected processChangedProperty(propertyName: string): void {
-        this.firePropertyChanged(propertyName);
     }
 
     protected onParentChanged(newParent: Instance | null): void {
@@ -420,10 +416,10 @@ export default abstract class Instance implements IDestroyable
         return this._parent.findFirstAncestorRecursiveInternal(predicate, maxDepth, nextDepth);
     }
 
-    private firePropertyChanged(propertyName: string): void {
+    protected firePropertyChanged(propertyName: string): void {
         this.onPropertyChanged(propertyName);
 
-        if (this._propertyChangedSignals !== undefined) {
+        if (this._propertyChangedSignals !== null) {
             const signal = this._propertyChangedSignals.get(propertyName);
             if (signal !== undefined) {
                 signal.emit(propertyName);

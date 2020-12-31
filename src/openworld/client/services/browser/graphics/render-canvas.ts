@@ -6,9 +6,12 @@ import { Signal } from "typed-signals";
 
 export default class RenderCanvas extends ServiceBase
 {
+    private static _skyboxGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
+
     private _renderer: THREE.WebGLRenderer;
     private _scene: THREE.Scene = new THREE.Scene();
-    private _camera: THREE.PerspectiveCamera | undefined = undefined;    
+    private _camera: THREE.PerspectiveCamera | null = null;    
+    private _skybox: THREE.Mesh = new THREE.Mesh(RenderCanvas._skyboxGeometry);
     
     private _resized = new Signal<() => void>();
 
@@ -19,6 +22,9 @@ export default class RenderCanvas extends ServiceBase
     constructor(private _canvas: HTMLCanvasElement) {
         super();
         
+        this._scene.add(this._skybox);
+        this._skybox.renderOrder = Number.NEGATIVE_INFINITY;
+
         this._renderer = new THREE.WebGLRenderer({ canvas: _canvas, antialias: false });
         this._renderer.shadowMap.enabled = true;
 
@@ -58,11 +64,15 @@ export default class RenderCanvas extends ServiceBase
         return this._scene;
     }
 
-    public get camera(): THREE.PerspectiveCamera | undefined {
+    public get camera(): THREE.PerspectiveCamera | null {
         return this._camera;
     }
-    public set camera(newCamera: THREE.PerspectiveCamera | undefined) {
+    public set camera(newCamera: THREE.PerspectiveCamera | null) {
         this._camera = newCamera;
+    }
+
+    public get skybox(): THREE.Mesh {
+        return this._skybox;
     }
 
     //
@@ -70,7 +80,7 @@ export default class RenderCanvas extends ServiceBase
     //
     
     public render(): void {
-        if (this._camera !== undefined) {
+        if (this._camera !== null) {
             this._renderer.render(this._scene, this._camera);
         } else {
             this._renderer.clear();

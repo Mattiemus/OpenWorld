@@ -6,6 +6,11 @@ export default class MathEx
         // No-op
     }
 
+    public static random(min: number, max: number): number {
+        const range = max - min;
+        return min + (Math.random() * range);
+    }
+
     public static clamp(value: number, min: number, max: number): number {
         return Math.min(Math.max(value, min), max);
     }
@@ -35,6 +40,10 @@ export default class MathEx
     }
 
     public static isApproxEqual(a: number, b: number, epsilon: number = 0.000001): boolean {
-        return Math.abs(a - b) < 0.000001;
+        return Math.abs(a - b) < epsilon;
+    }
+
+    public static isApproxZero(a: number, epsilon: number = 0.000001): boolean {
+        return Math.abs(a) < epsilon;
     }
 }

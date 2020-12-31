@@ -41,6 +41,10 @@ export default class Vector2
     }
 
     public equals(other: Vector2): boolean {
+        if (this === other) {
+            return true;
+        }
+        
         return this.x === other.x && this.y === other.y;
     }
 }

@@ -44,7 +44,7 @@ export default abstract class Light extends WorldObject
         }
 
         this._brightness = newBrightness;
-        this.processChangedProperty('brightness');
+        this.firePropertyChanged('brightness');
     }
 
     public get color(): Color3 {
@@ -56,7 +56,7 @@ export default abstract class Light extends WorldObject
         }
 
         this._color = newColor;
-        this.processChangedProperty('color');
+        this.firePropertyChanged('color');
     }
 
     public get castsShadows(): boolean {
@@ -68,6 +68,6 @@ export default abstract class Light extends WorldObject
         }
 
         this._castsShadows = newCastsShadows;
-        this.processChangedProperty('castsShadows');
+        this.firePropertyChanged('castsShadows');
     }
 }

@@ -42,7 +42,7 @@ export default class Lighting extends Instance
         }
 
         this._ambient = newAmbient;
-        this.processChangedProperty('ambient');
+        this.firePropertyChanged('ambient');
     }
 
     //

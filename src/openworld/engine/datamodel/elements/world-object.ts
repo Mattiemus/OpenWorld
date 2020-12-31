@@ -32,6 +32,6 @@ export default abstract class WorldObject extends Instance
         }
 
         this._cframe = newCFrame;
-        this.processChangedProperty('cframe');
+        this.firePropertyChanged('cframe');
     }
 }

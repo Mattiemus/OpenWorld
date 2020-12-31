@@ -3,8 +3,9 @@ import Instance from '../elements/instance';
 import PropertyType from '../internals/metadata/properties/property-type';
 import MouseImpl from '../../services/mouse-impl';
 import ForwardingSignal from '../internals/forwarding-signal';
+import MathEx from '../../math/mathex';
 
-import { Signal } from 'typed-signals';
+import { Signal, SignalConnection } from 'typed-signals';
 
 @DataModelClass({
     className: 'Mouse',
@@ -55,6 +56,12 @@ export default class Mouse extends Instance
     private _wheelDown: ForwardingSignal<() => void>;
     private _wheelUp: ForwardingSignal<() => void>;
 
+    private _leftButtonDownConnection: SignalConnection;
+    private _leftButtonUpConnection: SignalConnection;
+    private _rightButtonDownConnection: SignalConnection;
+    private _rightButtonUpConnection: SignalConnection;
+    private _moveConnection: SignalConnection;
+
     constructor() {
         super();
 
@@ -69,7 +76,11 @@ export default class Mouse extends Instance
         this._wheelDown = new ForwardingSignal(this._impl.wheelDown);
         this._wheelUp = new ForwardingSignal(this._impl.wheelUp);
 
-        // TODO: Fire the relevent propertyChanged signals!
+        this._leftButtonDownConnection = this._impl.leftButtonDown.connect(this.onLeftButtonDownOrUp.bind(this));
+        this._leftButtonUpConnection = this._impl.leftButtonUp.connect(this.onLeftButtonDownOrUp.bind(this));
+        this._rightButtonDownConnection = this._impl.rightButtonDown.connect(this.onRightButtonDownOrUp.bind(this));
+        this._rightButtonUpConnection = this._impl.rightButtonUp.connect(this.onRightButtonDownOrUp.bind(this));
+        this._moveConnection = this._impl.move.connect(this.onMove.bind(this));
     }   
 
     // 
@@ -148,5 +159,31 @@ export default class Mouse extends Instance
         this._move.destroy();
         this._wheelDown.destroy();
         this._wheelUp.destroy();
+
+        this._leftButtonDownConnection.disconnect();
+        this._leftButtonUpConnection.disconnect();
+        this._rightButtonDownConnection.disconnect();
+        this._rightButtonUpConnection.disconnect();
+        this._moveConnection.disconnect();
+    }
+
+    private onLeftButtonDownOrUp(): void {
+        this.firePropertyChanged('leftButtonDown');
+        this.firePropertyChanged('leftButtonUp');
+    }
+
+    private onRightButtonDownOrUp(): void {
+        this.firePropertyChanged('leftButtonDown');
+        this.firePropertyChanged('leftButtonUp');
+    }
+
+    private onMove(deltaX: number, deltaY: number): void {
+        if (!MathEx.isApproxZero(deltaX)) {
+            this.firePropertyChanged('x');
+        }
+
+        if (!MathEx.isApproxZero(deltaX)) {
+            this.firePropertyChanged('y');
+        }
     }
 }

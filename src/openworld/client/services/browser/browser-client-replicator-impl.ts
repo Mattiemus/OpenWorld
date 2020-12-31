@@ -7,8 +7,8 @@ import { SignalConnection } from 'typed-signals';
 
 export default class BrowserClientReplicatorImpl extends ClientReplicatorImpl
 {
-    private _descendentAddedConnection: SignalConnection | undefined = undefined;
-    private _descendentRemovingConnection: SignalConnection | undefined = undefined;
+    private _descendentAddedConnection: SignalConnection | null = null;
+    private _descendentRemovingConnection: SignalConnection | null = null;
     private _descendentPropertyChangedConnections = new Map<Instance, SignalConnection>();
 
     //
@@ -70,14 +70,14 @@ export default class BrowserClientReplicatorImpl extends ClientReplicatorImpl
     }
 
     private unhookDataModelSignals(): void {
-        if (this._descendentAddedConnection !== undefined) {
+        if (this._descendentAddedConnection !== null) {
             this._descendentAddedConnection.disconnect();
-            this._descendentAddedConnection = undefined;
+            this._descendentAddedConnection = null;
         }
 
-        if (this._descendentRemovingConnection !== undefined) {
+        if (this._descendentRemovingConnection !== null) {
             this._descendentRemovingConnection.disconnect();
-            this._descendentRemovingConnection = undefined;
+            this._descendentRemovingConnection = null;
         }
 
         this._descendentPropertyChangedConnections.forEach((v, _) => {

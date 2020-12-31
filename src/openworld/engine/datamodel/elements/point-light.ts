@@ -31,6 +31,6 @@ export default class PointLight extends Light
         }
 
         this._range = newRange;
-        this.processChangedProperty('range');
+        this.firePropertyChanged('range');
     }
 }

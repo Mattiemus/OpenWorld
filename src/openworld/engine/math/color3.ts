@@ -90,6 +90,10 @@ export default class Color3
     }
 
     public equals(other: Color3): boolean {
+        if (this === other) {
+            return true;
+        }
+
         return this.r === other.r && this.g === other.g && this.b === other.b;
     }
 }

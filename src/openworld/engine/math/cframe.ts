@@ -47,6 +47,10 @@ export default class CFrame
     }
 
     public equals(other: CFrame): boolean {
+        if (this === other) {
+            return true;
+        }
+
         return this.x === other.x && 
                this.y === other.y &&
                this.z === other.z &&

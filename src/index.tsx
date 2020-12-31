@@ -32,19 +32,27 @@ import LightingImpl from './openworld/engine/services/lighting-impl';
 import Lighting from "./openworld/engine/datamodel/services/lighting";
 import Color3 from "./openworld/engine/math/color3";
 import PointLight from './openworld/engine/datamodel/elements/point-light';
+import Material from "./openworld/engine/datamodel/data-types/material";
+import Content from "./openworld/engine/datamodel/data-types/content";
+import Sky from './openworld/engine/datamodel/elements/sky';
+import BrowserContentProviderImpl from './openworld/client/services/browser/browser-content-provider';
+import ContentProviderImpl from './openworld/engine/services/content-provider-impl';
+import ContentProvider from './openworld/engine/datamodel/services/content-provider';
 
 function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
-    // TODO: Remove canvas paremter so we can create a local data model anywhere, and retarget the canvas later on
+    // TODO: Remove canvas param so we can create a local data model anywhere, and retarget the canvas later on
 
     const datamodel = new DataModel();
 
     const renderCanvas = new RenderCanvas(canvas);
+    const browserContentProviderImpl = new BrowserContentProviderImpl();    
     const browserMouseService = new BrowserMouseImpl();
     const browserTaskScheduler = new BrowserRunServiceImpl(renderCanvas);
     const browserClientReplicator = new BrowserClientReplicatorImpl(datamodel);
-    const browserWorldImpl = new BrowserWorldImpl(renderCanvas);
+    const browserWorldImpl = new BrowserWorldImpl(renderCanvas, browserContentProviderImpl);
     const browserLightingImpl = new BrowserLightingImpl(renderCanvas);
 
+    // TODO: Why is this not type checking?
     Instance['_getServiceImpl'] = ((serviceBase: Class<ServiceBase>): ServiceBase => {
         if (serviceBase === MouseImpl) {
             return browserMouseService;
@@ -56,6 +64,8 @@ function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
             return browserWorldImpl;
         } else if (serviceBase === LightingImpl) {
             return browserLightingImpl;
+        } else if (serviceBase === ContentProviderImpl) {
+            return browserContentProviderImpl;
         }
 
         throw new Error('Cannot find service implementation');
@@ -64,12 +74,11 @@ function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
     const world = datamodel.getService(World);
     world.currentCamera = new Camera();
 
-    const lighting = datamodel.getService(Lighting);
-    lighting.ambient = new Color3(0.25, 0.25, 0.25);
-
+    datamodel.getService(ContentProvider);
+    datamodel.getService(Lighting);
     datamodel.getService(ClientReplicator);
     datamodel.getService(Mouse);
-    datamodel.getService(RunService);       
+    datamodel.getService(RunService);
 
     return datamodel;
 }
@@ -88,21 +97,38 @@ export class OpenWorldCanvas extends React.Component
         const world = datamodel.getService(World);
 
         // Create some shapes to look at (as these are created on the client they are local only)
-        const cubeSize = 9 / 2;
+        const cubeSize = 5 / 2;
+        const topLayerOfPrimities: Primitive[] = [];
         for (let x = -cubeSize; x <= cubeSize; x++) {
             for (let y = -cubeSize; y <= cubeSize; y++) {
                 for (let z = -cubeSize; z <= cubeSize; z++) {          
                     const p = new Primitive();
-                    p.type = Math.random() > 0.5 ? PrimitiveType.Sphere : PrimitiveType.Cube;
                     p.cframe = CFrame.fromPosition(new Vector3(x * 1.1, y * 1.1, z * 1.1));
+
+                    p.material =
+                        Material.createBasic(
+                            new Content("a1172ed0-2c80-4190-9edd-eae2e978238c"));
+
                     p.parent = world;
+
+                    if (y === cubeSize) {
+                        topLayerOfPrimities.push(p);
+                    }
                 }
             }
         }
 
+        // Setup lighting
+        const lighting = datamodel.getService(Lighting);
+        lighting.ambient = new Color3(0.25, 0.25, 0.25);
+
+        const sky = new Sky();
+        sky.parent = lighting;
+
         // Create a test point light
         const pointLight = new PointLight();
         pointLight.cframe = CFrame.fromPosition(new Vector3(0, (cubeSize * 1.1) + 2, 0));
+        pointLight.brightness = 5;
         pointLight.range = 10;
         pointLight.parent = world;
             
@@ -150,15 +176,20 @@ export class OpenWorldCanvas extends React.Component
             phi = MathEx.clamp(phi, phiMin, phiMax);
         });
     
-        runService.preSimulation.connect(() => {
-            for (let i = 0; i < 1000; i++) {
-                let cameraPosition = calculateOrbitVector();
-                cameraPosition = Vector3.multiplyScalar(cameraPosition, radius);
-                cameraPosition = Vector3.add(cameraPosition, camTarget);
-                
-                world.currentCamera!.cframe = CFrame.createLookAt(cameraPosition, camTarget);
+        runService.preSimulation.connect((_, elapsedTime) => {
+            let cameraPosition = calculateOrbitVector();
+            cameraPosition = Vector3.multiplyScalar(cameraPosition, radius);
+            cameraPosition = Vector3.add(cameraPosition, camTarget);
+            
+            world.currentCamera!.cframe = CFrame.createLookAt(cameraPosition, camTarget);
+
+            // Fancy top
+            for (const prim of topLayerOfPrimities) {
+                const newY = cubeSize + 1 + (Math.sin(elapsedTime + (prim.cframe.x * prim.cframe.z)) * Math.cos(elapsedTime + (prim.cframe.x * prim.cframe.z)) * 0.5);
+                prim.cframe = CFrame.fromPosition(new Vector3(prim.cframe.x, newY, prim.cframe.z));
             }
 
+            // Flip between cube and sphere
             const worldChildren = world.getChildren();
             while (true) {
                 const idx = Math.floor(Math.random() * worldChildren.length);                    

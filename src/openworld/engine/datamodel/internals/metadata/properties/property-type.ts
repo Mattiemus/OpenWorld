@@ -10,6 +10,7 @@ export default class PropertyType
     public static readonly color3 = new PropertyType();
     public static readonly vector3 = new PropertyType();
     public static readonly quaternion = new PropertyType();
+    public static readonly content = new PropertyType();
     public static readonly materialProperties = new PropertyType();
 
     //

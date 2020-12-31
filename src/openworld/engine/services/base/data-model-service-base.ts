@@ -3,13 +3,13 @@ import Instance from '../../datamodel/elements/instance';
 
 export default class DataModelServiceBase<TService extends Instance> extends ServiceBase
 {
-    private _currentDataModel: TService | undefined = undefined;
+    private _currentDataModel: TService | null = null;
 
     //
     // Properties
     //
 
-    protected get currentDataModel(): TService | undefined {
+    protected get currentDataModel(): TService | null {
         return this._currentDataModel;
     }
 
@@ -18,7 +18,7 @@ export default class DataModelServiceBase<TService extends Instance> extends Ser
     //
 
     public attatch(dataModel: TService): void {
-        if (this._currentDataModel !== undefined) {
+        if (this._currentDataModel !== null) {
             throw new Error('Cannot attatch service implementation as it has already been attatched');
         }
 
@@ -32,11 +32,11 @@ export default class DataModelServiceBase<TService extends Instance> extends Ser
         }
 
         this.onDetatch();
-        this._currentDataModel = undefined;
+        this._currentDataModel = null;
     }
 
     protected onDestroy(): void {
-        if (this._currentDataModel !== undefined) {
+        if (this._currentDataModel !== null) {
             this.detatch(this._currentDataModel);
         }
 

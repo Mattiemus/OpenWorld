@@ -50,7 +50,7 @@ export default class World extends Instance
             newCamera.parent = this;
         }
 
-        this.processChangedProperty('currentCamera');
+        this.firePropertyChanged('currentCamera');
     }
 
     //

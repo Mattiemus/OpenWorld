@@ -99,6 +99,10 @@ export default class Quaternion
     }
 
     public equals(other: Quaternion): boolean {
+        if (this === other) {
+            return true;
+        }
+        
         return this.x === other.x && this.y === other.y && this.z === other.z && this.w === other.w;
     }
 }

@@ -9,20 +9,13 @@ export default class BrowserMouseImpl extends MouseImpl
     private _mouseX: number = 0;
     private _mouseY: number = 0;
 
-    private _leftButtonDown: Signal<() => void> =
-        new Signal<() => void>();
-    private _leftButtonUp: Signal<() => void> =
-        new Signal<() => void>();
-    private _rightButtonDown: Signal<() => void> =
-        new Signal<() => void>();
-    private _rightButtonUp: Signal<() => void> =
-        new Signal<() => void>();
-    private _move: Signal<(deltaX: number, deltaY: number) => void> =
-        new Signal<(deltaX: number, deltaY: number) => void>();
-    private _wheelDown: Signal<() => void> =
-        new Signal<() => void>();
-    private _wheelUp: Signal<() => void> =
-        new Signal<() => void>();
+    private _leftButtonDown = new Signal<() => void>();
+    private _leftButtonUp = new Signal<() => void>();
+    private _rightButtonDown = new Signal<() => void>();
+    private _rightButtonUp = new Signal<() => void>();
+    private _move = new Signal<(deltaX: number, deltaY: number) => void>();
+    private _wheelDown = new Signal<() => void>();
+    private _wheelUp = new Signal<() => void>();
 
     //
     // Constructor
