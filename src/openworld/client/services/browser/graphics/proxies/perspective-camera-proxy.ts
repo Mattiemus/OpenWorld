@@ -75,9 +75,11 @@ export default class PerspectiveCameraProxy extends THREE.PerspectiveCamera impl
             this._camera.cframe.qz,
             this._camera.cframe.qw);
 
-        this._renderCanvas.skybox.position.set(
-            this._camera.cframe.x,
-            this._camera.cframe.y,
-            this._camera.cframe.z);
+        if (this._renderCanvas.skybox !== null) {
+            this._renderCanvas.skybox.position.set(
+                this._camera.cframe.x,
+                this._camera.cframe.y,
+                this._camera.cframe.z);
+        }
     }
 }

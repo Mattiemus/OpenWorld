@@ -431,12 +431,12 @@ export default abstract class Instance implements IDestroyable
 
     private fireChildRemoved(child: Instance): void {
         this.onChildRemoved(child);
-        this._childRemoved.emit(this);
+        this._childRemoved.emit(child);
     }
 
     private fireChildAdded(child: Instance): void {
         this.onChildAdded(child);
-        this._childAdded.emit(this);
+        this._childAdded.emit(child);
     }
 
     private fireAncestroyChangedRecursive(child: Instance, parent: Instance | null): void {

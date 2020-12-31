@@ -26,4 +26,8 @@ export default class BrowserContentProviderImpl extends ContentProviderImpl
     public loadTexture(contentId: Content): THREE.Texture {
         return this._textureLoader.load(`./content/${contentId.id}.png`);
     }
+
+    public unloadTexture(texture: THREE.Texture): void {
+        // TODO
+    }
 }

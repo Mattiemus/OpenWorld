@@ -50,7 +50,7 @@ function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
     const browserTaskScheduler = new BrowserRunServiceImpl(renderCanvas);
     const browserClientReplicator = new BrowserClientReplicatorImpl(datamodel);
     const browserWorldImpl = new BrowserWorldImpl(renderCanvas, browserContentProviderImpl);
-    const browserLightingImpl = new BrowserLightingImpl(renderCanvas);
+    const browserLightingImpl = new BrowserLightingImpl(renderCanvas, browserContentProviderImpl);
 
     // TODO: Why is this not type checking?
     Instance['_getServiceImpl'] = ((serviceBase: Class<ServiceBase>): ServiceBase => {
@@ -123,6 +123,12 @@ export class OpenWorldCanvas extends React.Component
         lighting.ambient = new Color3(0.25, 0.25, 0.25);
 
         const sky = new Sky();
+        sky.skyboxTop = new Content("skybox3_py");
+        sky.skyboxBottom = new Content("skybox3_ny");
+        sky.skyboxLeft = new Content("skybox3_nx");
+        sky.skyboxRight = new Content("skybox3_px");
+        sky.skyboxFront = new Content("skybox3_pz");
+        sky.skyboxBack = new Content("skybox3_nz");
         sky.parent = lighting;
 
         // Create a test point light

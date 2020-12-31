@@ -40,6 +40,14 @@ export default class PointLightProxy extends THREE.PointLight implements IDestro
     }
 
     //
+    // Properties
+    //
+
+    public get dataModel(): PointLight {
+        return this._pointLight;
+    }
+
+    //
     // Methods
     //
     

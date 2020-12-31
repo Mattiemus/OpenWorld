@@ -3,15 +3,14 @@ import getElementSize from "../../../utils/get-element-size";
 
 import * as THREE from 'three';
 import { Signal } from "typed-signals";
+import SkyProxy from './proxies/sky-proxy';
 
 export default class RenderCanvas extends ServiceBase
 {
-    private static _skyboxGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
-
     private _renderer: THREE.WebGLRenderer;
     private _scene: THREE.Scene = new THREE.Scene();
     private _camera: THREE.PerspectiveCamera | null = null;    
-    private _skybox: THREE.Mesh = new THREE.Mesh(RenderCanvas._skyboxGeometry);
+    private _skybox: SkyProxy | null = null;
     
     private _resized = new Signal<() => void>();
 
@@ -22,9 +21,6 @@ export default class RenderCanvas extends ServiceBase
     constructor(private _canvas: HTMLCanvasElement) {
         super();
         
-        this._scene.add(this._skybox);
-        this._skybox.renderOrder = Number.NEGATIVE_INFINITY;
-
         this._renderer = new THREE.WebGLRenderer({ canvas: _canvas, antialias: false });
         this._renderer.shadowMap.enabled = true;
 
@@ -71,8 +67,24 @@ export default class RenderCanvas extends ServiceBase
         this._camera = newCamera;
     }
 
-    public get skybox(): THREE.Mesh {
+    public get skybox(): SkyProxy | null {
         return this._skybox;
+    }
+    public set skybox(newSkybox: SkyProxy | null) {
+        if (this._skybox === newSkybox) {
+            return;
+        }
+
+        if (this._skybox !== null) {
+            this._skybox.destroy();            
+            this._skybox = null;
+        }
+
+        this._skybox = newSkybox;
+
+        if (newSkybox !== null) {
+            this._scene.add(newSkybox);
+        }
     }
 
     //
