@@ -88,30 +88,37 @@ export default class Mouse extends Instance
     //
 
     public get leftButtonDown(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._leftButtonDown.signal;
     }
 
     public get leftButtonUp(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._leftButtonUp.signal;
     }
 
     public get rightButtonDown(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._rightButtonDown.signal;
     }
 
     public get rightButtonUp(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._rightButtonUp.signal;
     }
 
     public get move(): Signal<(deltaX: number, deltaY: number) => void> {
+        this.throwIfDestroyed();
         return this._move.signal;
     }
 
     public get wheelDown(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._wheelDown.signal;
     }
 
     public get wheelUp(): Signal<() => void> {
+        this.throwIfDestroyed();
         return this._wheelUp.signal;
     }
 
@@ -120,26 +127,32 @@ export default class Mouse extends Instance
     //
 
     public get isLeftButtonDown(): boolean {
+        this.throwIfDestroyed();
         return this._impl.isLeftButtonDown;
     }
 
     public get isLeftButtonUp(): boolean {
+        this.throwIfDestroyed();
         return this._impl.isLeftButtonUp;
     }
 
     public get isRightButtonDown(): boolean {
+        this.throwIfDestroyed();
         return this._impl.isRightButtonDown;
     }
 
     public get isRightButtonUp(): boolean {
+        this.throwIfDestroyed();
         return this._impl.isRightButtonUp;
     }
 
     public get x(): number {
+        this.throwIfDestroyed();
         return this._impl.x;
     }
 
     public get y(): number {
+        this.throwIfDestroyed();
         return this._impl.y;
     }
 

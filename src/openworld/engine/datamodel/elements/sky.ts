@@ -54,9 +54,12 @@ export default class Sky extends Instance
     //
 
     public get skyboxTop(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxTop;
     }
     public set skyboxTop(newSkyboxTop: Content | null) {
+        this.throwIfDestroyed();
+
         if (this._skyboxTop === newSkyboxTop) {
             return;
         }
@@ -66,9 +69,12 @@ export default class Sky extends Instance
     }
 
     public get skyboxBottom(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxBottom;
     }
     public set skyboxBottom(newSkyboxBottom: Content | null) {
+        this.throwIfDestroyed();
+
         if (this._skyboxBottom === newSkyboxBottom) {
             return;
         }
@@ -78,9 +84,12 @@ export default class Sky extends Instance
     }
 
     public get skyboxLeft(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxLeft;
     }
     public set skyboxLeft(newSkyboxLeft: Content | null) {
+        this.throwIfDestroyed();
+
         if (this._skyboxLeft === newSkyboxLeft) {
             return;
         }
@@ -90,9 +99,12 @@ export default class Sky extends Instance
     }
 
     public get skyboxRight(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxRight;
     }
     public set skyboxRight(newSkyboxRight: Content | null) {
+        this.throwIfDestroyed();
+
         if (this._skyboxRight === newSkyboxRight) {
             return;
         }
@@ -102,9 +114,12 @@ export default class Sky extends Instance
     }
 
     public get skyboxFront(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxFront;
     }
     public set skyboxFront(newSkyboxFront: Content | null) {
+        this.throwIfDestroyed();
+
         if (this._skyboxFront === newSkyboxFront) {
             return;
         }
@@ -114,9 +129,12 @@ export default class Sky extends Instance
     }
 
     public get skyboxBack(): Content | null {
+        this.throwIfDestroyed();
         return this._skyboxBack;
     }
     public set skyboxBack(newSkyboxBack: Content | null) {
+        this.throwIfDestroyed();
+        
         if (this._skyboxBack === newSkyboxBack) {
             return;
         }

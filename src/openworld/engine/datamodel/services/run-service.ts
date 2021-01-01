@@ -37,18 +37,22 @@ export default class RunService extends Instance
     //
 
     public get preRender(): Signal<(deltaTime: number, elapsedTime: number) => void> {
+        this.throwIfDestroyed();
         return this._preRender.signal;
     }
 
     public get postRender(): Signal<(deltaTime: number, elapsedTime: number) => void> {
+        this.throwIfDestroyed();
         return this._postRender.signal;
     }
 
     public get preSimulation(): Signal<(deltaTime: number, elapsedTime: number) => void> {
+        this.throwIfDestroyed();
         return this._preSimulation.signal;
     }
 
     public get postSimulation(): Signal<(deltaTime: number, elapsedTime: number) => void> {
+        this.throwIfDestroyed();
         return this._postSimulation.signal;
     }
 

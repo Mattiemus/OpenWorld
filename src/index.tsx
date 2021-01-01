@@ -88,7 +88,6 @@ export class OpenWorldCanvas extends React.Component
     private _canvas: HTMLCanvasElement | null = null;
 
     public componentDidMount(): void {
-
         if (this._canvas === null) {
             throw new Error('Canvas should not be null in this context!');
         }
@@ -117,6 +116,12 @@ export class OpenWorldCanvas extends React.Component
                 }
             }
         }
+
+        const base = new Primitive();
+        base.name = 'base';
+        base.size = new Vector3(25, 0.5, 25);
+        base.cframe = CFrame.fromPosition(new Vector3(0, -3.5, 0));
+        base.parent = world;
 
         // Setup lighting
         const lighting = datamodel.getService(Lighting);
@@ -196,7 +201,7 @@ export class OpenWorldCanvas extends React.Component
             }
 
             // Flip between cube and sphere
-            const worldChildren = world.getChildren();
+            const worldChildren = world.getChildren().filter(i => i instanceof Primitive && i.name != 'base');
             while (true) {
                 const idx = Math.floor(Math.random() * worldChildren.length);                    
                 const child = worldChildren[idx];

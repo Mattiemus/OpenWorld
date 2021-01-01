@@ -1,12 +1,14 @@
 
 import * as THREE from 'three';
 import CFrame from '../../../../../engine/math/cframe';
+import Vector3 from '../../../../../engine/math/vector3';
 
 export default class CFrameConverter
 {
     private static readonly _tempQuaternion = new THREE.Quaternion();
     private static readonly _tempMatrix4A = new THREE.Matrix4();
     private static readonly _tempMatrix4B = new THREE.Matrix4();
+    private static readonly _tempMatrix4C = new THREE.Matrix4();
 
     //
     // Constructor
@@ -33,11 +35,13 @@ export default class CFrameConverter
         return result;
     }
 
-    public static toMatrix(cframe: CFrame, result: THREE.Matrix4 = new THREE.Matrix4()): THREE.Matrix4 {
+    public static toMatrix(cframe: CFrame, scale: Vector3 = Vector3.one, result: THREE.Matrix4 = new THREE.Matrix4()): THREE.Matrix4 {
         CFrameConverter.toTranslationMatrix(cframe, CFrameConverter._tempMatrix4A);
         CFrameConverter.toRotationMatrix(cframe, CFrameConverter._tempMatrix4B);
+        CFrameConverter._tempMatrix4C.makeScale(scale.x, scale.y, scale.z);
 
         result.multiplyMatrices(CFrameConverter._tempMatrix4A, CFrameConverter._tempMatrix4B);
+        result.multiplyMatrices(result, CFrameConverter._tempMatrix4C);
 
         return result;
     }

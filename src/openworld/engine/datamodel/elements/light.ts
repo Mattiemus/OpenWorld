@@ -36,9 +36,12 @@ export default abstract class Light extends WorldObject
     //
 
     public get brightness(): number {
+        this.throwIfDestroyed();
         return this._brightness;
     }
     public set brightness(newBrightness: number) {
+        this.throwIfDestroyed();
+
         if (this._brightness === newBrightness) {
             return;
         }
@@ -48,10 +51,13 @@ export default abstract class Light extends WorldObject
     }
 
     public get color(): Color3 {
+        this.throwIfDestroyed();
         return this._color;
     }
     public set color(newColor: Color3) {
-        if (this._color === newColor) {
+        this.throwIfDestroyed();
+
+        if (this._color.equals(newColor)) {
             return;
         }
 
@@ -60,9 +66,12 @@ export default abstract class Light extends WorldObject
     }
 
     public get castsShadows(): boolean {
+        this.throwIfDestroyed();
         return this._castsShadows;
     }
     public set castsShadows(newCastsShadows: boolean) {
+        this.throwIfDestroyed();
+
         if (this._castsShadows === newCastsShadows) {
             return;
         }

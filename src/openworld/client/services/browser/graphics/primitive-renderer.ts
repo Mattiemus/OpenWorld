@@ -9,27 +9,45 @@ import Destroyable from '../../../../engine/utils/destroyable';
 import * as THREE from 'three';
 import { SignalConnection } from 'typed-signals';
 
+type PrimitiveBatchKey = {    
+    type: PrimitiveType;
+    material: Material;
+    castsShadows: boolean;
+    receivesShadows: boolean;
+}
+
 export default class PrimitiveRenderer extends Destroyable
 {
-    private _instancedMeshes = new Map<{
-        type: PrimitiveType;
-        material: Material;
-    }, DynamicInstancedMesh>();
+    private static _cubePrimitiveGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
+    private static _spherePrimitiveGeometry = new THREE.SphereBufferGeometry(0.5);
 
+    private _instancedMeshes = new Map<PrimitiveBatchKey, DynamicInstancedMesh>();
     private _primitiveInstances = new Map<Primitive, MeshInstance>();
+
     private _primitiveCFrameChangedConnections = new Map<Primitive, SignalConnection>();
     private _primitiveTypeChangedConnections = new Map<Primitive, SignalConnection>();
     private _primitiveMaterialChangedConnections = new Map<Primitive, SignalConnection>();
+    private _primitiveSizeChangedConnections = new Map<Primitive, SignalConnection>();
+    private _primitiveReceivesShadowsChangedConnections = new Map<Primitive, SignalConnection>();
+    private _primitiveCastsShadowsChangedConnections = new Map<Primitive, SignalConnection>();
+
+    //
+    // Constructor
+    //
 
     constructor(private _renderCanvas: RenderCanvas, private _browserContentProviderImpl: BrowserContentProviderImpl) {
         super();
     }
 
+    //
+    // Methods
+    //
+
     public addPrimitive(primitive: Primitive): void {
-        const instancedMesh = this.findOrCreateInstancedMesh(primitive.type, primitive.material);
+        const instancedMesh = this.findOrCreateInstancedMesh(primitive.type, primitive.material, true, true);
 
         const meshInstance = instancedMesh.addInstance();
-        meshInstance.setCFrame(primitive.cframe);
+        meshInstance.setCFrame(primitive.cframe, primitive.size);
 
         this._primitiveInstances.set(primitive, meshInstance);
 
@@ -44,6 +62,18 @@ export default class PrimitiveRenderer extends Destroyable
         const materialChangedSignal = primitive.getPropertyChangedSignal('material')!;
         const materialChangedConnection = materialChangedSignal.connect(() => this.onPrimitiveMaterialChanged(primitive));
         this._primitiveMaterialChangedConnections.set(primitive, materialChangedConnection);
+
+        const sizeChangedSignal = primitive.getPropertyChangedSignal('size')!;
+        const sizeChangedConnection = sizeChangedSignal.connect(() => this.onPrimitiveSizeChanged(primitive, meshInstance));
+        this._primitiveSizeChangedConnections.set(primitive, sizeChangedConnection);
+
+        const receivesShadowsChangedSignal = primitive.getPropertyChangedSignal('receivesShadows')!;
+        const receivesShadowsChangedConnection = receivesShadowsChangedSignal.connect(() => this.onPrimitiveReceivesShadowsChanged(primitive));
+        this._primitiveReceivesShadowsChangedConnections.set(primitive, receivesShadowsChangedConnection);
+
+        const castsShadowsChangedSignal = primitive.getPropertyChangedSignal('castsShadows')!;
+        const castsShadowsChangedConnection = castsShadowsChangedSignal.connect(() => this.onPrimitiveCastsShadowsChanged(primitive));
+        this._primitiveCastsShadowsChangedConnections.set(primitive, castsShadowsChangedConnection);
     }
 
     public removePrimitive(primitive: Primitive): void {
@@ -72,10 +102,28 @@ export default class PrimitiveRenderer extends Destroyable
             materialChangedConnection.disconnect();
             this._primitiveMaterialChangedConnections.delete(primitive);
         }
+
+        const sizeChangedConnection = this._primitiveSizeChangedConnections.get(primitive);
+        if (sizeChangedConnection !== undefined) {
+            sizeChangedConnection.disconnect();
+            this._primitiveSizeChangedConnections.delete(primitive);
+        }
+
+        const receivesShadowsChangedConnection = this._primitiveReceivesShadowsChangedConnections.get(primitive);
+        if (receivesShadowsChangedConnection !== undefined) {
+            receivesShadowsChangedConnection.disconnect();
+            this._primitiveReceivesShadowsChangedConnections.delete(primitive);
+        }
+
+        const castsShadowsChangedConnection = this._primitiveCastsShadowsChangedConnections.get(primitive);
+        if (castsShadowsChangedConnection !== undefined) {
+            castsShadowsChangedConnection.disconnect();
+            this._primitiveCastsShadowsChangedConnections.delete(primitive);
+        }
     }
 
     private onPrimitiveCFrameChanged(primitive: Primitive, meshInstance: MeshInstance): void {
-        meshInstance.setCFrame(primitive.cframe);
+        meshInstance.setCFrame(primitive.cframe, primitive.size);
     }
 
     private onPrimitiveTypeChanged(primitive: Primitive): void {
@@ -88,22 +136,53 @@ export default class PrimitiveRenderer extends Destroyable
         this.addPrimitive(primitive);
     }
 
-    private findOrCreateInstancedMesh(primitiveType: PrimitiveType, material: Material): DynamicInstancedMesh {
-        for (let pair of Array.from(this._instancedMeshes.keys())) {
-            if (primitiveType === pair.type && material.equals(pair.material)) {
-                return this._instancedMeshes.get(pair)!;
+    private onPrimitiveSizeChanged(primitive: Primitive, meshInstance: MeshInstance): void {
+        meshInstance.setCFrame(primitive.cframe, primitive.size);
+    }
+
+    private onPrimitiveReceivesShadowsChanged(primitive: Primitive): void {
+        this.removePrimitive(primitive);
+        this.addPrimitive(primitive);
+    }
+
+    private onPrimitiveCastsShadowsChanged(primitive: Primitive): void {
+        this.removePrimitive(primitive);
+        this.addPrimitive(primitive);
+    }
+
+    private findOrCreateInstancedMesh(
+        primitiveType: PrimitiveType,
+        material: Material,
+        castsShadows: boolean,
+        receivesShadows: boolean
+    ): DynamicInstancedMesh {
+        for (let batchKey of Array.from(this._instancedMeshes.keys())) {
+            if (primitiveType === batchKey.type &&
+                material.equals(batchKey.material) &&
+                castsShadows === batchKey.castsShadows &&
+                receivesShadows === batchKey.receivesShadows
+            ) {
+                return this._instancedMeshes.get(batchKey)!;
             }
         }
 
         const threeGeometry = this.createGeometryForPrimitiveType(primitiveType);
         const threeMaterial = this._browserContentProviderImpl.loadMaterial(material);
 
-        const primTypeAndMaterial = { type: primitiveType, material };
+        const batchKey: PrimitiveBatchKey = {
+            type: primitiveType,
+            material,
+            castsShadows,
+            receivesShadows
+        };
 
         const dynamicInstancedMesh = new DynamicInstancedMesh(threeGeometry, threeMaterial);
+        dynamicInstancedMesh.castShadow = castsShadows;
+        dynamicInstancedMesh.receiveShadow = receivesShadows;
+
         this._renderCanvas.scene.add(dynamicInstancedMesh);
 
-        this._instancedMeshes.set(primTypeAndMaterial, dynamicInstancedMesh);
+        this._instancedMeshes.set(batchKey, dynamicInstancedMesh);
 
         return dynamicInstancedMesh;
     }
@@ -111,9 +190,10 @@ export default class PrimitiveRenderer extends Destroyable
     private createGeometryForPrimitiveType(primType: PrimitiveType): THREE.BufferGeometry {
         switch (primType) {
             case PrimitiveType.Cube:
-                return new THREE.BoxBufferGeometry(1, 1, 1);
+                return PrimitiveRenderer._cubePrimitiveGeometry;
+
             case PrimitiveType.Sphere:
-                return new THREE.SphereBufferGeometry(0.5);
+                return PrimitiveRenderer._spherePrimitiveGeometry;
         }
 
         throw new Error(`Unknown primitive type "${primType}"`);

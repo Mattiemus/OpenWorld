@@ -41,10 +41,13 @@ export default class Camera extends Instance
     //
 
     public get cframe(): CFrame {
+        this.throwIfDestroyed();
         return this._cframe;
     }
     public set cframe(newCFrame: CFrame) {
-        if (this._cframe === newCFrame) {
+        this.throwIfDestroyed();
+
+        if (this._cframe.equals(newCFrame)) {
             return;
         }
 
@@ -53,9 +56,12 @@ export default class Camera extends Instance
     }
 
     public get fieldOfView(): number {
+        this.throwIfDestroyed();
         return this._fieldOfView;
     }
     public set fieldOfView(newFieldOfView: number) {
+        this.throwIfDestroyed();
+
         if (MathEx.isApproxEqual(this._fieldOfView, newFieldOfView)) {
             return;
         }
@@ -65,10 +71,12 @@ export default class Camera extends Instance
     }
 
     public get nearPlane(): number {
+        this.throwIfDestroyed();
         return 0.1;
     }
 
     public get farPlane(): number {
+        this.throwIfDestroyed();
         return 1000;
     }
 }

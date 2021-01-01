@@ -1,5 +1,6 @@
 import Destroyable from '../../../../../engine/utils/destroyable';
 import CFrame from '../../../../../engine/math/cframe';
+import Vector3 from '../../../../../engine/math/vector3';
 import CFrameConverter from '../converters/cframe-converter';
 
 import * as THREE from 'three';
@@ -29,8 +30,8 @@ export class MeshInstance extends Destroyable
     // Methods
     //
 
-    public setCFrame(cframe: CFrame): void {
-        CFrameConverter.toMatrix(cframe, MeshInstance._tempMatrix);
+    public setCFrame(cframe: CFrame, scale: Vector3 = Vector3.one): void {
+        CFrameConverter.toMatrix(cframe, scale, MeshInstance._tempMatrix);
         this.setMatrix(MeshInstance._tempMatrix);
     }
 
@@ -160,6 +161,9 @@ export class DynamicInstancedMesh extends THREE.Object3D
     private createInstancedMesh(size: number): THREE.InstancedMesh {        
         const instancedMesh = new THREE.InstancedMesh(this._geometry, this._material, size);
         instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);        
+
+        instancedMesh.castShadow = this.castShadow;
+        instancedMesh.receiveShadow = this.receiveShadow;
 
         for (let i = 0; i < instancedMesh.count; i++) {
             instancedMesh.setMatrixAt(i, DynamicInstancedMesh._zeroScaleMatrix);

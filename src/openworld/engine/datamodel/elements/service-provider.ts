@@ -18,11 +18,15 @@ export default abstract class ServiceProvider extends Instance
     //
 
     public findService<T extends Instance>(className: string | Class<T>): T | undefined {
+        this.throwIfDestroyed();
+
         const service = this.findFirstChildOfClass(className, false) as T;
         return service;
     }
 
     public getService<T extends Instance>(className: string | Class<T>): T {
+        this.throwIfDestroyed();
+        
         const foundService = this.findService(className);
         if (foundService !== undefined) {
             return foundService;

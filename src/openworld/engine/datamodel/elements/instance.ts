@@ -201,6 +201,8 @@ export default abstract class Instance implements IDestroyable
     } 
 
     public getPropertyChangedSignal(propertyName: string): Signal<(propertyName: string) => void> | undefined {
+        this.throwIfDestroyed();
+        
         if (this._propertyChangedSignals === null) {
             this._propertyChangedSignals = new Map<string, Signal<(propertyName: string) => void>>();
         }
@@ -221,10 +223,13 @@ export default abstract class Instance implements IDestroyable
     }
 
     public findFirstChildNamed(name: string, isRecursive: boolean = true): Instance | undefined {
+        this.throwIfDestroyed();
         return this.findFirstChildInternal(i => i.name === name, isRecursive);
     }
 
     public findFirstChildOfClass<T extends Instance>(className: string | Class<T>, isRecursive: boolean = true): T | undefined {
+        this.throwIfDestroyed();
+
         if (_.isString(className)) {
             return this.findFirstChildInternal(i => i.className === className, isRecursive) as T;
         }
@@ -233,14 +238,18 @@ export default abstract class Instance implements IDestroyable
     }
 
     public findFirstChildWhichIsA<T extends Instance>(className: string | Class<T>, isRecursive: boolean = true): T | undefined {
+        this.throwIfDestroyed();
         return this.findFirstChildInternal(i => i.isA(className), isRecursive) as T;
     }
 
     public findFirstAncestorNamed(name: string): Instance | undefined {
+        this.throwIfDestroyed();
         return this.findFirstAncestorInternal(i => i.name === name);
     }
 
     public findFirstAncestorOfClass<T extends Instance>(className: string | Class<T>): T | undefined {
+        this.throwIfDestroyed();
+
         if (_.isString(className)) {
             return this.findFirstAncestorInternal(i => i.className === className) as T;
         }
@@ -249,10 +258,13 @@ export default abstract class Instance implements IDestroyable
     }
 
     public findFirstAncestorWhichIsA<T extends Instance>(className: string | Class<T>): T | undefined {
+        this.throwIfDestroyed();
         return this.findFirstAncestorInternal(i => i.isA(className)) as T;
     }   
 
     public isA<T extends Instance>(className: string | Class<T>): boolean {
+        this.throwIfDestroyed();
+
         if (!_.isString(className)) {
             const classMetaData = getMetaData(className);
             className = classMetaData.className;

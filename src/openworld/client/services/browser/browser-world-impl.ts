@@ -52,7 +52,16 @@ export default class BrowserWorldImpl extends WorldImpl
     protected onDetatch(): void {
         super.onDetatch();
 
-        // TODO: Full cleanup       
+        const allProxies = Array.from(this._instanceProxies.values());
+        for (const proxy of allProxies) {
+            proxy.destroy();
+        }
+        this._instanceProxies.clear();
+        
+        if (this._primitiveRenderer !== null) {
+            this._primitiveRenderer.destroy();
+            this._primitiveRenderer = null;
+        }
 
         if (this._currentCameraChangedConnection !== null) {
             this._currentCameraChangedConnection.disconnect();

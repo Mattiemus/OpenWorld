@@ -24,10 +24,13 @@ export default abstract class WorldObject extends Instance
     //
 
     public get cframe(): CFrame {
+        this.throwIfDestroyed();
         return this._cframe;
     }
     public set cframe(newCFrame: CFrame) {
-        if (this._cframe === newCFrame) {
+        this.throwIfDestroyed();
+
+        if (this._cframe.equals(newCFrame)) {
             return;
         }
 
