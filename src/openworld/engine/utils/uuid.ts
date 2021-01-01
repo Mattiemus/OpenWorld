@@ -30,6 +30,6 @@ export default class Uuid
     }
 
     public equals(other: Uuid): boolean {
-        return this._uuid == other._uuid;
+        return this._uuid === other._uuid;
     }
 }

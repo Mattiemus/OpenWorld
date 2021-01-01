@@ -1,4 +1,5 @@
 import MouseImpl from '../../../engine/services/mouse-impl';
+import RenderCanvas from './graphics/render-canvas';
 
 import { Signal } from 'typed-signals';
 
@@ -21,14 +22,14 @@ export default class BrowserMouseImpl extends MouseImpl
     // Constructor
     //
 
-    constructor() {
+    constructor(private _renderCanvas: RenderCanvas) {
         super();
 
-        document.body.addEventListener('mousedown', this.onMouseDown);
-        document.body.addEventListener('mouseup', this.onMouseUp);
-        document.body.addEventListener('mousemove', this.onMouseMove);
-        document.body.addEventListener('wheel', this.onMouseWheel);
-        document.body.addEventListener('contextmenu', this.onContextMenu);
+        this._renderCanvas.canvas.addEventListener('mousedown', this.onMouseDown);
+        this._renderCanvas.canvas.addEventListener('mouseup', this.onMouseUp);
+        this._renderCanvas.canvas.addEventListener('mousemove', this.onMouseMove);
+        this._renderCanvas.canvas.addEventListener('wheel', this.onMouseWheel);
+        this._renderCanvas.canvas.addEventListener('contextmenu', this.onContextMenu);
     }
 
     // 
@@ -98,11 +99,11 @@ export default class BrowserMouseImpl extends MouseImpl
     protected onDestroy(): void {
         super.onDestroy();
 
-        document.body.removeEventListener('mousedown', this.onMouseDown);
-        document.body.removeEventListener('mouseup', this.onMouseUp);
-        document.body.removeEventListener('mousemove', this.onMouseMove);
-        document.body.removeEventListener('wheel', this.onMouseWheel);
-        document.body.removeEventListener('contextmenu', this.onContextMenu);
+        this._renderCanvas.canvas.removeEventListener('mousedown', this.onMouseDown);
+        this._renderCanvas.canvas.removeEventListener('mouseup', this.onMouseUp);
+        this._renderCanvas.canvas.removeEventListener('mousemove', this.onMouseMove);
+        this._renderCanvas.canvas.removeEventListener('wheel', this.onMouseWheel);
+        this._renderCanvas.canvas.removeEventListener('contextmenu', this.onContextMenu);
     }
 
     private onMouseDown = (e: MouseEvent): void => {

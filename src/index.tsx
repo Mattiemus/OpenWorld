@@ -46,7 +46,7 @@ function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
 
     const renderCanvas = new RenderCanvas(canvas);
     const browserContentProviderImpl = new BrowserContentProviderImpl();    
-    const browserMouseService = new BrowserMouseImpl();
+    const browserMouseService = new BrowserMouseImpl(renderCanvas);
     const browserTaskScheduler = new BrowserRunServiceImpl(renderCanvas);
     const browserClientReplicator = new BrowserClientReplicatorImpl(datamodel);
     const browserWorldImpl = new BrowserWorldImpl(renderCanvas, browserContentProviderImpl);

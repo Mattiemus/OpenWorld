@@ -9,16 +9,14 @@ import Primitive from "../../../engine/datamodel/elements/primitive";
 import PointLight from "../../../engine/datamodel/elements/point-light";
 import PointLightProxy from './graphics/proxies/point-light-proxy';
 import PerspectiveCameraProxy from "./graphics/proxies/perspective-camera-proxy";
-import WorldPrimitiveRenderer from "./graphics/world-primitive-renderer";
+import PrimitiveRenderer from "./graphics/primitive-renderer";
 import { InstanceProxy } from "./graphics/proxies/instance-proxy";
-
-import * as THREE from 'three';
 
 export default class BrowserWorldImpl extends WorldImpl
 {
     private _currentCameraProxy: PerspectiveCameraProxy | null = null;
     private _instanceProxies = new Map<Instance, InstanceProxy<Instance>>();
-    private _primitiveRenderer: WorldPrimitiveRenderer;
+    private _primitiveRenderer: PrimitiveRenderer | null = null;
 
     private _currentCameraChangedConnection: SignalConnection | null = null;
     private _descendantAddedConnection: SignalConnection | null = null;
@@ -30,9 +28,6 @@ export default class BrowserWorldImpl extends WorldImpl
 
     constructor(private _renderCanvas: RenderCanvas, private _browserContentProviderImpl: BrowserContentProviderImpl) {
         super();
-
-        // TODO
-        this._primitiveRenderer = new WorldPrimitiveRenderer(this._renderCanvas, this._browserContentProviderImpl);
     }
 
     //
@@ -41,6 +36,8 @@ export default class BrowserWorldImpl extends WorldImpl
 
     protected onAttatch(dataModel: World): void {
         super.onAttatch(dataModel);
+
+        this._primitiveRenderer = new PrimitiveRenderer(this._renderCanvas, this._browserContentProviderImpl);
 
         this._currentCameraChangedConnection =
             dataModel.getPropertyChangedSignal('currentCamera')!.connect(this.onWorldCurrentCameraChanged.bind(this));
@@ -55,7 +52,7 @@ export default class BrowserWorldImpl extends WorldImpl
     protected onDetatch(): void {
         super.onDetatch();
 
-        // TODO: Full cleanup
+        // TODO: Full cleanup       
 
         if (this._currentCameraChangedConnection !== null) {
             this._currentCameraChangedConnection.disconnect();
@@ -99,8 +96,11 @@ export default class BrowserWorldImpl extends WorldImpl
             return;
         }
 
-        if (descendant instanceof Primitive) {            
-            this._primitiveRenderer.addPrimitive(descendant);
+        if (descendant instanceof Primitive) {  
+            if (this._primitiveRenderer !== null) {          
+                this._primitiveRenderer.addPrimitive(descendant);
+            }
+
             return;
         }
 
@@ -119,7 +119,10 @@ export default class BrowserWorldImpl extends WorldImpl
         }
 
         if (descendant instanceof Primitive) {
-            this._primitiveRenderer.removePrimitive(descendant);
+            if (this._primitiveRenderer !== null) {
+                this._primitiveRenderer.removePrimitive(descendant);
+            }
+
             return;
         }
 

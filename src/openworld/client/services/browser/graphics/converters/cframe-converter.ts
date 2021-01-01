@@ -33,7 +33,7 @@ export default class CFrameConverter
         return result;
     }
 
-    public static toMatrix(cframe: CFrame, result: THREE.Matrix4 = new THREE.Matrix4): THREE.Matrix4 {
+    public static toMatrix(cframe: CFrame, result: THREE.Matrix4 = new THREE.Matrix4()): THREE.Matrix4 {
         CFrameConverter.toTranslationMatrix(cframe, CFrameConverter._tempMatrix4A);
         CFrameConverter.toRotationMatrix(cframe, CFrameConverter._tempMatrix4B);
 
