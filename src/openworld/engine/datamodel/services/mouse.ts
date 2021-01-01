@@ -4,6 +4,7 @@ import PropertyType from '../internals/metadata/properties/property-type';
 import MouseImpl from '../../services/mouse-impl';
 import ForwardingSignal from '../internals/forwarding-signal';
 import MathEx from '../../math/mathex';
+import InstanceContext from "../internals/instance-context";
 
 import { Signal, SignalConnection } from 'typed-signals';
 
@@ -62,10 +63,10 @@ export default class Mouse extends Instance
     private _rightButtonUpConnection: SignalConnection;
     private _moveConnection: SignalConnection;
 
-    constructor() {
-        super();
+    constructor(context: InstanceContext) {
+        super(context);
 
-        this._impl = Mouse._getServiceImpl(MouseImpl);
+        this._impl = context.getServiceImpl(MouseImpl);
         this._impl.attatch(this);
 
         this._leftButtonDown = new ForwardingSignal(this._impl.leftButtonDown);

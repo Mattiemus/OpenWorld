@@ -3,6 +3,7 @@ import { DataModelClass } from "../internals/metadata/metadata";
 import LightingImpl from '../../services/lighting-impl';
 import Color3 from '../../math/color3';
 import PropertyType from '../internals/metadata/properties/property-type';
+import InstanceContext from '../internals/instance-context';
 
 @DataModelClass({
     className: 'Lighting',
@@ -22,10 +23,10 @@ export default class Lighting extends Instance
 
     private _ambient: Color3 = Color3.black;
 
-    constructor() {
-        super();
+    constructor(context: InstanceContext) {
+        super(context);
         
-        this._impl = Lighting._getServiceImpl(LightingImpl);
+        this._impl = context.getServiceImpl(LightingImpl);
         this._impl.attatch(this);
     }
 

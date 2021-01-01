@@ -1,8 +1,7 @@
 import { Class, Constructor } from '../../../utils/types';
 import DataModelClassMetaData from './classes/data-model-class-metadata';
 import PropertyType from './properties/property-type';
-
-import * as _ from "lodash";
+import { isFunction, isString } from '../../../utils/type-guards';
 
 // TODO: Fix this!
 type Instance = any;
@@ -49,11 +48,11 @@ export function getMetaData<T extends Instance>(instanceTypeOrStringOrInstance: 
         return cachedResult;
     }
 
-    if (_.isFunction(instanceTypeOrStringOrInstance)) {
+    if (isFunction(instanceTypeOrStringOrInstance)) {
         return getMetaDataByClass(instanceTypeOrStringOrInstance);
     }
 
-    if (_.isString(instanceTypeOrStringOrInstance)) {
+    if (isString(instanceTypeOrStringOrInstance)) {
         const instanceType = dataModelConstables.get(instanceTypeOrStringOrInstance);
         if (instanceType === undefined) {
             throw new Error(`Unknown data model type ${instanceTypeOrStringOrInstance}`);
@@ -69,7 +68,7 @@ export function getMetaData<T extends Instance>(instanceTypeOrStringOrInstance: 
     throw new Error('Unknown argument passed to getMetaData');
 }
 
-export function getConstructor(className: string): Constructor<any> {
+export function getConstructor(className: string): Constructor<any, any> {
     const instanceType = dataModelConstables.get(className);
     if (instanceType === undefined) {
         throw new Error(`Unknown data model type ${className}`);
@@ -77,7 +76,7 @@ export function getConstructor(className: string): Constructor<any> {
 
     // TODO: Ensure not abstract
 
-    return instanceType as Constructor<any>;
+    return instanceType as Constructor<any, any>;
 }
 
 //

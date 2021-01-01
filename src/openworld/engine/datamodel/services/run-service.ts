@@ -2,6 +2,7 @@ import { DataModelClass } from "../internals/metadata/metadata";
 import Instance from '../elements/instance';
 import RunServiceImpl from '../../services/run-service-impl';
 import ForwardingSignal from '../internals/forwarding-signal';
+import InstanceContext from "../internals/instance-context";
 
 import { Signal } from 'typed-signals';
 
@@ -20,10 +21,10 @@ export default class RunService extends Instance
     private _preSimulation: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
     private _postSimulation: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
  
-    constructor() {
-        super();
+    constructor(context: InstanceContext) {
+        super(context);
 
-        this._impl = RunService._getServiceImpl(RunServiceImpl);
+        this._impl = context.getServiceImpl(RunServiceImpl);
         this._impl.attatch(this);
         
         this._preRender = new ForwardingSignal(this._impl.preRender);

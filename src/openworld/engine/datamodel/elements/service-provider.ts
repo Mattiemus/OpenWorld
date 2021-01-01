@@ -2,8 +2,8 @@ import Instance from './instance';
 import { getMetaData, getConstructor } from '../internals/metadata/metadata';
 import { DataModelClass } from '../internals/metadata/metadata';
 import { Class, Constructor } from '../../utils/types';
-
-import * as _ from "lodash";
+import InstanceContext from '../internals/instance-context';
+import { isString } from '../../utils/type-guards';
 
 @DataModelClass({
     className: 'ServiceProvider',
@@ -39,10 +39,10 @@ export default abstract class ServiceProvider extends Instance
         
         // TODO: Ensure not already under another object
 
-        const constructor: Constructor<Instance> =
-            _.isString(className) 
+        const constructor: Constructor<Instance, [InstanceContext]> =
+            isString(className) 
                 ? getConstructor(className)
-                : className as Constructor<Instance>;
+                : className as Constructor<Instance, [InstanceContext]>;
 
         const serviceInstance = this.constructService(constructor);
         serviceInstance.parent = this;
@@ -50,11 +50,11 @@ export default abstract class ServiceProvider extends Instance
         return serviceInstance as T;
     }
 
-    private constructService<T extends Instance>(constructor: Constructor<T>): T {
+    private constructService<T extends Instance>(constructor: Constructor<T, [InstanceContext]>): T {
         try {
             Instance['_allowCreateService'] = true;
 
-            const instance = new constructor();
+            const instance = new constructor(this._context);
             return instance;
         } catch (e) { 
             Instance['_allowCreateService'] = false;

@@ -1,5 +1,6 @@
 import Instance from "../../../elements/instance";
 import { Constructor } from "../../../../utils/types";
+import InstanceContext from '../../instance-context';
 
 export default class PropertyType
 {
@@ -11,7 +12,7 @@ export default class PropertyType
     public static readonly vector3 = new PropertyType();
     public static readonly quaternion = new PropertyType();
     public static readonly content = new PropertyType();
-    public static readonly materialProperties = new PropertyType();
+    public static readonly material = new PropertyType();
 
     //
     // Constructor
@@ -25,7 +26,7 @@ export default class PropertyType
     // Methods
     //
 
-    public static instanceRef<T extends Instance>(constructor: string | Constructor<T>): PropertyType {
+    public static instanceRef<T extends Instance>(constructor: string | Constructor<T, [InstanceContext]>): PropertyType {
         // TODO: This needs to return a unique value for each instance type
         return new PropertyType();
     }

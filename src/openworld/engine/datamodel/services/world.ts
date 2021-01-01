@@ -3,6 +3,7 @@ import { DataModelClass } from "../internals/metadata/metadata";
 import PropertyType from "../internals/metadata/properties/property-type";
 import WorldImpl from '../../services/world-impl';
 import Camera from '../elements/camera';
+import InstanceContext from '../internals/instance-context';
 
 @DataModelClass({
     className: 'World',
@@ -22,10 +23,10 @@ export default class World extends Instance
 
     private _currentCamera: Camera | null = null;
 
-    constructor() {
-        super();
+    constructor(context: InstanceContext) {
+        super(context);
         
-        this._impl = World._getServiceImpl(WorldImpl);
+        this._impl = context.getServiceImpl(WorldImpl);
         this._impl.attatch(this);
     }
 

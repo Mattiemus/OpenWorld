@@ -1,7 +1,6 @@
 import Content from './content';
 import Color3 from '../../math/color3';
-
-import * as _ from "lodash";
+import { isNumber } from '../../utils/type-guards';
 
 export default class Material
 {
@@ -49,7 +48,7 @@ export default class Material
 
         // Match metalness
         if (this.metalness !== other.metalness) {
-            if (_.isNumber(this.metalness) && _.isNumber(other.metalness)) {
+            if (isNumber(this.metalness) && isNumber(other.metalness)) {
                 if (this.metalness !== other.metalness) {
                     return false;
                 }
@@ -64,7 +63,7 @@ export default class Material
 
         // Match roughness
         if (this.roughness !== other.roughness) {
-            if (_.isNumber(this.roughness) && _.isNumber(other.roughness)) {
+            if (isNumber(this.roughness) && isNumber(other.roughness)) {
                 if (this.roughness !== other.roughness) {
                     return false;
                 }

@@ -6,12 +6,6 @@ import * as React from "react";
 import { render } from "react-dom";
 import DataModel from "./openworld/engine/datamodel/elements/datamodel";
 import World from "./openworld/engine/datamodel/services/world";
-import RunServiceImpl from "./openworld/engine/services/run-service-impl";
-import BrowserRunServiceImpl from "./openworld/client/services/browser/browser-run-service-impl";
-import BrowserMouseImpl from "./openworld/client/services/browser/browser-mouse-impl";
-import ClientReplicatorImpl from "./openworld/engine/services/client-replicator-impl";
-import BrowserClientReplicatorImpl from "./openworld/client/services/browser/browser-client-replicator-impl";
-import ClientReplicator from "./openworld/engine/datamodel/services/client-replicator";
 import Mouse from "./openworld/engine/datamodel/services/mouse";
 import RunService from "./openworld/engine/datamodel/services/run-service";
 import Camera from "./openworld/engine/datamodel/elements/camera";
@@ -20,68 +14,15 @@ import CFrame from "./openworld/engine/math/cframe";
 import Vector3 from "./openworld/engine/math/vector3";
 import Vector2 from "./openworld/engine/math/vector2";
 import MathEx from "./openworld/engine/math/mathex";
-import RenderCanvas from './openworld/client/services/browser/graphics/render-canvas';
-import Instance from "./openworld/engine/datamodel/elements/instance";
-import ServiceBase from './openworld/engine/services/base/service-base';
-import { Class } from "./openworld/engine/utils/types";
-import MouseImpl from './openworld/engine/services/mouse-impl';
-import BrowserWorldImpl from './openworld/client/services/browser/browser-world-impl';
-import WorldImpl from "./openworld/engine/services/world-impl";
-import BrowserLightingImpl from './openworld/client/services/browser/browser-lighting-impl';
-import LightingImpl from './openworld/engine/services/lighting-impl';
 import Lighting from "./openworld/engine/datamodel/services/lighting";
 import Color3 from "./openworld/engine/math/color3";
 import PointLight from './openworld/engine/datamodel/elements/point-light';
 import Material from "./openworld/engine/datamodel/data-types/material";
 import Content from "./openworld/engine/datamodel/data-types/content";
 import Sky from './openworld/engine/datamodel/elements/sky';
-import BrowserContentProviderImpl from './openworld/client/services/browser/browser-content-provider';
-import ContentProviderImpl from './openworld/engine/services/content-provider-impl';
 import ContentProvider from './openworld/engine/datamodel/services/content-provider';
-
-function createLocalDataModel(canvas: HTMLCanvasElement): DataModel {
-    // TODO: Remove canvas param so we can create a local data model anywhere, and retarget the canvas later on
-
-    const datamodel = new DataModel();
-
-    const renderCanvas = new RenderCanvas(canvas);
-    const browserContentProviderImpl = new BrowserContentProviderImpl();    
-    const browserMouseService = new BrowserMouseImpl(renderCanvas);
-    const browserTaskScheduler = new BrowserRunServiceImpl(renderCanvas);
-    const browserClientReplicator = new BrowserClientReplicatorImpl(datamodel);
-    const browserWorldImpl = new BrowserWorldImpl(renderCanvas, browserContentProviderImpl);
-    const browserLightingImpl = new BrowserLightingImpl(renderCanvas, browserContentProviderImpl);
-
-    // TODO: Why is this not type checking?
-    Instance['_getServiceImpl'] = ((serviceBase: Class<ServiceBase>): ServiceBase => {
-        if (serviceBase === MouseImpl) {
-            return browserMouseService;
-        } else if (serviceBase === RunServiceImpl) {
-            return browserTaskScheduler;
-        } else if (serviceBase === ClientReplicatorImpl) {
-            return browserClientReplicator;
-        } else if (serviceBase === WorldImpl) {
-            return browserWorldImpl;
-        } else if (serviceBase === LightingImpl) {
-            return browserLightingImpl;
-        } else if (serviceBase === ContentProviderImpl) {
-            return browserContentProviderImpl;
-        }
-
-        throw new Error('Cannot find service implementation');
-    }) as any;
-
-    const world = datamodel.getService(World);
-    world.currentCamera = new Camera();
-
-    datamodel.getService(ContentProvider);
-    datamodel.getService(Lighting);
-    datamodel.getService(ClientReplicator);
-    datamodel.getService(Mouse);
-    datamodel.getService(RunService);
-
-    return datamodel;
-}
+import LocalClientInstanceContext from "./openworld/client/contexts/local-client-instance-context";
+import JsonInstanceSerializer from './openworld/engine/datamodel/serialization/json/json-instance-serializer';
 
 export class OpenWorldCanvas extends React.Component
 {    
@@ -92,8 +33,18 @@ export class OpenWorldCanvas extends React.Component
             throw new Error('Canvas should not be null in this context!');
         }
 
-        const datamodel = createLocalDataModel(this._canvas);
+        const context = new LocalClientInstanceContext(this._canvas);
+
+        const datamodel = new DataModel(context);
+    
         const world = datamodel.getService(World);
+        world.currentCamera = new Camera(context);
+    
+        datamodel.getService(ContentProvider);
+        datamodel.getService(Lighting);
+        //datamodel.getService(ClientReplicator);
+        datamodel.getService(Mouse);
+        datamodel.getService(RunService);
 
         // Create some shapes to look at (as these are created on the client they are local only)
         const cubeSize = 5 / 2;
@@ -101,7 +52,7 @@ export class OpenWorldCanvas extends React.Component
         for (let x = -cubeSize; x <= cubeSize; x++) {
             for (let y = -cubeSize; y <= cubeSize; y++) {
                 for (let z = -cubeSize; z <= cubeSize; z++) {          
-                    const p = new Primitive();
+                    const p = new Primitive(context);
                     p.cframe = CFrame.fromPosition(new Vector3(x * 1.1, y * 1.1, z * 1.1));
 
                     p.material =
@@ -117,7 +68,7 @@ export class OpenWorldCanvas extends React.Component
             }
         }
 
-        const base = new Primitive();
+        const base = new Primitive(context);
         base.name = 'base';
         base.size = new Vector3(25, 0.5, 25);
         base.cframe = CFrame.fromPosition(new Vector3(0, -3.5, 0));
@@ -127,17 +78,23 @@ export class OpenWorldCanvas extends React.Component
         const lighting = datamodel.getService(Lighting);
         lighting.ambient = new Color3(0.25, 0.25, 0.25);
 
-        const sky = new Sky();
-        sky.skyboxTop = new Content("skybox3_py");
-        sky.skyboxBottom = new Content("skybox3_ny");
-        sky.skyboxLeft = new Content("skybox3_nx");
-        sky.skyboxRight = new Content("skybox3_px");
-        sky.skyboxFront = new Content("skybox3_pz");
-        sky.skyboxBack = new Content("skybox3_nz");
+        const sky = JsonInstanceSerializer.deserializeObject({
+            className: 'Sky',
+            properties: {
+                name: 'Sky',
+                skyboxTop: { content: "skybox3_py" },
+                skyboxBottom: { content: "skybox3_ny" },
+                skyboxLeft: { content: "skybox3_nx" },
+                skyboxRight: { content: "skybox3_px" },
+                skyboxFront: { content: "skybox3_pz" },
+                skyboxBack: { content: "skybox3_nz" },
+            },
+            children: []
+        }, context, Sky);
         sky.parent = lighting;
 
         // Create a test point light
-        const pointLight = new PointLight();
+        const pointLight = new PointLight(context);
         pointLight.cframe = CFrame.fromPosition(new Vector3(0, (cubeSize * 1.1) + 2, 0));
         pointLight.brightness = 5;
         pointLight.range = 10;
@@ -201,7 +158,7 @@ export class OpenWorldCanvas extends React.Component
             }
 
             // Flip between cube and sphere
-            const worldChildren = world.getChildren().filter(i => i instanceof Primitive && i.name != 'base');
+            const worldChildren = world.getChildren().filter(i => i instanceof Primitive && i.name !== 'base');
             while (true) {
                 const idx = Math.floor(Math.random() * worldChildren.length);                    
                 const child = worldChildren[idx];

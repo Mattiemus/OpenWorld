@@ -1,12 +1,11 @@
 import { IDestroyable } from '../../utils/interfaces';
 import { Class } from '../../utils/types';
-import Uuid from '../../utils/uuid';
 import { getMetaData } from "../internals/metadata/metadata";
 import { DataModelClass } from '../internals/metadata/metadata';
 import DataModelClassMetaData from "../internals/metadata/classes/data-model-class-metadata";
 import PropertyType from "../internals/metadata/properties/property-type";
-import InstanceManager from '../internals/instance-manager';
-import ServiceBase from '../../services/base/service-base';
+import InstanceContext from '../internals/instance-context';
+import { isString } from '../../utils/type-guards';
 
 import { Signal } from "typed-signals";
 import * as _ from "lodash";
@@ -37,12 +36,7 @@ export default abstract class Instance implements IDestroyable
 {
     private static _allowCreateService = false;
 
-    protected static _getServiceImpl: <TService extends ServiceBase>(serviceBase: Class<TService>) => TService = () => {
-        throw new Error('Instance._getService has not been setup!');
-    };
-
     private _metadata: DataModelClassMetaData;
-    private _refId: Uuid;
     private _name: string;
     private _parent: Instance | null = null;
     private _children = new Set<Instance>();
@@ -56,7 +50,7 @@ export default abstract class Instance implements IDestroyable
     private _descendantAdded = new Signal<(descendant : Instance) => void>();
     private _descendantRemoving = new Signal<(descendant : Instance) => void>();
 
-    constructor() {
+    constructor(protected _context: InstanceContext) {
         const selfMetadata = getMetaData(this);
         if (selfMetadata === undefined) {
             throw new Error(`Could not find metadata for class "${this.constructor.name}"`);
@@ -69,8 +63,9 @@ export default abstract class Instance implements IDestroyable
         }
 
         this._metadata = selfMetadata;
-        this._refId = InstanceManager.registerInstance(this);
         this._name = selfMetadata.className;
+
+        _context.registerInstance(this);
     }
 
     //
@@ -230,7 +225,7 @@ export default abstract class Instance implements IDestroyable
     public findFirstChildOfClass<T extends Instance>(className: string | Class<T>, isRecursive: boolean = true): T | undefined {
         this.throwIfDestroyed();
 
-        if (_.isString(className)) {
+        if (isString(className)) {
             return this.findFirstChildInternal(i => i.className === className, isRecursive) as T;
         }
         
@@ -250,7 +245,7 @@ export default abstract class Instance implements IDestroyable
     public findFirstAncestorOfClass<T extends Instance>(className: string | Class<T>): T | undefined {
         this.throwIfDestroyed();
 
-        if (_.isString(className)) {
+        if (isString(className)) {
             return this.findFirstAncestorInternal(i => i.className === className) as T;
         }
 
@@ -265,7 +260,7 @@ export default abstract class Instance implements IDestroyable
     public isA<T extends Instance>(className: string | Class<T>): boolean {
         this.throwIfDestroyed();
 
-        if (!_.isString(className)) {
+        if (!isString(className)) {
             const classMetaData = getMetaData(className);
             className = classMetaData.className;
         }
@@ -302,6 +297,8 @@ export default abstract class Instance implements IDestroyable
 
         this.parent = null;
         this.clearAllChildren();
+
+        this._context.unregisterInstance(this);
 
         this.onDestroy();
 

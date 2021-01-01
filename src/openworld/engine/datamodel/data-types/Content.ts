@@ -1,6 +1,5 @@
 import Uuid from "../../utils/uuid";
-
-import * as _ from "lodash";
+import { isString } from "../../utils/type-guards";
 
 export default class Content
 {
@@ -11,7 +10,7 @@ export default class Content
     //
 
     constructor(contentId: string | Uuid) {
-        if (_.isString(contentId)) {
+        if (isString(contentId)) {
             this._contentId = new Uuid(contentId);
         } else {
             this._contentId = contentId;

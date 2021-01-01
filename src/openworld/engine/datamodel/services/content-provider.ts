@@ -1,6 +1,7 @@
 import { DataModelClass } from "../internals/metadata/metadata";
 import Instance from "../elements/instance";
 import ContentProviderImpl from "../../services/content-provider-impl";
+import InstanceContext from '../internals/instance-context';
 
 @DataModelClass({
     className: 'ContentProvider',
@@ -16,10 +17,10 @@ export default abstract class ContentProvider extends Instance
     // Constructor
     //
 
-    constructor() {
-        super();
+    constructor(context: InstanceContext) {
+        super(context);
 
-        this._impl = ContentProvider._getServiceImpl(ContentProviderImpl);
+        this._impl = context.getServiceImpl(ContentProviderImpl);
         this._impl.attatch(this);
     }
 

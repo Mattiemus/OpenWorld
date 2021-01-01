@@ -22,7 +22,7 @@ export enum PrimitiveType {
         },
         material: {
             name: 'material',
-            type: PropertyType.materialProperties,
+            type: PropertyType.material,
             attributes: []
         },
         size: {
