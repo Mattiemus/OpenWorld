@@ -25,8 +25,12 @@ export default class Vector3
     // Properties
     //
 
+    public get lengthSquared(): number {
+        return (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
+    }
+
     public get length(): number {
-        const lengthSquared = (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
+        const lengthSquared = this.lengthSquared;
         return Math.sqrt(lengthSquared);
     }
 
@@ -48,7 +52,7 @@ export default class Vector3
         const y = (a.z * b.x) - (a.x * b.z);
         const z = (a.x * b.y) - (a.y * b.x);
 
-        return new Vector3(x, y, z);    
+        return new Vector3(x, y, z);
     }
 
     public static add(a: Vector3, b: Vector3): Vector3 {
@@ -72,6 +76,8 @@ export default class Vector3
             return true;
         }
         
-        return this.x === other.x && this.y === other.y && this.z === other.z;
+        return this.x === other.x &&
+               this.y === other.y &&
+               this.z === other.z;
     }
 }

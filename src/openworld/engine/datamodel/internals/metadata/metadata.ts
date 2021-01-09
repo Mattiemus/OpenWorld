@@ -2,9 +2,11 @@ import { Class, Constructor } from '../../../utils/types';
 import DataModelClassMetaData from './classes/data-model-class-metadata';
 import PropertyType from './properties/property-type';
 import { isFunction, isString } from '../../../utils/type-guards';
+import { injectable } from 'inversify';
 
 // TODO: Fix this!
 type Instance = any;
+type InstanceContext = any;
 
 export let dataModelConstables = new Map<string, Class<Instance>>();
 
@@ -68,7 +70,7 @@ export function getMetaData<T extends Instance>(instanceTypeOrStringOrInstance: 
     throw new Error('Unknown argument passed to getMetaData');
 }
 
-export function getConstructor(className: string): Constructor<any, any> {
+export function getConstructor(className: string): Constructor<Instance, [InstanceContext, string?]> {
     const instanceType = dataModelConstables.get(className);
     if (instanceType === undefined) {
         throw new Error(`Unknown data model type ${className}`);
@@ -76,7 +78,7 @@ export function getConstructor(className: string): Constructor<any, any> {
 
     // TODO: Ensure not abstract
 
-    return instanceType as Constructor<any, any>;
+    return instanceType as Constructor<Instance, [InstanceContext, string?]>;
 }
 
 //
@@ -93,7 +95,7 @@ export interface IDataModelClassMetaData {
 }
 
 export function DataModelClass(metadata: IDataModelClassMetaData) {
-    return function(constructor: Function) {
+    return function(constructor: Function): void {
         if (registeredDataModelTypes.has(constructor)) {
             throw new Error(`Class "${constructor.name}" should only have a single "DataModelClass" decorator`);
         }
@@ -120,3 +122,12 @@ export interface IDataModelPropertyMetaData {
     attributes: DataModelPropertyAttribute[];
 }
 
+//
+// Service impl metadata
+//
+
+export function DataModelServiceImpl() {
+    return function(constructor: Function): void {
+        injectable()(constructor);
+    }
+}

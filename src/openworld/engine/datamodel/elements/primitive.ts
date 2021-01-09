@@ -1,9 +1,10 @@
-import PropertyType from "../internals/metadata/properties/property-type";
-import WorldObject from './world-object';
-import { DataModelClass } from "../internals/metadata/metadata";
-import Material from '../data-types/material';
 import Color3 from '../../math/color3';
+import InstanceContext from '../internals/instance-context';
+import Material from '../data-types/material';
+import PropertyType from '../internals/metadata/properties/property-type';
 import Vector3 from '../../math/vector3';
+import WorldObject from './world-object';
+import { DataModelClass } from '../internals/metadata/metadata';
 
 export enum PrimitiveType {
     Cube = 'Cube',
@@ -50,6 +51,15 @@ export default class Primitive extends WorldObject
     private _size = Vector3.one;
     private _receivesShadows = true;
     private _castsShadows = true;
+    
+    //
+    // Constructor
+    //
+
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
+        this.finishConstruction(refId);
+    }
     
     //
     // Properties

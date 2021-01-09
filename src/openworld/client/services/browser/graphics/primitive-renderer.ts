@@ -80,10 +80,7 @@ export default class PrimitiveRenderer extends Destroyable
         const primitiveInstance = this._primitiveInstances.get(primitive);
         if (primitiveInstance === undefined) {
             return;
-        }
-
-        primitiveInstance.destroy();
-        this._primitiveInstances.delete(primitive);
+        }       
 
         const cframeChangedConnection = this._primitiveCFrameChangedConnections.get(primitive);
         if (cframeChangedConnection !== undefined) {
@@ -120,6 +117,26 @@ export default class PrimitiveRenderer extends Destroyable
             castsShadowsChangedConnection.disconnect();
             this._primitiveCastsShadowsChangedConnections.delete(primitive);
         }
+
+        primitiveInstance.destroy();
+        this._primitiveInstances.delete(primitive);
+        
+        const instancedMesh =
+            this.findInstancedMesh(
+                primitive.type,
+                primitive.material,
+                primitive.castsShadows,
+                primitive.receivesShadows);
+
+        if (instancedMesh !== undefined && instancedMesh.instanceCount === 0) {
+            this._browserContentProviderImpl.unloadMaterial(instancedMesh.material);
+
+            this.deleteInstancedMesh(
+                primitive.type,
+                primitive.material,
+                primitive.castsShadows,
+                primitive.receivesShadows);
+        }
     }
 
     private onPrimitiveCFrameChanged(primitive: Primitive, meshInstance: MeshInstance): void {
@@ -150,20 +167,53 @@ export default class PrimitiveRenderer extends Destroyable
         this.addPrimitive(primitive);
     }
 
-    private findOrCreateInstancedMesh(
+    private deleteInstancedMesh(
         primitiveType: PrimitiveType,
         material: Material,
         castsShadows: boolean,
         receivesShadows: boolean
-    ): DynamicInstancedMesh {
+    ): boolean {
         for (let batchKey of Array.from(this._instancedMeshes.keys())) {
             if (primitiveType === batchKey.type &&
                 material.equals(batchKey.material) &&
                 castsShadows === batchKey.castsShadows &&
                 receivesShadows === batchKey.receivesShadows
             ) {
-                return this._instancedMeshes.get(batchKey)!;
+                return this._instancedMeshes.delete(batchKey);
             }
+        }
+
+        return false;
+    }
+
+    private findInstancedMesh(
+        primitiveType: PrimitiveType,
+        material: Material,
+        castsShadows: boolean,
+        receivesShadows: boolean
+    ): DynamicInstancedMesh | undefined {
+        for (let batchKey of Array.from(this._instancedMeshes.keys())) {
+            if (primitiveType === batchKey.type &&
+                material.equals(batchKey.material) &&
+                castsShadows === batchKey.castsShadows &&
+                receivesShadows === batchKey.receivesShadows
+            ) {
+                return this._instancedMeshes.get(batchKey);
+            }
+        }
+
+        return undefined;
+    }
+
+    private findOrCreateInstancedMesh(
+        primitiveType: PrimitiveType,
+        material: Material,
+        castsShadows: boolean,
+        receivesShadows: boolean
+    ): DynamicInstancedMesh {
+        const existingInstancedMesh = this.findInstancedMesh(primitiveType, material, castsShadows, receivesShadows);
+        if (existingInstancedMesh !== undefined) {
+            return existingInstancedMesh;
         }
 
         const threeGeometry = this.createGeometryForPrimitiveType(primitiveType);

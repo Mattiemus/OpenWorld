@@ -3,7 +3,9 @@ import RenderCanvas from './graphics/render-canvas';
 
 import * as THREE from 'three';
 import { Signal } from "typed-signals";
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export default class BrowserRunServiceImpl extends RunServiceImpl
 {
     private _isRunning: boolean = true;
@@ -18,7 +20,7 @@ export default class BrowserRunServiceImpl extends RunServiceImpl
     // Constructor
     //
 
-    constructor(private _renderCanvas: RenderCanvas) {
+    constructor(@inject('RenderCanvas') private _renderCanvas: RenderCanvas) {
         super();
 
         this._clock.start();

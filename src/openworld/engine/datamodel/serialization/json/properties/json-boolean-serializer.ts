@@ -1,4 +1,4 @@
-import { isBoolean } from 'util';
+import { isBoolean } from "../../../../utils/type-guards";
 
 export default class JsonBooleanSerializer
 {
@@ -16,6 +16,10 @@ export default class JsonBooleanSerializer
 
     public static verifyObject(json: unknown): json is boolean {
         return isBoolean(json);
+    }
+
+    public static serializeToObject(obj: boolean): boolean {
+        return obj;
     }
 
     public static deserializeObject(json: unknown): boolean {

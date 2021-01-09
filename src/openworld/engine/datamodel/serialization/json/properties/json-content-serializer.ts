@@ -24,6 +24,10 @@ export default class JsonContentSerializer
                hasFieldOfType('content', json, isString);
     }
 
+    public static serializeToObject(obj: Content): ContentJson {
+        return { content: obj.id.toString() };
+    }
+
     public static deserializeObject(json: unknown): Content {
         if (!JsonContentSerializer.verifyObject(json)) {
             throw new Error('Invalid json string');

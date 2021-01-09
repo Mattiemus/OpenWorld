@@ -1,7 +1,8 @@
-import Instance from './instance';
-import { DataModelClass } from "../internals/metadata/metadata";
-import PropertyType from "../internals/metadata/properties/property-type";
 import Content from '../data-types/content';
+import Instance from './instance';
+import InstanceContext from '../internals/instance-context';
+import PropertyType from '../internals/metadata/properties/property-type';
+import { DataModelClass } from '../internals/metadata/metadata';
 
 @DataModelClass({
     className: 'Sky',
@@ -48,6 +49,15 @@ export default class Sky extends Instance
     private _skyboxRight: Content | null = null;
     private _skyboxFront: Content | null = null;
     private _skyboxBack: Content | null = null;
+
+    //
+    // Constructor
+    //
+
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
+        this.finishConstruction(refId);
+    }
 
     //
     // Properties

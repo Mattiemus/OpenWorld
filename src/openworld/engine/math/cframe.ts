@@ -43,7 +43,15 @@ export default class CFrame
 
     public static createLookAt(at: Vector3, lookAt: Vector3, up: Vector3 = Vector3.up): CFrame {
         const rotation = Quaternion.createLookAt(at, lookAt, up);
-        return new CFrame(at.x, at.y, at.z, rotation.x, rotation.y, rotation.z, rotation.w);
+
+        return new CFrame(
+            at.x,
+            at.y,
+            at.z,
+            rotation.x,
+            rotation.y,
+            rotation.z,
+            rotation.w);
     }
 
     public equals(other: CFrame): boolean {

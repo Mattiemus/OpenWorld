@@ -1,5 +1,8 @@
 import { IDestroyable } from "./interfaces";
 
+import { injectable } from "inversify";
+
+@injectable()
 export default class Destroyable implements IDestroyable {
     private _isDestroyed: boolean = false;
     

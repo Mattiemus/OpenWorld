@@ -9,6 +9,7 @@ import { isString } from '../../utils/type-guards';
 
 import { Signal } from "typed-signals";
 import * as _ from "lodash";
+import InstanceUtils from '../utils/InstanceUtils';
 
 @DataModelClass({
     className: 'Instance',
@@ -37,6 +38,7 @@ export default abstract class Instance implements IDestroyable
     private static _allowCreateService = false;
 
     private _metadata: DataModelClassMetaData;
+    private _refId: string = '<!UNSET!>';
     private _name: string;
     private _parent: Instance | null = null;
     private _children = new Set<Instance>();
@@ -50,7 +52,7 @@ export default abstract class Instance implements IDestroyable
     private _descendantAdded = new Signal<(descendant : Instance) => void>();
     private _descendantRemoving = new Signal<(descendant : Instance) => void>();
 
-    constructor(protected _context: InstanceContext) {
+    constructor(protected _context: InstanceContext, refId?: string) {
         const selfMetadata = getMetaData(this);
         if (selfMetadata === undefined) {
             throw new Error(`Could not find metadata for class "${this.constructor.name}"`);
@@ -64,8 +66,6 @@ export default abstract class Instance implements IDestroyable
 
         this._metadata = selfMetadata;
         this._name = selfMetadata.className;
-
-        _context.registerInstance(this);
     }
 
     //
@@ -259,26 +259,7 @@ export default abstract class Instance implements IDestroyable
 
     public isA<T extends Instance>(className: string | Class<T>): boolean {
         this.throwIfDestroyed();
-
-        if (!isString(className)) {
-            const classMetaData = getMetaData(className);
-            className = classMetaData.className;
-        }
-
-        let metadata = this._metadata;
-        while (metadata !== null) {
-            if (className === metadata.className) {
-                return true;
-            }
-
-            if (metadata.parent === null) {
-                break;
-            } else {
-                metadata = getMetaData(metadata.parent);
-            }
-        }
-
-        return false;
+        return InstanceUtils.isA(this.className, className);
     }
 
     public clearAllChildren(): void {
@@ -303,6 +284,10 @@ export default abstract class Instance implements IDestroyable
         this.onDestroy();
 
         this._isDestroyed = true;
+    }
+
+    protected finishConstruction(refId?: string) {        
+        this._context.registerInstance(this, refId);
     }
 
     protected throwIfDestroyed(): void {
@@ -370,7 +355,7 @@ export default abstract class Instance implements IDestroyable
         maxDepth: number | undefined,
         depthCounter: number
     ): [Instance, number] | undefined {
-        for (const child of Array.from(this._children)) {
+        for (const child of this._children) {
             if (predicate(child)) {
                 return [child, depthCounter];
             }
@@ -382,7 +367,7 @@ export default abstract class Instance implements IDestroyable
         }
 
         const results: [Instance, number][] = [];
-        for (const child of Array.from(this._children)) {
+        for (const child of this._children) {
             const result = child.findFirstChildRecursiveInternal(predicate, maxDepth, nextDepth);
             if (result !== undefined) {
                 results.push(result);

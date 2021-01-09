@@ -3,7 +3,9 @@ import Content from '../../../engine/datamodel/data-types/content';
 import Material from '../../../engine/datamodel/data-types/material';
 
 import * as THREE from 'three';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class BrowserContentProviderImpl extends ContentProviderImpl
 {
     private _loadingManager: THREE.LoadingManager;

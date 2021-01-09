@@ -4,7 +4,9 @@ import ClientReplicatorImpl from '../../../engine/services/client-replicator-imp
 import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
 
 import { SignalConnection } from 'typed-signals';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class BrowserClientReplicatorImpl extends ClientReplicatorImpl
 {
     private _descendentAddedConnection: SignalConnection | null = null;

@@ -1,15 +1,15 @@
 import CFrame from '../../../../math/cframe';
-import { hasFieldOfType, isNumber, isObject } from '../../../../utils/type-guards';
+import { isNumber, isArrayOf } from '../../../../utils/type-guards';
 
-export type CFrameJson = {
-    x: number;
-    y: number;
-    z: number;
-    qx: number;
-    qy: number;
-    qz: number;
-    qw: number;
-};
+export type CFrameJson = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+];
 
 export default class JsonCFrameSerializer
 {
@@ -26,14 +26,11 @@ export default class JsonCFrameSerializer
     //
 
     public static verifyObject(json: unknown): json is CFrameJson {
-        return isObject(json) &&
-               hasFieldOfType('x', json, isNumber) &&
-               hasFieldOfType('y', json, isNumber) &&
-               hasFieldOfType('z', json, isNumber) &&
-               hasFieldOfType('qx', json, isNumber) &&
-               hasFieldOfType('qy', json, isNumber) &&
-               hasFieldOfType('qz', json, isNumber) &&
-               hasFieldOfType('qw', json, isNumber);
+        return isArrayOf(json, isNumber, 7);
+    }
+
+    public static serializeToObject(obj: CFrame): CFrameJson {
+        return [ obj.x, obj.y, obj.z, obj.qx, obj.qy, obj.qz, obj.qw ];
     }
 
     public static deserializeObject(json: unknown): CFrame {
@@ -41,10 +38,10 @@ export default class JsonCFrameSerializer
             throw new Error('Invalid json cframe');
         }
 
-        return new CFrame(json.x, json.y, json.z, json.qx, json.qy, json.qz, json.qz);
+        return new CFrame(json[0], json[1], json[2], json[3], json[4], json[5], json[6]);
     }
 
     public static deserializeObjectUnsafe(json: CFrameJson): CFrame {
-        return new CFrame(json.x, json.y, json.z, json.qx, json.qy, json.qz, json.qz);
+        return new CFrame(json[0], json[1], json[2], json[3], json[4], json[5], json[6]);
     }
 }

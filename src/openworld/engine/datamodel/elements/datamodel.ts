@@ -1,3 +1,4 @@
+import InstanceContext from '../internals/instance-context';
 import ServiceProvider from './service-provider';
 import { DataModelClass } from '../internals/metadata/metadata';
 
@@ -9,4 +10,12 @@ import { DataModelClass } from '../internals/metadata/metadata';
 })
 export default class DataModel extends ServiceProvider
 {    
+    //
+    // Constructor
+    //
+
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
+        this.finishConstruction(refId);
+    }
 }

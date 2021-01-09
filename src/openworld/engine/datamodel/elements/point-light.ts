@@ -1,6 +1,7 @@
-import PropertyType from "../internals/metadata/properties/property-type";
-import { DataModelClass } from "../internals/metadata/metadata";
-import Light from "./light";
+import InstanceContext from '../internals/instance-context';
+import Light from './light';
+import PropertyType from '../internals/metadata/properties/property-type';
+import { DataModelClass } from '../internals/metadata/metadata';
 
 @DataModelClass({
     className: 'PointLight',
@@ -18,6 +19,15 @@ export default class PointLight extends Light
 {
     private _range: number = 5;
     
+    //
+    // Constructor
+    //
+
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
+        this.finishConstruction(refId);
+    }
+
     //
     // Properties
     //

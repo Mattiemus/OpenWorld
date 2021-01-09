@@ -1,8 +1,10 @@
 import MouseImpl from '../../../engine/services/mouse-impl';
 import RenderCanvas from './graphics/render-canvas';
 
-import { Signal } from 'typed-signals';
+import { Signal, SignalConnection } from 'typed-signals';
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export default class BrowserMouseImpl extends MouseImpl
 {
     private _isLeftButtonDown: boolean = false;
@@ -18,18 +20,20 @@ export default class BrowserMouseImpl extends MouseImpl
     private _wheelDown = new Signal<() => void>();
     private _wheelUp = new Signal<() => void>();
 
+    private _canvasChangedSignal: SignalConnection;
+
     //
     // Constructor
     //
 
-    constructor(private _renderCanvas: RenderCanvas) {
+    constructor(@inject('RenderCanvas') private _renderCanvas: RenderCanvas) {
         super();
 
-        this._renderCanvas.canvas.addEventListener('mousedown', this.onMouseDown);
-        this._renderCanvas.canvas.addEventListener('mouseup', this.onMouseUp);
-        this._renderCanvas.canvas.addEventListener('mousemove', this.onMouseMove);
-        this._renderCanvas.canvas.addEventListener('wheel', this.onMouseWheel);
-        this._renderCanvas.canvas.addEventListener('contextmenu', this.onContextMenu);
+        if (this._renderCanvas.canvas !== null) {
+            this.connectCanvasMouseEvents(this._renderCanvas.canvas);
+        }
+
+        this._canvasChangedSignal = _renderCanvas.canvasChanged.connect(this.onCanvasChanged.bind(this));
     }
 
     // 
@@ -99,11 +103,45 @@ export default class BrowserMouseImpl extends MouseImpl
     protected onDestroy(): void {
         super.onDestroy();
 
-        this._renderCanvas.canvas.removeEventListener('mousedown', this.onMouseDown);
-        this._renderCanvas.canvas.removeEventListener('mouseup', this.onMouseUp);
-        this._renderCanvas.canvas.removeEventListener('mousemove', this.onMouseMove);
-        this._renderCanvas.canvas.removeEventListener('wheel', this.onMouseWheel);
-        this._renderCanvas.canvas.removeEventListener('contextmenu', this.onContextMenu);
+        this._canvasChangedSignal.disconnect();
+
+        if (this._renderCanvas.canvas !== null) {
+            this.disconnectCanvasMouseEvents(this._renderCanvas.canvas);
+        }
+
+        this._leftButtonDown.disconnectAll();
+        this._leftButtonUp.disconnectAll();
+        this._rightButtonDown.disconnectAll();
+        this._rightButtonUp.disconnectAll();
+        this._move.disconnectAll();
+        this._wheelDown.disconnectAll();
+        this._wheelUp.disconnectAll();
+    }
+
+    private connectCanvasMouseEvents(canvas: HTMLCanvasElement): void {        
+        canvas.addEventListener('mousedown', this.onMouseDown);
+        canvas.addEventListener('mouseup', this.onMouseUp);
+        canvas.addEventListener('mousemove', this.onMouseMove);
+        canvas.addEventListener('wheel', this.onMouseWheel);
+        canvas.addEventListener('contextmenu', this.onContextMenu);
+    }
+
+    private disconnectCanvasMouseEvents(canvas: HTMLCanvasElement): void {
+        canvas.removeEventListener('mousedown', this.onMouseDown);
+        canvas.removeEventListener('mouseup', this.onMouseUp);
+        canvas.removeEventListener('mousemove', this.onMouseMove);
+        canvas.removeEventListener('wheel', this.onMouseWheel);
+        canvas.removeEventListener('contextmenu', this.onContextMenu);
+    }
+
+    private onCanvasChanged(oldCanvas: HTMLCanvasElement | null, newCanvas: HTMLCanvasElement | null): void {
+        if (oldCanvas !== null) {
+            this.disconnectCanvasMouseEvents(oldCanvas);
+        }
+
+        if (newCanvas !== null) {
+            this.connectCanvasMouseEvents(newCanvas);
+        }
     }
 
     private onMouseDown = (e: MouseEvent): void => {

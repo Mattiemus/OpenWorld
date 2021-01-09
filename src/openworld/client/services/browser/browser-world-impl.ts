@@ -12,6 +12,9 @@ import PerspectiveCameraProxy from "./graphics/proxies/perspective-camera-proxy"
 import PrimitiveRenderer from "./graphics/primitive-renderer";
 import { InstanceProxy } from "./graphics/proxies/instance-proxy";
 
+import { injectable, inject } from "inversify";
+
+@injectable()
 export default class BrowserWorldImpl extends WorldImpl
 {
     private _currentCameraProxy: PerspectiveCameraProxy | null = null;
@@ -26,7 +29,10 @@ export default class BrowserWorldImpl extends WorldImpl
     // Constructor
     //
 
-    constructor(private _renderCanvas: RenderCanvas, private _browserContentProviderImpl: BrowserContentProviderImpl) {
+    constructor(
+        @inject('RenderCanvas') private _renderCanvas: RenderCanvas, 
+        @inject('BrowserContentProviderImpl') private _browserContentProviderImpl: BrowserContentProviderImpl
+    ) {
         super();
     }
 
@@ -38,6 +44,8 @@ export default class BrowserWorldImpl extends WorldImpl
         super.onAttatch(dataModel);
 
         this._primitiveRenderer = new PrimitiveRenderer(this._renderCanvas, this._browserContentProviderImpl);
+
+        // TODO: Do we need to initialise any existing descendent proxies?
 
         this._currentCameraChangedConnection =
             dataModel.getPropertyChangedSignal('currentCamera')!.connect(this.onWorldCurrentCameraChanged.bind(this));

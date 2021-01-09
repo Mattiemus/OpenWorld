@@ -1,11 +1,11 @@
 import Color3 from '../../../../math/color3';
-import { hasFieldOfType, isNumber, isObject } from '../../../../utils/type-guards';
+import { isNumber, isArrayOf } from '../../../../utils/type-guards';
 
-export type Color3Json = {
-    r: number;
-    g: number;
-    b: number;
-};
+export type Color3Json = [
+    number,
+    number,
+    number
+];
 
 export default class JsonColor3Serializer
 {
@@ -22,10 +22,11 @@ export default class JsonColor3Serializer
     //
 
     public static verifyObject(json: unknown): json is Color3Json {
-        return isObject(json) &&
-               hasFieldOfType('r', json, isNumber) &&
-               hasFieldOfType('g', json, isNumber) &&
-               hasFieldOfType('b', json, isNumber);
+        return isArrayOf(json, isNumber, 3);
+    }
+
+    public static serializeToObject(obj: Color3): Color3Json {
+        return [ obj.r, obj.g, obj.b ];
     }
 
     public static deserializeObject(json: unknown): Color3 {
@@ -33,10 +34,10 @@ export default class JsonColor3Serializer
             throw new Error('Invalid json color3');
         }
 
-        return new Color3(json.r, json.g, json.b);
+        return new Color3(json[0], json[1], json[2]);
     }
 
     public static deserializeObjectUnsafe(json: Color3Json): Color3 {
-        return new Color3(json.r, json.g, json.b);
+        return new Color3(json[0], json[1], json[2]);
     }
 }

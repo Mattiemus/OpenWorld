@@ -1,12 +1,12 @@
 import Quaternion from '../../../../math/quaternion';
-import { hasFieldOfType, isNumber, isObject } from '../../../../utils/type-guards';
+import { isNumber, isArrayOf } from '../../../../utils/type-guards';
 
-export type QuaternionJson = {
-    x: number;
-    y: number;
-    z: number;
-    w: number;
-};
+export type QuaternionJson = [
+    number,
+    number,
+    number,
+    number
+];
 
 export default class JsonQuaternionSerializer
 {
@@ -23,11 +23,11 @@ export default class JsonQuaternionSerializer
     //
 
     public static verifyObject(json: unknown): json is QuaternionJson {
-        return isObject(json) &&
-               hasFieldOfType('x', json, isNumber) &&
-               hasFieldOfType('y', json, isNumber) &&
-               hasFieldOfType('z', json, isNumber) &&
-               hasFieldOfType('w', json, isNumber);
+        return isArrayOf(json, isNumber, 4);
+    }
+
+    public static serializeToObject(obj: Quaternion): QuaternionJson {
+        return [ obj.x, obj.y, obj.z, obj.w ];
     }
 
     public static deserializeObject(json: unknown): Quaternion {
@@ -35,10 +35,10 @@ export default class JsonQuaternionSerializer
             throw new Error('Invalid json quaternion');
         }
 
-        return new Quaternion(json.x, json.y, json.z, json.w);
+        return new Quaternion(json[0], json[1], json[2], json[3]);
     }
 
     public static deserializeObjectUnsafe(json: QuaternionJson): Quaternion {
-        return new Quaternion(json.x, json.y, json.z, json.w);
+        return new Quaternion(json[0], json[1], json[2], json[3]);
     }
 }

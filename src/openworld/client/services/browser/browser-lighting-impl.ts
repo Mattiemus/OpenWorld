@@ -8,7 +8,9 @@ import BrowserContentProviderImpl from './browser-content-provider';
 
 import * as THREE from 'three';
 import { SignalConnection } from 'typed-signals';
+import { injectable, inject } from "inversify";
 
+@injectable()
 export default class BrowserLightingImpl extends LightingImpl
 {
     private _ambientLight = new THREE.AmbientLight();
@@ -20,7 +22,10 @@ export default class BrowserLightingImpl extends LightingImpl
     // Constructor
     //
 
-    constructor(private _renderCanvas: RenderCanvas, private _browserContentProvider: BrowserContentProviderImpl) {
+    constructor(
+        @inject('RenderCanvas') private _renderCanvas: RenderCanvas, 
+        @inject('BrowserContentProviderImpl') private _browserContentProvider: BrowserContentProviderImpl
+    ) {
         super();
     }
 
@@ -31,6 +36,8 @@ export default class BrowserLightingImpl extends LightingImpl
     protected onAttatch(dataModel: Lighting): void {        
         this._ambientLight.color.set(dataModel.ambient.toNumber());
         this._renderCanvas.scene.add(this._ambientLight);
+
+        // TODO: Do we need to initialise any existing descendent proxies?
 
         const ambientChangedSignal = dataModel.getPropertyChangedSignal('ambient')!;
         this._ambientChangedConnection = ambientChangedSignal.connect(this.onAmbientChanged.bind(this));

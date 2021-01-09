@@ -23,11 +23,13 @@ export default class Lighting extends Instance
 
     private _ambient: Color3 = Color3.black;
 
-    constructor(context: InstanceContext) {
-        super(context);
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
         
         this._impl = context.getServiceImpl(LightingImpl);
         this._impl.attatch(this);
+
+        this.finishConstruction(refId);
     }
 
     //

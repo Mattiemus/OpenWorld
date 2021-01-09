@@ -21,8 +21,8 @@ export default class RunService extends Instance
     private _preSimulation: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
     private _postSimulation: ForwardingSignal<(deltaTime: number, elapsedTime: number) => void>;
  
-    constructor(context: InstanceContext) {
-        super(context);
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
 
         this._impl = context.getServiceImpl(RunServiceImpl);
         this._impl.attatch(this);
@@ -31,6 +31,8 @@ export default class RunService extends Instance
         this._postRender = new ForwardingSignal(this._impl.postRender);
         this._preSimulation = new ForwardingSignal(this._impl.preSimulation);
         this._postSimulation = new ForwardingSignal(this._impl.postSimulation);
+
+        this.finishConstruction(refId);
     }
 
     //

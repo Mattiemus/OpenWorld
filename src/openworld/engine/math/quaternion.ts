@@ -32,8 +32,7 @@ export default class Quaternion
         const zz = zAxis.z;
 
         const trace = xx + yy + zz;
-        if(trace > 0.0)
-        {
+        if(trace > 0.0) {
             let sqrt = Math.sqrt(trace + 1.0);
             const half = 0.5 * sqrt;
             sqrt = 0.5 / sqrt;
@@ -86,7 +85,6 @@ export default class Quaternion
     }
 
     public static createLookAt(at: Vector3, lookAt: Vector3, up: Vector3 = Vector3.up): Quaternion {
-
         let zAxis = Vector3.subtract(at, lookAt);
         zAxis = Vector3.normalize(zAxis);
 
@@ -103,6 +101,9 @@ export default class Quaternion
             return true;
         }
         
-        return this.x === other.x && this.y === other.y && this.z === other.z && this.w === other.w;
+        return this.x === other.x &&
+               this.y === other.y &&
+               this.z === other.z &&
+               this.w === other.w;
     }
 }

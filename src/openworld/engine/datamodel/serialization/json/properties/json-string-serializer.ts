@@ -1,4 +1,4 @@
-import { isString } from 'util';
+import { isString } from "../../../../utils/type-guards";
 
 export default class JsonStringSerializer
 {
@@ -16,6 +16,10 @@ export default class JsonStringSerializer
 
     public static verifyObject(json: unknown): json is string {
         return isString(json);
+    }
+
+    public static serializeToObject(obj: string): string {
+        return obj;
     }
 
     public static deserializeObject(json: unknown): string {

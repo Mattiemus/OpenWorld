@@ -94,6 +94,8 @@ export default class Color3
             return true;
         }
 
-        return this.r === other.r && this.g === other.g && this.b === other.b;
+        return this.r === other.r &&
+               this.g === other.g &&
+               this.b === other.b;
     }
 }

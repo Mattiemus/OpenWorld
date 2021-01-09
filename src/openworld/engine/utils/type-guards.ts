@@ -15,7 +15,33 @@ export function isObject(value: unknown): value is object {
 }
 
 export function isArray(value: unknown): value is Array<unknown> {
-    return isObject(value) && hasFieldOfType('length', value, isNumber);
+    return Array.isArray(value);
+}
+
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 0): value is [];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 1): value is [TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 2): value is [TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 3): value is [TType, TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 4): value is [TType, TType, TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 5): value is [TType, TType, TType, TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 6): value is [TType, TType, TType, TType, TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: 7): value is [TType, TType, TType, TType, TType, TType, TType];
+export function isArrayOf<TType>(value: unknown, elementGuard: (e: unknown) => e is TType, minLength?: number): value is Array<TType> {
+    if (!Array.isArray(value)) {
+        return false;
+    }
+
+    if (minLength !== undefined && value.length < minLength) {
+        return false;
+    }
+
+    for (const element of value) {
+        if (!elementGuard(element)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export function isFunction(value: unknown): value is Function {

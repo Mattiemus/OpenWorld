@@ -13,23 +13,23 @@ import { Signal, SignalConnection } from 'typed-signals';
     parent: Instance,
     attributes: [ 'Service', 'NotCreatable', 'NotReplicated' ],
     properties: {
-        isLeftMouseButtonDown: {
-            name: 'isLeftMouseButtonDown',
+        isLeftButtonDown: {
+            name: 'isLeftButtonDown',
             type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
-        isLeftMouseButtonUp: {
-            name: 'isLeftMouseButtonUp',
+        isLeftButtonUp: {
+            name: 'isLeftButtonUp',
             type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
-        isRightMouseButtonDown: {
-            name: 'isRightMouseButtonDown',
+        isRightButtonDown: {
+            name: 'isRightButtonDown',
             type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
-        isRightMouseButtonUp: {
-            name: 'isRightMouseButtonUp',
+        isRightButtonUp: {
+            name: 'isMouseButtonUp',
             type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
@@ -63,8 +63,8 @@ export default class Mouse extends Instance
     private _rightButtonUpConnection: SignalConnection;
     private _moveConnection: SignalConnection;
 
-    constructor(context: InstanceContext) {
-        super(context);
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
 
         this._impl = context.getServiceImpl(MouseImpl);
         this._impl.attatch(this);
@@ -82,6 +82,8 @@ export default class Mouse extends Instance
         this._rightButtonDownConnection = this._impl.rightButtonDown.connect(this.onRightButtonDownOrUp.bind(this));
         this._rightButtonUpConnection = this._impl.rightButtonUp.connect(this.onRightButtonDownOrUp.bind(this));
         this._moveConnection = this._impl.move.connect(this.onMove.bind(this));
+
+        this.finishConstruction(refId);
     }   
 
     // 

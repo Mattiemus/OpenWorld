@@ -1,6 +1,9 @@
 import ServiceBase from "./service-base";
 import Instance from '../../datamodel/elements/instance';
 
+import { injectable } from "inversify";
+
+@injectable()
 export default class DataModelServiceBase<TService extends Instance> extends ServiceBase
 {
     private _currentDataModel: TService | null = null;

@@ -23,11 +23,13 @@ export default class World extends Instance
 
     private _currentCamera: Camera | null = null;
 
-    constructor(context: InstanceContext) {
-        super(context);
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
         
         this._impl = context.getServiceImpl(WorldImpl);
         this._impl.attatch(this);
+
+        this.finishConstruction(refId);
     }
 
     //

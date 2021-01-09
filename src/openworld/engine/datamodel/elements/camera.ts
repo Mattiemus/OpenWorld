@@ -1,8 +1,9 @@
 import CFrame from '../../math/cframe';
-import { DataModelClass } from "../internals/metadata/metadata";
 import Instance from './instance';
-import PropertyType from '../internals/metadata/properties/property-type';
+import InstanceContext from '../internals/instance-context';
 import MathEx from '../../math/mathex';
+import PropertyType from '../internals/metadata/properties/property-type';
+import { DataModelClass } from '../internals/metadata/metadata';
 
 @DataModelClass({
     className: 'Camera',
@@ -36,6 +37,15 @@ export default class Camera extends Instance
     private _cframe = CFrame.identity;
     private _fieldOfView = 70.0;
 
+    //
+    // Constructor
+    //
+
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
+        this.finishConstruction(refId);
+    }
+    
     //
     // Properties
     //

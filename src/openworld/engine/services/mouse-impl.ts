@@ -1,7 +1,9 @@
 import { Signal } from 'typed-signals';
 import DataModelServiceBase from './base/data-model-service-base';
 import Mouse from '../datamodel/services/mouse';
+import { DataModelServiceImpl } from '../datamodel/internals/metadata/metadata';
 
+@DataModelServiceImpl()
 export default abstract class MouseImpl extends DataModelServiceBase<Mouse>
 {
     //

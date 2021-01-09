@@ -1,4 +1,6 @@
 import Material from '../../../data-types/material';
+import Content from '../../../data-types/content';
+import Color3 from '../../../../math/color3';
 import { hasFieldOfType, isObject } from '../../../../utils/type-guards';
 import JsonColor3Serializer, { Color3Json } from './json-color3-serializer';
 import JsonContentSerializer, { ContentJson } from './json-content-serializer';
@@ -31,6 +33,15 @@ export default class JsonMaterialSerializer
                hasFieldOfType('metalness', json, (f: unknown): f is number | ContentJson => JsonNumberSerializer.verifyObject(f) || JsonContentSerializer.verifyObject(f)) &&
                hasFieldOfType('roughness', json, (f: unknown): f is number | ContentJson => JsonNumberSerializer.verifyObject(f) || JsonContentSerializer.verifyObject(f)) &&
                hasFieldOfType('normal', json, (f: unknown): f is ContentJson | null => f === null || JsonContentSerializer.verifyObject(f));
+    }
+
+    public static serializeToObject(obj: Material): MaterialJson {
+        return { 
+            color: obj.color instanceof Color3 ? JsonColor3Serializer.serializeToObject(obj.color) : JsonContentSerializer.serializeToObject(obj.color),
+            metalness: obj.metalness instanceof Content ? JsonContentSerializer.serializeToObject(obj.metalness) : obj.metalness,
+            roughness: obj.roughness instanceof Content ? JsonContentSerializer.serializeToObject(obj.roughness) : obj.roughness,
+            normal: obj.normal === null ? obj.normal : JsonContentSerializer.serializeToObject(obj.normal)
+        };
     }
 
     public static deserializeObject(json: unknown): Material {

@@ -1,4 +1,4 @@
-import { isNumber } from 'util';
+import { isNumber } from "../../../../utils/type-guards";
 
 export default class JsonNumberSerializer
 {
@@ -16,6 +16,10 @@ export default class JsonNumberSerializer
 
     public static verifyObject(json: unknown): json is number {
         return isNumber(json);
+    }
+
+    public static serializeToObject(obj: number): number {
+        return obj;
     }
 
     public static deserializeObject(json: unknown): number {

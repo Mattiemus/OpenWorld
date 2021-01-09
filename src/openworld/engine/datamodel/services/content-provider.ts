@@ -17,11 +17,13 @@ export default abstract class ContentProvider extends Instance
     // Constructor
     //
 
-    constructor(context: InstanceContext) {
-        super(context);
+    constructor(context: InstanceContext, refId?: string) {
+        super(context, refId);
 
         this._impl = context.getServiceImpl(ContentProviderImpl);
         this._impl.attatch(this);
+
+        this.finishConstruction(refId);
     }
 
     //

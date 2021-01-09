@@ -2,6 +2,7 @@ import Destroyable from '../../../../../engine/utils/destroyable';
 import CFrame from '../../../../../engine/math/cframe';
 import Vector3 from '../../../../../engine/math/vector3';
 import CFrameConverter from '../converters/cframe-converter';
+import { IDestroyable } from '../../../../../engine/utils/interfaces';
 
 import * as THREE from 'three';
 
@@ -50,7 +51,7 @@ export class MeshInstance extends Destroyable
     }
 }
 
-export class DynamicInstancedMesh extends THREE.Object3D
+export class DynamicInstancedMesh extends THREE.Object3D implements IDestroyable
 {
     private static _tempMatrix = new THREE.Matrix4();
     private static _zeroScaleMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
@@ -59,6 +60,7 @@ export class DynamicInstancedMesh extends THREE.Object3D
     private _instances = new Set<MeshInstance>();
     private _indexHoles: number[] = [];
     private _lastFreeIndex = 0;
+    private _isDestroyed: boolean = false;
     
     //
     // Constructor
@@ -72,10 +74,28 @@ export class DynamicInstancedMesh extends THREE.Object3D
     }
 
     //
+    // Properties
+    //
+
+    public get instanceCount(): number {
+        return this._instances.size;
+    }
+
+    public get geometry(): THREE.Geometry | THREE.BufferGeometry {
+        return this._geometry
+    }
+
+    public get material(): THREE.Material {
+        return this._material;
+    }
+
+    //
     // Methods
     //
 
     public addInstance(): MeshInstance {
+        this.throwIfDestroyed();
+
         const nextIndex = this.allocateIndex();
 
         const newInstance = new MeshInstance(this, nextIndex);
@@ -85,6 +105,8 @@ export class DynamicInstancedMesh extends THREE.Object3D
     }
 
     public removeInstance(instance: MeshInstance): boolean {
+        this.throwIfDestroyed();
+
         if (this._instances.delete(instance)) {
             instance.setMatrix(DynamicInstancedMesh._zeroScaleMatrix);
             instance['_isDestroyed'] = true;
@@ -98,6 +120,8 @@ export class DynamicInstancedMesh extends THREE.Object3D
     }
 
     public clearInstances(): void {
+        this.throwIfDestroyed();
+
         const instancesClone = Array.from(this._instances.values());
         for (const instance of instancesClone) {
             this.removeInstance(instance);
@@ -105,9 +129,27 @@ export class DynamicInstancedMesh extends THREE.Object3D
     }
 
     public reserve(minimumSize: number): void {
+        this.throwIfDestroyed();
+
         // TODO: Optimise reallocations to follow a curve
         if (this._instancedMesh === null || this._instancedMesh.count < minimumSize) {
             this.resizeInternal(minimumSize);
+        }
+    }
+
+    public destroy(): void {
+        if (this._isDestroyed) {
+            return;
+        }
+
+        this.clearInstances();
+
+        this._isDestroyed = true;
+    }
+
+    protected throwIfDestroyed(): void {
+        if (this._isDestroyed) {
+            throw new Error('Object has been destroyed');
         }
     }
 
