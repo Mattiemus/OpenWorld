@@ -36,14 +36,14 @@ export default class PointLight extends Light
         this.throwIfDestroyed();
         return this._range;
     }
-    public set range(newRange: number) {
+    public set range(newValue: number) {
         this.throwIfDestroyed();
 
-        if (this._range === newRange) {
+        if (this._range === newValue) {
             return;
         }
 
-        this._range = newRange;
+        this._range = newValue;
         this.firePropertyChanged('range');
     }
 }

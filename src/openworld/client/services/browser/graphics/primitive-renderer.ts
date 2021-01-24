@@ -44,7 +44,12 @@ export default class PrimitiveRenderer extends Destroyable
     //
 
     public addPrimitive(primitive: Primitive): void {
-        const instancedMesh = this.findOrCreateInstancedMesh(primitive.type, primitive.material, true, true);
+        const instancedMesh =
+            this.findOrCreateInstancedMesh(
+                primitive.type,
+                primitive.material,
+                primitive.castsShadows,
+                primitive.receivesShadows);
 
         const meshInstance = instancedMesh.addInstance();
         meshInstance.setCFrame(primitive.cframe, primitive.size);
@@ -120,6 +125,8 @@ export default class PrimitiveRenderer extends Destroyable
 
         primitiveInstance.destroy();
         this._primitiveInstances.delete(primitive);
+
+        // TODO: This needs to cleanup the PREVIOUS primitive value - this currently uses the CURRENT values!
         
         const instancedMesh =
             this.findInstancedMesh(

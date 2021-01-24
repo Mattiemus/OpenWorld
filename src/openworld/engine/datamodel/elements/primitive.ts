@@ -69,14 +69,14 @@ export default class Primitive extends WorldObject
         this.throwIfDestroyed();
         return this._primType;
     }
-    public set type(newPrimitiveType: PrimitiveType) {
+    public set type(newValue: PrimitiveType) {
         this.throwIfDestroyed();
 
-        if (this._primType === newPrimitiveType) {
+        if (this._primType === newValue) {
             return;
         }
 
-        this._primType = newPrimitiveType;
+        this._primType = newValue;
         this.firePropertyChanged('type');
     }
 
@@ -84,14 +84,14 @@ export default class Primitive extends WorldObject
         this.throwIfDestroyed();
         return this._material;
     }
-    public set material(newMaterial: Material) {
+    public set material(newValue: Material) {
         this.throwIfDestroyed();
 
-        if (this._material.equals(newMaterial)) {
+        if (this._material.equals(newValue)) {
             return;
         }
 
-        this._material = newMaterial;
+        this._material = newValue;
         this.firePropertyChanged('material');
     }
 
@@ -99,14 +99,14 @@ export default class Primitive extends WorldObject
         this.throwIfDestroyed();
         return this._size;
     }
-    public set size(newSize: Vector3) {
+    public set size(newValue: Vector3) {
         this.throwIfDestroyed();
 
-        if (this._size.equals(newSize)) {
+        if (this._size.equals(newValue)) {
             return;
         }
 
-        this._size = newSize;
+        this._size = newValue;
         this.firePropertyChanged('size');
     }
 
@@ -114,14 +114,14 @@ export default class Primitive extends WorldObject
         this.throwIfDestroyed();
         return this._receivesShadows;
     }
-    public set receivesShadows(newReceivesShadows: boolean) {
+    public set receivesShadows(newValue: boolean) {
         this.throwIfDestroyed();
 
-        if (this._receivesShadows === newReceivesShadows) {
+        if (this._receivesShadows === newValue) {
             return;
         }
 
-        this._receivesShadows = newReceivesShadows;
+        this._receivesShadows = newValue;
         this.firePropertyChanged('receivesShadows');
     }
 
@@ -129,14 +129,14 @@ export default class Primitive extends WorldObject
         this.throwIfDestroyed();
         return this._castsShadows;
     }
-    public set castsShadows(newCastsShadows: boolean) {
+    public set castsShadows(newValue: boolean) {
         this.throwIfDestroyed();
         
-        if (this._castsShadows === newCastsShadows) {
+        if (this._castsShadows === newValue) {
             return;
         }
 
-        this._castsShadows = newCastsShadows;
+        this._castsShadows = newValue;
         this.firePropertyChanged('castsShadows');
     }
 }

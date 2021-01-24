@@ -39,14 +39,14 @@ export default abstract class Light extends WorldObject
         this.throwIfDestroyed();
         return this._brightness;
     }
-    public set brightness(newBrightness: number) {
+    public set brightness(newValue: number) {
         this.throwIfDestroyed();
 
-        if (this._brightness === newBrightness) {
+        if (this._brightness === newValue) {
             return;
         }
 
-        this._brightness = newBrightness;
+        this._brightness = newValue;
         this.firePropertyChanged('brightness');
     }
 
@@ -54,14 +54,14 @@ export default abstract class Light extends WorldObject
         this.throwIfDestroyed();
         return this._color;
     }
-    public set color(newColor: Color3) {
+    public set color(newValue: Color3) {
         this.throwIfDestroyed();
 
-        if (this._color.equals(newColor)) {
+        if (this._color.equals(newValue)) {
             return;
         }
 
-        this._color = newColor;
+        this._color = newValue;
         this.firePropertyChanged('color');
     }
 
@@ -69,14 +69,14 @@ export default abstract class Light extends WorldObject
         this.throwIfDestroyed();
         return this._castsShadows;
     }
-    public set castsShadows(newCastsShadows: boolean) {
+    public set castsShadows(newValue: boolean) {
         this.throwIfDestroyed();
 
-        if (this._castsShadows === newCastsShadows) {
+        if (this._castsShadows === newValue) {
             return;
         }
 
-        this._castsShadows = newCastsShadows;
+        this._castsShadows = newValue;
         this.firePropertyChanged('castsShadows');
     }
 }

@@ -20,26 +20,26 @@ export default class WorkerThreadRunServiceImpl extends RunServiceImpl
     // Constructor
     //
 
-    constructor(@inject(InterThreadCommunication) private _comms: InterThreadCommunication) {
+    constructor(@inject(InterThreadCommunication) comms: InterThreadCommunication) {
         super();
 
         this._runServicePreRenderConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'RunService:PreRender',
                 this.onRunServicePreRender.bind(this));
 
         this._runServicePostRenderConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'RunService:PostRender',
                 this.onRunServicePostRender.bind(this));
 
         this._runServicePreSimulationConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'RunService:PreSimulation',
                 this.onRunServicePreSimulation.bind(this));
 
         this._runServicePostSimulationConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'RunService:PostSimulation',
                 this.onRunServicePostSimulation.bind(this));
     }

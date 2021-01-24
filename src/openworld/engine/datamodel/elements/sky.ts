@@ -67,14 +67,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxTop;
     }
-    public set skyboxTop(newSkyboxTop: Content | null) {
+    public set skyboxTop(newValue: Content | null) {
         this.throwIfDestroyed();
 
-        if (this._skyboxTop === newSkyboxTop) {
+        if (this._skyboxTop === newValue) {
             return;
         }
 
-        this._skyboxTop = newSkyboxTop;
+        this._skyboxTop = newValue;
         this.firePropertyChanged('skyboxTop');
     }
 
@@ -82,14 +82,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxBottom;
     }
-    public set skyboxBottom(newSkyboxBottom: Content | null) {
+    public set skyboxBottom(newValue: Content | null) {
         this.throwIfDestroyed();
 
-        if (this._skyboxBottom === newSkyboxBottom) {
+        if (this._skyboxBottom === newValue) {
             return;
         }
 
-        this._skyboxBottom = newSkyboxBottom;
+        this._skyboxBottom = newValue;
         this.firePropertyChanged('skyboxBottom');
     }
 
@@ -97,14 +97,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxLeft;
     }
-    public set skyboxLeft(newSkyboxLeft: Content | null) {
+    public set skyboxLeft(newValue: Content | null) {
         this.throwIfDestroyed();
 
-        if (this._skyboxLeft === newSkyboxLeft) {
+        if (this._skyboxLeft === newValue) {
             return;
         }
 
-        this._skyboxLeft = newSkyboxLeft;
+        this._skyboxLeft = newValue;
         this.firePropertyChanged('skyboxLeft');
     }
 
@@ -112,14 +112,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxRight;
     }
-    public set skyboxRight(newSkyboxRight: Content | null) {
+    public set skyboxRight(newValue: Content | null) {
         this.throwIfDestroyed();
 
-        if (this._skyboxRight === newSkyboxRight) {
+        if (this._skyboxRight === newValue) {
             return;
         }
 
-        this._skyboxRight = newSkyboxRight;
+        this._skyboxRight = newValue;
         this.firePropertyChanged('skyboxRight');
     }
 
@@ -127,14 +127,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxFront;
     }
-    public set skyboxFront(newSkyboxFront: Content | null) {
+    public set skyboxFront(newValue: Content | null) {
         this.throwIfDestroyed();
 
-        if (this._skyboxFront === newSkyboxFront) {
+        if (this._skyboxFront === newValue) {
             return;
         }
 
-        this._skyboxFront = newSkyboxFront;
+        this._skyboxFront = newValue;
         this.firePropertyChanged('skyboxFront');
     }
 
@@ -142,14 +142,14 @@ export default class Sky extends Instance
         this.throwIfDestroyed();
         return this._skyboxBack;
     }
-    public set skyboxBack(newSkyboxBack: Content | null) {
+    public set skyboxBack(newValue: Content | null) {
         this.throwIfDestroyed();
         
-        if (this._skyboxBack === newSkyboxBack) {
+        if (this._skyboxBack === newValue) {
             return;
         }
 
-        this._skyboxBack = newSkyboxBack;
+        this._skyboxBack = newValue;
         this.firePropertyChanged('skyboxBack');
     }
 }

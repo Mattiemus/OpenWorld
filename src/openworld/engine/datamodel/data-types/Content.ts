@@ -29,6 +29,10 @@ export default class Content
     // Methods
     //
 
+    public toString(): string {
+        return this._contentId.toString();
+    }
+
     public equals(other: Content): boolean {
         return this._contentId === other._contentId || this._contentId.equals(other._contentId);
     }

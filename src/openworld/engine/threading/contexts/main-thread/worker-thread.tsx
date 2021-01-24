@@ -14,7 +14,6 @@ import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../d
 export class WorkerThread extends Destroyable {
     private _ignoreChanges = false;
 
-    private _worker: Worker;
     private _comms: InterThreadCommunication;
 
     private _runServiceImplProxy: WorkerRunServiceImplProxy;
@@ -32,11 +31,10 @@ export class WorkerThread extends Destroyable {
     // Constructor
     //
 
-    constructor(private _parentContext: InstanceContext) {
+    constructor(private _parentContext: InstanceContext, private _webWorker: Worker) {
         super();
 
-        this._worker = new Worker('../../../../../work', { name: 'work', type: 'module' });
-        this._comms = new InterThreadCommunication(this._worker);
+        this._comms = new InterThreadCommunication(this._webWorker);
 
         this._runServiceImplProxy =
             new WorkerRunServiceImplProxy(
@@ -92,7 +90,7 @@ export class WorkerThread extends Destroyable {
         this._instancePropertyChangedConnections.clear();
 
         this._comms.destroy();        
-        this._worker.terminate();
+        this._webWorker.terminate();
     }
 
     protected sendFinishSynchronize(): void {

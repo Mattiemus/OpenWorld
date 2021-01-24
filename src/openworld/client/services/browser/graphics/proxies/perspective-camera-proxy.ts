@@ -61,6 +61,7 @@ export default class PerspectiveCameraProxy extends THREE.PerspectiveCamera impl
 
     private onDataModelFieldOfViewChanged(): void {
         this.fov = this._camera.fieldOfView;
+        this.updateProjectionMatrix();
     }
 
     private onDataModelCFrameChanged(): void {

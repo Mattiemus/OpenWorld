@@ -6,7 +6,7 @@ import InstanceContext from '../internals/instance-context';
 @DataModelClass({
     className: 'ContentProvider',
     parent: Instance,
-    attributes: [ 'Service', 'NotCreatable', 'NotReplicated' ],
+    attributes: [ 'Service', 'NotCreatable', 'NotReplicated', 'EditorHidden' ],
     properties: {}
 })
 export default abstract class ContentProvider extends Instance

@@ -33,7 +33,7 @@ function getMetaDataByClass<T extends Instance>(instanceClass: Class<T>): DataMo
             throw new Error(`Internal error while compiling metadata for "${instanceClass.name}", parent "${parent.name}" not found in reflection database`);
         }
 
-        finalizedDataModel.properties = { ...finalizedDataModel.properties, ...parentDataModel.properties };
+        finalizedDataModel.properties = { ...parentDataModel.properties, ...finalizedDataModel.properties };
 
         parent = parentDataModel.parent;
     }
@@ -85,7 +85,7 @@ export function getConstructor(className: string): Constructor<Instance, [Instan
 // Class MetaData
 //
 
-export type DataModelClassAttribute = "Service" | "NotCreatable" | "NotReplicated";
+export type DataModelClassAttribute = "Service" | "NotCreatable" | "NotReplicated" | "EditorHidden";
 
 export interface IDataModelClassMetaData {
     className: string;
@@ -97,12 +97,23 @@ export interface IDataModelClassMetaData {
 export function DataModelClass(metadata: IDataModelClassMetaData) {
     return function(constructor: Function): void {
         if (registeredDataModelTypes.has(constructor)) {
-            throw new Error(`Class "${constructor.name}" should only have a single "DataModelClass" decorator`);
+            throw new Error(`Class "${constructor.name}" declaring as "${metadata.className}" should only have a single "DataModelClass" decorator`);
         }
 
         if (dataModelConstables.has(metadata.className)) {
             throw new Error(`Class "${constructor.name}" duplicates the class name "${metadata.className}"`);
+        }
 
+        // TODO!
+        //if (DataModelUtils.getAllTypes().findIndex(x => x === constructor) === -1) {
+        //    throw new Error(`Class "${constructor.name}" declaring as "${metadata.className}" has not been added to DataModelUtils`);
+        //}
+
+        for (const propKey in metadata.properties) {
+            const propName = metadata.properties[propKey].name;
+            if (propKey !== propName) {
+                throw new Error(`Class "${constructor.name}" declaring as "${metadata.className}" contains a property with the key "${propKey}" but given the name "${propName}" which do not match`);
+            }
         }
 
         registeredDataModelTypes.set(constructor, metadata);
@@ -114,7 +125,7 @@ export function DataModelClass(metadata: IDataModelClassMetaData) {
 // Property MetaData
 //
 
-export type DataModelPropertyAttribute = "ReadOnly" | "NotReplicated";
+export type DataModelPropertyAttribute = "ReadOnly" | "NotReplicated" | "EditorHidden";
 
 export interface IDataModelPropertyMetaData {
     name: string;

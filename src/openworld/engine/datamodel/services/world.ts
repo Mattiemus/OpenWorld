@@ -40,17 +40,17 @@ export default class World extends Instance
         this.throwIfDestroyed();
         return this._currentCamera;
     }
-    public set currentCamera(newCamera: Camera | null) {
+    public set currentCamera(newValue: Camera | null) {
         this.throwIfDestroyed();
         
-        if (this._currentCamera === newCamera) {
+        if (this._currentCamera === newValue) {
             return;
         }
 
-        this._currentCamera = newCamera;
+        this._currentCamera = newValue;
         
-        if (newCamera !== null && newCamera.parent === null) {
-            newCamera.parent = this;
+        if (newValue !== null && newValue.parent === null) {
+            newValue.parent = this;
         }
 
         this.firePropertyChanged('currentCamera');

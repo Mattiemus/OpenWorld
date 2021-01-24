@@ -9,7 +9,7 @@ import { Signal } from 'typed-signals';
 @DataModelClass({
     className: 'RunService',
     parent: Instance,
-    attributes: [ 'Service', 'NotCreatable', 'NotReplicated' ],
+    attributes: [ 'Service', 'NotCreatable', 'NotReplicated', 'EditorHidden' ],
     properties: {}
 })
 export default class RunService extends Instance

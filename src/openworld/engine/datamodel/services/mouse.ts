@@ -11,7 +11,7 @@ import { Signal, SignalConnection } from 'typed-signals';
 @DataModelClass({
     className: 'Mouse',
     parent: Instance,
-    attributes: [ 'Service', 'NotCreatable', 'NotReplicated' ],
+    attributes: [ 'Service', 'NotCreatable', 'NotReplicated', 'EditorHidden' ],
     properties: {
         isLeftButtonDown: {
             name: 'isLeftButtonDown',
@@ -29,7 +29,7 @@ import { Signal, SignalConnection } from 'typed-signals';
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },
         isRightButtonUp: {
-            name: 'isMouseButtonUp',
+            name: 'isRightButtonUp',
             type: PropertyType.boolean,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         },

@@ -31,41 +31,41 @@ export default class WorkerThreadMouseImpl extends MouseImpl
     // Constructor
     //
 
-    constructor(@inject(InterThreadCommunication) private _comms: InterThreadCommunication) {
+    constructor(@inject(InterThreadCommunication) comms: InterThreadCommunication) {
         super();
 
         this._mouseLeftButtonDownConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:LeftButtonDown',
                 this.onMouseLeftButtonDown.bind(this));
 
         this._mouseLeftButtonUpConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:LeftButtonUp',
                 this.onMouseLeftButtonUp.bind(this));
                 
         this._mouseRightButtonDownConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:RightButtonDown',
                 this.onMouseRightButtonDown.bind(this));
 
         this._mouseRightButtonUpConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:RightButtonUp',
                 this.onMouseRightButtonUp.bind(this));
 
         this._mouseMoveConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:Move',
                 this.onMouseMove.bind(this));
 
         this._mouseWheelDownConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:WheelDown',
                 this.onMouseWheelDown.bind(this));
 
         this._mouseWheelUpConnection =
-            _comms.addSignalHandler(
+            comms.addSignalHandler(
                 'Mouse:WheelUp',
                 this.onMouseWheelUp.bind(this));
     }

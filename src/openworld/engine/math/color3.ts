@@ -1,4 +1,5 @@
 import MathEx from './mathex';
+
 export default class Color3
 {
     public static readonly white = new Color3(1, 1, 1);
@@ -79,14 +80,29 @@ export default class Color3
         return new Color3(red, green, blue);
     }
 
-    public toNumber(alpha: number = 255): number
+    public toNumber(alpha: number = 1): number
     {
         const r = MathEx.clampAndRound(this.r * 255, 0, 255);
         const g = (MathEx.clampAndRound(this.g * 255, 0, 255)) << 8;
         const b = (MathEx.clampAndRound(this.b * 255, 0, 255)) << 16;
-        const a = alpha << 24;
+        const a = (MathEx.clampAndRound(alpha * 255, 0, 255)) << 24;
 
         return r | g | b | a;
+    }
+
+    public toHex(alpha?: number): string
+    {
+        const r = MathEx.clampAndRound(this.r * 255, 0, 255);
+        const g = MathEx.clampAndRound(this.g * 255, 0, 255);
+        const b = MathEx.clampAndRound(this.b * 255, 0, 255);
+        const a = alpha === undefined ? undefined : MathEx.clampAndRound(alpha * 255, 0, 255);
+
+        const rStr = r.toString(16);
+        const gStr = g.toString(16);
+        const bStr = b.toString(16);
+        const aStr = a === undefined ? '' : a.toString(16);
+
+        return `${rStr}${gStr}${bStr}${aStr}`;
     }
 
     public equals(other: Color3): boolean {

@@ -41,14 +41,14 @@ export default class Lighting extends Instance
 
         return this._ambient;
     }
-    public set ambient(newAmbient: Color3) {
+    public set ambient(newValue: Color3) {
         this.throwIfDestroyed();
 
-        if (this._ambient.equals(newAmbient)) {
+        if (this._ambient.equals(newValue)) {
             return;
         }
 
-        this._ambient = newAmbient;
+        this._ambient = newValue;
         this.firePropertyChanged('ambient');
     }
 

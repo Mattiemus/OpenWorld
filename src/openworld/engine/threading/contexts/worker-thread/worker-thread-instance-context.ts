@@ -1,25 +1,15 @@
-import ContentProviderImpl from '../../../services/content-provider-impl';
 import DataModel from '../../../datamodel/elements/datamodel';
+import Instance from '../../../datamodel/elements/instance';
 import InstanceContext from '../../../datamodel/internals/instance-context';
 import InterThreadCommunication from '../../inter-thread-communication';
+import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../datamodel/serialization/json/json-instance-property-serializer';
 import JsonInstanceSerializer from '../../../datamodel/serialization/json/json-instance-serializer';
-import LightingImpl from '../../../services/lighting-impl';
-import MouseImpl from '../../../services/mouse-impl';
-import NullContentProviderImpl from '../../../services/null/null-content-provider-impl';
-import NullLightingImpl from '../../../services/null/null-lighting-impl';
-import NullWorldImpl from '../../../services/null/null-world-impl';
-import RunServiceImpl from '../../../services/run-service-impl';
-import WorkerThreadMouseImpl from './services/worker-thread-mouse-impl';
-import WorkerThreadRunServiceImpl from './services/worker-thread-run-service-impl';
-import WorldImpl from '../../../services/world-impl';
 import { Container } from 'inversify';
+import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
 import { InstanceJson } from '../../../datamodel/serialization/json/json-instance-serializer';
 import { SignalConnection } from 'typed-signals';
-import Instance from '../../../datamodel/elements/instance';
-import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
-import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../datamodel/serialization/json/json-instance-property-serializer';
 
-export default class WorkerThreadInstanceContext extends InstanceContext
+export default abstract class WorkerThreadInstanceContext extends InstanceContext
 {
     private _ignoreChanges = false;
 
@@ -82,25 +72,8 @@ export default class WorkerThreadInstanceContext extends InstanceContext
         this._contextFinishSynchronizeConnection.disconnect();
     }
 
-    protected setupContainer(container: Container): void {
+    protected setupContainer(container: Container): void {        
         container.bind(InterThreadCommunication).toConstantValue(this._comms);
-
-        container.bind('NullWorldImpl').to(NullWorldImpl).inSingletonScope();
-        container.bind(WorldImpl).toService('NullWorldImpl');
-
-        container.bind('NullContentProviderImpl').to(NullContentProviderImpl).inSingletonScope();
-        container.bind(ContentProviderImpl).toService('NullContentProviderImpl');
-
-        container.bind('NullLightingImpl').to(NullLightingImpl).inSingletonScope();
-        container.bind(LightingImpl).toService('NullLightingImpl');
-
-        // TODO: client replicator
-
-        container.bind('WorkerThreadMouseImpl').to(WorkerThreadMouseImpl).inSingletonScope();
-        container.bind(MouseImpl).toService('WorkerThreadMouseImpl');
-
-        container.bind('WorkerThreadRunServiceImpl').to(WorkerThreadRunServiceImpl).inSingletonScope();
-        container.bind(RunServiceImpl).toService('WorkerThreadRunServiceImpl');
     }
 
     protected createDataModel(): DataModel {
