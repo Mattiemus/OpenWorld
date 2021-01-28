@@ -4,6 +4,7 @@ import Material from '../../../engine/datamodel/data-types/material';
 
 import * as THREE from 'three';
 import { injectable } from 'inversify';
+import { Color3Format } from '../../../engine/math/color3';
 
 @injectable()
 export default class BrowserContentProviderImpl extends ContentProviderImpl
@@ -40,7 +41,7 @@ export default class BrowserContentProviderImpl extends ContentProviderImpl
         if (material.color instanceof Content) {
             materialParams.map = this.loadTexture(material.color);
         } else {
-            materialParams.color = material.color.toNumber();
+            materialParams.color = material.color.toNumber(1, Color3Format.BGRA);
         }
         
         if (material.metalness instanceof Content) {

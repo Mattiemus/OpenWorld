@@ -1,28 +1,19 @@
-import * as React from "react";
-import DataModel from "../../engine/datamodel/elements/datamodel";
+import React from "react";
 import LocalClientInstanceContext from "../contexts/local-client-instance-context";
+import InstanceContext from "../../engine/datamodel/internals/instance-context";
 
-type Props = {
-    dataModel: DataModel;
+export type OpenWorldCanvasProps = {
+    instanceContext: InstanceContext;
 };
 
-type State = {
-};
+export default function OpenWorldCanvas(props: OpenWorldCanvasProps) {
+    const { instanceContext } = props;
 
-export class OpenWorldCanvas extends React.Component<Props, State>
-{
-    state: State = {};
-
-    public render() {
-        return (
-            <canvas ref={this.setCanvasRef} />
-        );
-    }
-
-    private setCanvasRef = (canvas: HTMLCanvasElement | null): void => {
-        const context = this.props.dataModel['_context'];
-        if (context instanceof LocalClientInstanceContext) {
-            context.canvas = canvas;
-        }
-    }
+    return (
+        <canvas ref={canvas => {
+            if (instanceContext instanceof LocalClientInstanceContext) {
+                instanceContext.canvas = canvas;
+            }
+        }} />
+    );
 }

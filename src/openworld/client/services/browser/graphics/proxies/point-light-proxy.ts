@@ -3,6 +3,7 @@ import { IDestroyable } from '../../../../../engine/utils/interfaces';
 
 import * as THREE from 'three';
 import { SignalConnection } from 'typed-signals';
+import { Color3Format } from '../../../../../engine/math/color3';
 
 export default class PointLightProxy extends THREE.PointLight implements IDestroyable
 {
@@ -18,7 +19,7 @@ export default class PointLightProxy extends THREE.PointLight implements IDestro
 
     constructor(private _pointLight: PointLight) {
         // Create
-        super(_pointLight.color.toNumber(), _pointLight.brightness, _pointLight.range);
+        super(_pointLight.color.toNumber(1, Color3Format.BGRA), _pointLight.brightness, _pointLight.range);
         this.onDataModelCastsShadowsChanged();
         this.onDataModelCFrameChanged();
 
@@ -72,7 +73,7 @@ export default class PointLightProxy extends THREE.PointLight implements IDestro
     }
 
     private onDataModelColorChanged(): void {
-        this.color.set(this._pointLight.color.toNumber());
+        this.color.set(this._pointLight.color.toNumber(1, Color3Format.BGRA));
     }
 
     private onDataModelCastsShadowsChanged(): void {

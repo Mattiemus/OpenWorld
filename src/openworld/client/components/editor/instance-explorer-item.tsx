@@ -1,6 +1,6 @@
 import Instance from '../../../engine/datamodel/elements/instance';
 import React, { useState, useEffect } from 'react';
-import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
+import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
 import InstanceLabel from './instance-label';
@@ -13,25 +13,34 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-type Props = {
-    instance: Instance
-} & Partial<Omit<TreeItemProps, 'label' | 'nodeId' | 'key'>>;
+export type InstanceExplorerItemProps = {
+    instance: Instance;
+    showEditorHiddenInstances?: boolean;
+    onContextMenu?: (event: React.MouseEvent<HTMLLIElement, MouseEvent>, instance: Instance) => void;
+};
 
-function createChildExplorerItems(props: Props) {
-    const { instance, ...otherProps } = props;
+function createChildExplorerItems(props: InstanceExplorerItemProps) {
+    const { instance, showEditorHiddenInstances, ...otherProps } = props;
 
     return instance.getChildren().map(inst => {
-        const metadata = getMetaData(inst);
-        if (metadata.hasAttribute('EditorHidden')) {
-            return null;
+        if (showEditorHiddenInstances === undefined || !showEditorHiddenInstances) {
+            const metadata = getMetaData(inst);
+            if (metadata.hasAttribute('EditorHidden')) {
+                return null;
+            }
         }
 
-        return (<InstanceExplorerItem {...otherProps} key={inst['_refId']} instance={inst} />);
+        return (
+            <InstanceExplorerItem
+                {...otherProps}
+                key={inst['_refId']}
+                instance={inst} />
+        );
     });
 };
 
-export default function InstanceExplorerItem(props: Props) {
-    const { instance, ...otherProps } = props;
+export default function InstanceExplorerItem(props: InstanceExplorerItemProps) {
+    const { instance, onContextMenu } = props;
 
     const classes = useStyles();
 
@@ -53,16 +62,15 @@ export default function InstanceExplorerItem(props: Props) {
             instanceChildAddedConnection.disconnect();
             instanceChildRemovedConnection.disconnect();
         };
-    }, [ instance ]);
+    }, [ instance, props ]);
 
     return (
         <TreeItem
-            {...otherProps}
+            onContextMenu={onContextMenu === undefined ? undefined : (e) => onContextMenu(e, instance)}
             nodeId={instance['_refId']}
             key={instance['_refId']}
             label={<InstanceLabel instance={instance} />}
             classes={{
-                ...otherProps.classes,
                 label: classes.label
             }}
         >

@@ -22,6 +22,10 @@ export default abstract class MouseImpl extends DataModelServiceBase<Mouse>
     // Properties
     //
 
+    public abstract get x(): number;
+
+    public abstract get y(): number;
+
     public abstract get isLeftButtonDown(): boolean;
 
     public abstract get isLeftButtonUp(): boolean;
@@ -29,8 +33,4 @@ export default abstract class MouseImpl extends DataModelServiceBase<Mouse>
     public abstract get isRightButtonDown(): boolean;
 
     public abstract get isRightButtonUp(): boolean;
-
-    public abstract get x(): number;
-
-    public abstract get y(): number;
 }

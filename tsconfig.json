@@ -7,6 +7,10 @@
       "dom.iterable",
       "webworker"
     ],
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -24,6 +28,6 @@
     "jsx": "react"
   },
   "include": [
-    "src"
+    "./src"
   ]
 }

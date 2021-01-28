@@ -1,9 +1,21 @@
-import Vector3 from './vector3';
+import Vector3, { IVector3 } from './vector3';
+import MathEx from './mathex';
+
+export interface IQuaternion {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
+}
 
 export default class Quaternion 
 {
     public static readonly identity = new Quaternion(0, 0, 0, 1);
     public static readonly one = new Quaternion(1, 1, 1, 1);
+
+    //
+    // Constructor
+    //
 
     constructor(
         public readonly x: number,
@@ -18,7 +30,33 @@ export default class Quaternion
     // Methods
     //
 
-    public static fromAxis(xAxis: Vector3, yAxis: Vector3, zAxis: Vector3): Quaternion {
+    public static fromEulerAngles(yaw: number, pitch: number, roll: number): Quaternion {
+        const rollAngle = roll * 0.5;
+        const rollSin = Math.sin(rollAngle);
+        const rollCos = Math.cos(rollAngle);
+
+        const pitchAngle = pitch * 0.5;
+        const pitchSin = Math.sin(pitchAngle);
+        const pitchCos = Math.cos(pitchAngle);
+
+        const yawAngle = yaw * 0.5;
+        const yawSin = Math.sin(yawAngle);
+        const yawCos = Math.cos(yawAngle);
+
+        const yawCosXpitchSin = yawCos * pitchSin;
+        const yawSinXpitchCos = yawSin * pitchCos;
+        const yawCosXpitchCos = yawCos * pitchCos;
+        const yawSinXpitchSin = yawSin * pitchSin;
+
+        return new Quaternion(
+            (yawCosXpitchSin * rollCos) + (yawSinXpitchCos * rollSin),
+            (yawSinXpitchCos * rollCos) - (yawCosXpitchSin * rollSin),
+            (yawCosXpitchCos * rollSin) - (yawSinXpitchSin * rollCos),
+            (yawCosXpitchCos * rollCos) + (yawSinXpitchSin * rollSin)
+        );
+    }
+
+    public static fromAxis(xAxis: IVector3, yAxis: IVector3, zAxis: IVector3): Quaternion {
         const xx = xAxis.x;
         const xy = xAxis.y;
         const xz = xAxis.z;
@@ -76,7 +114,7 @@ export default class Quaternion
         }
     }
 
-    public static fromAxisAngle(axis: Vector3, angle: number): Quaternion {
+    public static fromAxisAngle(axis: IVector3, angle: number): Quaternion {
         const halfAngle = angle * 0.5;
         const s = Math.sin(halfAngle);
         const c = Math.cos(halfAngle);
@@ -84,7 +122,7 @@ export default class Quaternion
         return new Quaternion(axis.x * s, axis.y * s, axis.z * s, c);
     }
 
-    public static createLookAt(at: Vector3, lookAt: Vector3, up: Vector3 = Vector3.up): Quaternion {
+    public static createLookAt(at: IVector3, lookAt: IVector3, up: IVector3 = Vector3.up): Quaternion {
         let zAxis = Vector3.subtract(at, lookAt);
         zAxis = Vector3.normalize(zAxis);
 
@@ -95,8 +133,62 @@ export default class Quaternion
 
         return Quaternion.fromAxis(xAxis, yAxis, zAxis);
     }
+    
+    public toEulerAngles(): Vector3 {
+        let yaw: number;
+        let pitch: number;
+        let roll: number;
 
-    public equals(other: Quaternion): boolean {
+        const test = (this.x * this.y) + (this.z * this.w);        
+        if(test > 0.499)
+        {
+            // North pole singularity
+            yaw = 2.0 * Math.atan2(this.x, this.w);
+            pitch = 0.0;
+            roll = MathEx.piOverTwo;
+        } else if(test < -0.499) {
+            // South pole singularity
+            yaw = -2.0 * Math.atan2(this.x, this.w);
+            pitch = 0.0;
+            roll = -MathEx.piOverTwo;
+        } else {
+            const xx = this.x * this.x;
+            const yy = this.y * this.y;
+            const zz = this.z * this.z;
+
+            yaw = Math.atan2(
+                (2.0 * this.y * this.w) - (2.0 * this.x * this.z),
+                1.0 - (2.0 * yy) - (2.0 * zz)
+            );
+
+            pitch = Math.atan2(
+                (2.0 * this.x * this.w) - (2.0 * this.y * this.z),
+                1.0 - (2.0 * xx) - (2.0 * zz)
+            );
+
+            roll = Math.asin(2.0 * test);
+        }
+
+        if(MathEx.isApproxZero(yaw)) {
+            yaw = 0.0;
+        }
+
+        if(MathEx.isApproxZero(pitch)) {
+            pitch = 0.0;
+        }
+
+        if(MathEx.isApproxZero(roll)) {
+            roll = 0.0;
+        }
+
+        return new Vector3(yaw, pitch, roll);
+    }
+
+    public clone(): Quaternion {
+        return new Quaternion(this.x, this.y, this.z, this.w);
+    }
+
+    public equals(other: IQuaternion): boolean {
         if (this === other) {
             return true;
         }

@@ -1,32 +1,34 @@
-import "reflect-metadata";
-
-import "./index.css"
-
-import * as React from "react";
-import { render } from "react-dom";
-import DataModel from "./openworld/engine/datamodel/elements/datamodel";
-import World from "./openworld/engine/datamodel/services/world";
-import Camera from "./openworld/engine/datamodel/elements/camera";
-import Primitive from "./openworld/engine/datamodel/elements/primitive";
-import CFrame from "./openworld/engine/math/cframe";
-import Vector3 from "./openworld/engine/math/vector3";
-import Lighting from "./openworld/engine/datamodel/services/lighting";
-import Color3 from "./openworld/engine/math/color3";
+import 'reflect-metadata';
+import './index.css';
+import * as React from 'react';
+import Camera from './openworld/engine/datamodel/elements/camera';
+import CFrame from './openworld/engine/math/cframe';
+import ClientScript from './openworld/engine/datamodel/elements/client-script';
+import Color3 from './openworld/engine/math/color3';
+import Content from './openworld/engine/datamodel/data-types/content';
+import DataModelDebugger from './openworld/client/components/data-model-debugger';
+import DataModelUtils from './openworld/engine/datamodel/utils/DataModelUtils';
+import Folder from './openworld/engine/datamodel/elements/folder';
+import InstanceContext from './openworld/engine/datamodel/internals/instance-context';
+import Lighting from './openworld/engine/datamodel/services/lighting';
+import LocalClientInstanceContext from './openworld/client/contexts/local-client-instance-context';
+import Material from './openworld/engine/datamodel/data-types/material';
+import OpenWorldCanvas from './openworld/client/components/openworld-canvas';
 import PointLight from './openworld/engine/datamodel/elements/point-light';
-import Material from "./openworld/engine/datamodel/data-types/material";
-import Content from "./openworld/engine/datamodel/data-types/content";
+import Primitive from './openworld/engine/datamodel/elements/primitive';
 import Sky from './openworld/engine/datamodel/elements/sky';
-import LocalClientInstanceContext from "./openworld/client/contexts/local-client-instance-context";
-import { OpenWorldCanvas } from "./openworld/client/components/openworld-canvas";
-import { WorkerThread } from "./openworld/engine/threading/contexts/main-thread/worker-thread";
-import DataModelUtils from "./openworld/engine/datamodel/utils/DataModelUtils";
-import ClientScript from "./openworld/engine/datamodel/elements/client-script";
-import { ScriptLanguage } from "./openworld/engine/datamodel/elements/base-script";
-import DataModelDebugger from "./openworld/client/components/data-model-debugger";
+import Vector3 from './openworld/engine/math/vector3';
+import World from './openworld/engine/datamodel/services/world';
+import { render } from 'react-dom';
+import { ScriptLanguage } from './openworld/engine/datamodel/elements/base-script';
+import { WorkerThread } from './openworld/engine/threading/contexts/main-thread/worker-thread';
+import MenuIcon from '@material-ui/icons/Menu';
+import CloseIcon from '@material-ui/icons/Close';
+import { AppBar, Toolbar, IconButton, Typography, Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Select, MenuItem, Divider } from '@material-ui/core';
 
 DataModelUtils.initialiseMetaData();
 
-function createDataModel(): DataModel {
+function createFilledContext(): InstanceContext {
     const context = new LocalClientInstanceContext();
 
     // TODO: Implement this fully
@@ -46,45 +48,22 @@ function createDataModel(): DataModel {
     const camera = new Camera(context);
     world.currentCamera = camera;
 
-    /*
-    // Create some shapes to look at (as these are created on the client they are local only)
-    const cubeSize = 4 / 2;
-    const topLayerOfPrimities: Primitive[] = [];
-    for (let x = -cubeSize; x <= cubeSize; x++) {
-        for (let y = -cubeSize; y <= cubeSize; y++) {
-            for (let z = -cubeSize; z <= cubeSize; z++) {          
-                const p = new Primitive(context);
-                p.cframe = CFrame.fromPosition(new Vector3(x * 1.1, y * 1.1, z * 1.1));
+    // Create a folder for the cubes
+    const folder = new Folder(context);
+    folder.name = 'Fancy Cubes';
+    folder.parent = world;
 
-                p.material =
-                    Material.createBasic(
-                        new Content("a1172ed0-2c80-4190-9edd-eae2e978238c"));
+    // Create some cubes
+    for (let x = -10; x < 10; x++) {
+        const p = new Primitive(context);
+        p.cframe = CFrame.fromPosition(new Vector3(x * 1.1, Math.sin(x) * 1.1, 0));
 
-                p.parent = world;
+        p.material =
+            Material.createBasic(
+                new Content("a1172ed0-2c80-4190-9edd-eae2e978238c"));
 
-                if (y === cubeSize) {
-                    topLayerOfPrimities.push(p);
-                }
-            }
-        }
+        p.parent = folder;
     }
-    */
-
-
-
-   for (let x = -10; x < 10; x++) {
-
-    const p = new Primitive(context);
-    p.cframe = CFrame.fromPosition(new Vector3(x * 1.1, Math.sin(x) * 1.1, 0));
-
-    p.material =
-        Material.createBasic(
-            new Content("a1172ed0-2c80-4190-9edd-eae2e978238c"));
-
-    p.parent = world;
-}
-
-
 
     // Create base platform
     const base = new Primitive(context);
@@ -194,12 +173,117 @@ function createDataModel(): DataModel {
         `;
     sinGraphScript.parent = world;
 
-    return datamodel;
+    return context;
 }
 
-const dataModel = createDataModel();
+const instanceContext = createFilledContext();
+
 
 render(
-    ( <> <OpenWorldCanvas dataModel={dataModel} /> <DataModelDebugger dataModel={dataModel} /> </> ),   
+    ( 
+        <div style={{ display: 'flex', flexBasis: '100%', flexDirection: 'column' }}>
+            <AppBar position="static" color="primary" elevation={0}>
+                <Toolbar variant="dense">
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <Typography variant="h6" style={{ flexGrow: 1 }}>
+                        OpenWorld Editor
+                    </Typography>
+
+                    <IconButton edge="end" style={{ marginLeft: '16px' }} color="inherit" aria-label="menu" size="small">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <IconButton edge="end" style={{ marginLeft: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+
+            <AppBar position="static" color="default" elevation={0}>
+                <Toolbar variant="dense">
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <Divider orientation='vertical' style={{ marginRight: '16px' }} />
+
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+
+                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+
+            <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'row' }}>
+                <div>
+                    <List component="nav">
+                        <ListItem button>
+                            <MenuIcon />
+                        </ListItem>
+                        <ListItem button>
+                            <MenuIcon />
+                        </ListItem>
+                    </List>
+                </div>
+
+                <div style={{ width: '320px' }}>
+                    <DataModelDebugger dataModel={instanceContext.dataModel} />
+                </div>
+
+                <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}>
+                    <AppBar position="static" color="default" elevation={0}>
+                        <Tabs value={0} indicatorColor='primary' textColor='primary' >
+                            <Tab label={
+                                <span>
+                                  Scene
+                                  <IconButton style={{ marginLeft: '8px' }} size='small'>
+                                    <CloseIcon />
+                                  </IconButton>
+                                </span>
+                            } value={0} />
+
+                            <Tab label={
+                                <span>
+                                  Server Script
+                                  <IconButton style={{ marginLeft: '8px' }} size='small'>
+                                    <CloseIcon />
+                                  </IconButton>
+                                </span>
+                            } value={1} />
+
+                            <Tab label={
+                                <span>
+                                  Client Script
+                                  <IconButton style={{ marginLeft: '8px' }} size='small'>
+                                    <CloseIcon />
+                                  </IconButton>
+                                </span>
+                            } value={2} />
+                        </Tabs>
+                    </AppBar>
+
+                    <OpenWorldCanvas instanceContext={instanceContext} />
+                </div>
+            </div>  
+        </div>
+    ),   
     document.getElementById('root')
 );

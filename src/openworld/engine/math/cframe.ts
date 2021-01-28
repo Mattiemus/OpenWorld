@@ -5,6 +5,10 @@ export default class CFrame
 {
     public static readonly identity = new CFrame(0, 0, 0, 0, 0, 0, 1);
 
+    //
+    // Constructor
+    //
+
     constructor(        
         public readonly x: number,
         public readonly y: number,
@@ -52,6 +56,10 @@ export default class CFrame
             rotation.y,
             rotation.z,
             rotation.w);
+    }
+
+    public clone(): CFrame {
+        return new CFrame(this.x, this.y, this.z, this.qx, this.qy, this.qz, this.qw);
     }
 
     public equals(other: CFrame): boolean {

@@ -128,7 +128,6 @@ export default abstract class Instance implements IDestroyable
     }
 
     public get parent(): Instance | null {
-        this.throwIfDestroyed();
         return this._parent;
     }
     public set parent(newParent: Instance | null) {
@@ -262,6 +261,30 @@ export default abstract class Instance implements IDestroyable
         return InstanceUtils.isA(this.className, className);
     }
 
+    public isAncestorOf(descendant: Instance | null): boolean {
+        this.throwIfDestroyed();
+
+        if (descendant === null) {
+            return false;
+        }
+
+        return descendant.isAncestorOf(this);
+    }
+
+    public isDescendantOf(ancestor: Instance | null): boolean {
+        this.throwIfDestroyed();
+        
+        if (this._parent === ancestor) {
+            return true;
+        }
+
+        if (this._parent === null) {
+            return false;
+        }
+
+        return this._parent.isDescendantOf(ancestor);
+    }
+
     public clearAllChildren(): void {
         this.throwIfDestroyed();
 
@@ -269,6 +292,44 @@ export default abstract class Instance implements IDestroyable
         for (const child of childrenClone) {
             child.destroy();
         }
+    }
+
+    public clone(): this {
+        // TODO: This needs to ensure it does not duplicate property instances multiple times!
+
+        if (this._metadata.hasAttribute('NotCreatable')) {
+            throw new Error(`Cannot clone an instance of "${this.className}" as it is marked NotCreatable`);
+        }
+
+        const selfConstructor = this.constructor as { new (context: InstanceContext): any };
+        const clonedInstance = new selfConstructor(this._context);
+
+        const unsafeClonedInstance = clonedInstance as any;
+        const unsafeThis = this as any;
+        
+        for (const [ propName, prop ] of this._metadata.properties) {
+            if (propName === 'parent' || prop.hasAttribute('ReadOnly')) {
+                // Leave the parent as null and ignore read only props
+                continue;
+            }
+
+            const valueToClone = unsafeThis[propName];
+
+            if (valueToClone instanceof Instance) {                
+                unsafeClonedInstance[propName] = valueToClone.clone();
+            } else if (valueToClone['clone'] !== undefined) {
+                unsafeClonedInstance[propName] = valueToClone.clone();
+            } else {                
+                unsafeClonedInstance[propName] = valueToClone;
+            }
+        }
+
+        for (const childInstance of this._children) {
+            const clonedChildInstance = childInstance.clone();
+            clonedChildInstance.parent = clonedInstance;
+        }
+
+        return clonedInstance;
     }
 
     public destroy(): void {

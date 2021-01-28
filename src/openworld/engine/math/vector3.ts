@@ -1,3 +1,9 @@
+export interface IVector3 {
+    x: number;
+    y: number;
+    z: number;
+}
+
 export default class Vector3 
 {
     public static readonly zero = new Vector3(0, 0, 0);
@@ -43,11 +49,11 @@ export default class Vector3
         return new Vector3(v.x / length, v.y / length, v.z / length);
     }
 
-    public static dot(a: Vector3, b: Vector3): number {
+    public static dot(a: IVector3, b: IVector3): number {
         return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);        
     }
 
-    public static cross(a: Vector3, b: Vector3): Vector3 {
+    public static cross(a: IVector3, b: IVector3): Vector3 {
         const x = (a.y * b.z) - (a.z * b.y);
         const y = (a.z * b.x) - (a.x * b.z);
         const z = (a.x * b.y) - (a.y * b.x);
@@ -55,23 +61,27 @@ export default class Vector3
         return new Vector3(x, y, z);
     }
 
-    public static add(a: Vector3, b: Vector3): Vector3 {
+    public static add(a: IVector3, b: IVector3): Vector3 {
         return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    public static subtract(a: Vector3, b: Vector3): Vector3 {
+    public static subtract(a: IVector3, b: IVector3): Vector3 {
         return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    public static multiply(a: Vector3, b: Vector3): Vector3 {
+    public static multiply(a: IVector3, b: IVector3): Vector3 {
         return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
-    public static multiplyScalar(a: Vector3, scale: number): Vector3 {
+    public static multiplyScalar(a: IVector3, scale: number): Vector3 {
         return new Vector3(a.x * scale, a.y * scale, a.z * scale);
     }
 
-    public equals(other: Vector3): boolean {
+    public clone(): Vector3 {
+        return new Vector3(this.x, this.y, this.z);
+    }
+
+    public equals(other: IVector3): boolean {
         if (this === other) {
             return true;
         }

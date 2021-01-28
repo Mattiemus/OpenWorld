@@ -6,10 +6,10 @@ import InterThreadCommunication from '../../../inter-thread-communication';
 @injectable()
 export default class WorkerThreadMouseImpl extends MouseImpl
 {
-    private _isLeftButtonDown = false;
-    private _isRightButtonDown = false;
     private _x = 0;
     private _y = 0;
+    private _isLeftButtonDown = false;
+    private _isRightButtonDown = false;
 
     private _leftButtonDown = new Signal<() => void>();
     private _leftButtonUp = new Signal<() => void>();
@@ -106,6 +106,14 @@ export default class WorkerThreadMouseImpl extends MouseImpl
     // Properties
     //
 
+    public get x(): number {
+        return this._x;
+    }
+
+    public get y(): number {
+        return this._y;
+    }
+
     public get isLeftButtonDown(): boolean {
         return this._isLeftButtonDown;
     }
@@ -120,14 +128,6 @@ export default class WorkerThreadMouseImpl extends MouseImpl
 
     public get isRightButtonUp(): boolean {
         return !this._isRightButtonDown;
-    }
-
-    public get x(): number {
-        return this._x;
-    }
-
-    public get y(): number {
-        return this._y;
     }
 
     //

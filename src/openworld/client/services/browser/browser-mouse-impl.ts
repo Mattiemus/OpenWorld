@@ -7,10 +7,10 @@ import { injectable, inject } from 'inversify';
 @injectable()
 export default class BrowserMouseImpl extends MouseImpl
 {
-    private _isLeftButtonDown: boolean = false;
-    private _isRightButtonDown: boolean = false;
     private _mouseX: number = 0;
     private _mouseY: number = 0;
+    private _isLeftButtonDown: boolean = false;
+    private _isRightButtonDown: boolean = false;
 
     private _leftButtonDown = new Signal<() => void>();
     private _leftButtonUp = new Signal<() => void>();
@@ -33,7 +33,8 @@ export default class BrowserMouseImpl extends MouseImpl
             this.connectCanvasMouseEvents(this._renderCanvas.canvas);
         }
 
-        this._canvasChangedSignal = _renderCanvas.canvasChanged.connect(this.onCanvasChanged.bind(this));
+        this._canvasChangedSignal =
+            _renderCanvas.canvasChanged.connect(this.onCanvasChanged.bind(this));
     }
 
     // 
@@ -72,6 +73,14 @@ export default class BrowserMouseImpl extends MouseImpl
     // Properties
     //
 
+    public get x(): number {
+        return this._mouseX;
+    }
+
+    public get y(): number {
+        return this._mouseY;
+    }
+
     public get isLeftButtonDown(): boolean {
         return this._isLeftButtonDown;
     }
@@ -86,14 +95,6 @@ export default class BrowserMouseImpl extends MouseImpl
 
     public get isRightButtonUp(): boolean {
         return !this._isRightButtonDown;
-    }
-
-    public get x(): number {
-        return this._mouseX;
-    }
-
-    public get y(): number {
-        return this._mouseY;
     }
 
     //

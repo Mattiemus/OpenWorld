@@ -1,144 +1,27 @@
 import BaseScript from '../../engine/datamodel/elements/base-script';
-import Color3 from '../../engine/math/color3';
-import Content from '../../engine/datamodel/data-types/content';
 import DataModel from '../../engine/datamodel/elements/datamodel';
 import EditIcon from '@material-ui/icons/Edit';
 import Instance from '../../engine/datamodel/elements/instance';
 import InstanceExplorer from './editor/instance-explorer';
-import InstanceLabel from './editor/instance-label';
-import PropertyType from '../../engine/datamodel/internals/metadata/properties/property-type';
+import InstancePropertyEditor from './editor/instance-property-editor';
 import React, { useState } from 'react';
-import Vector3 from '../../engine/math/vector3';
-import {
-    Button,
-    MenuItem,
-    Select,
-    Typography
-    } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { camel2title } from '../../engine/utils/text-utils';
 import { getMetaData } from '../../engine/datamodel/internals/metadata/metadata';
-import { InstanceBooleanPropertyEditor } from './editor/property-editors/instance-boolean-property-editor';
-import { InstanceNumberPropertyEditor } from './editor/property-editors/instance-number-property-editor';
-import { InstanceStringPropertyEditor } from './editor/property-editors/instance-string-property-editor';
 import { isArray } from '../../engine/utils/type-guards';
-import { Vector3InputField } from './editor/custom-form-inputs/vector3-input-field';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 type Props = {
     instance: Instance
 };
-
-function createEditorForProperty(instance: Instance, propertyName: string) {
-    const unsafeInstance = instance as any;
-
-    const metadata = getMetaData(instance);
-    const propertyMetadata = metadata.properties.get(propertyName);
-    if (propertyMetadata === undefined) {
-        throw new Error(`Cannot created string property editor for property "${propertyName}" as it does not exist on parent instance "${instance['_refId']}"`);
-    }
-
-    if (propertyMetadata.type === PropertyType.number) {
-        return <InstanceNumberPropertyEditor instance={instance} propertyName={propertyName} />
-    }
-
-    if (propertyMetadata.type === PropertyType.boolean) {
-        return <InstanceBooleanPropertyEditor instance={instance} propertyName={propertyName} />
-    }
-
-    if (propertyMetadata.type === PropertyType.string) {
-        return <InstanceStringPropertyEditor instance={instance} propertyName={propertyName} />
-    }
-
-    if (propertyMetadata.type === PropertyType.color3) {
-        return (
-            <Button
-                size="small"
-                variant="outlined"
-                fullWidth
-                style={{ 
-                    textTransform: 'none',
-                    height: '32px',
-                    background: '#' + (unsafeInstance[propertyName] as Color3).toHex()
-                }}
-            />
-        );
-    }
-
-    if (propertyMetadata.type === PropertyType.vector3) {
-        return (
-            <Vector3InputField 
-                value={(unsafeInstance[propertyName] as Vector3)}
-            />
-        );
-    }
-
-    if (propertyMetadata.type === PropertyType.quaternion) {
-        return (
-            <Vector3InputField 
-                value={new Vector3(1, 2, 3)}
-            />
-        );
-    }
-
-    if (propertyMetadata.type === PropertyType.content) {
-        return (
-            <Button
-                size="small"
-                variant="outlined"
-                fullWidth
-                style={{ textTransform: 'none' }}
-            >
-                { (unsafeInstance[propertyName] as Content).toString() }
-            </Button>
-        );
-    }
-
-    if (propertyMetadata.type === PropertyType.material) {
-        return (
-            <Button
-                size="small"
-                variant="outlined"
-                fullWidth
-                style={{ textTransform: 'none' }}
-            >
-                Material
-            </Button>
-        );
-    }
-
-    if (propertyMetadata.type.isEnum) {
-        return (
-            <Select
-                fullWidth
-                value={1}
-            >
-                <MenuItem value={1}>Enum Value A</MenuItem>
-                <MenuItem value={2}>Enum Value B</MenuItem>
-                <MenuItem value={3}>Enum Value C</MenuItem>
-            </Select>
-        );
-    }
-
-    if (propertyMetadata.type.isInstanceRef) {
-        return (
-            <Button
-                size="small"
-                variant="outlined"
-                fullWidth
-                style={{ textTransform: 'none' }}
-            >
-                <InstanceLabel instance={unsafeInstance[propertyName]} />
-            </Button>
-        );
-    }
-
-    return <span>no editor</span>;
-}
 
 export function InstanceEditor(props: Props) {
     const { instance } = props;
 
     const metadata = getMetaData(instance);
 
+    // TODO: Create specialised editor components
     let extraButtons: JSX.Element | null = null;
     if (instance instanceof BaseScript) {
         extraButtons = (
@@ -146,14 +29,14 @@ export function InstanceEditor(props: Props) {
                 style={{ float: 'right' }}
                 size='small'
                 variant="contained"
-                color="primary"
+                color="default"
                 startIcon={<EditIcon />}
             >
                 Edit Script
             </Button>
         );
     }
-
+    
     return (
         <>
             <table style={{ tableLayout: 'fixed', width: '100%' }}>
@@ -165,12 +48,15 @@ export function InstanceEditor(props: Props) {
                             }
 
                             return (
-                                <tr key={`${instance['_refId']}_${property.name}`}>
+                                <tr key={property.name}>
                                     <td style={{ width: '38%' }}>
                                         <Typography variant='body2'>{camel2title(property.name)}</Typography> 
                                     </td>
                                     <td>
-                                        { createEditorForProperty(instance, property.name) }
+                                        <InstancePropertyEditor 
+                                            instance={instance}
+                                            propertyName={property.name}
+                                        />
                                     </td>
                                 </tr>
                             )
@@ -183,10 +69,6 @@ export function InstanceEditor(props: Props) {
         </>
     );
 }
-
-
-
-
 
 export default function DataModelDebugger(props: { dataModel: DataModel }) {
     const { dataModel } = props;
@@ -205,29 +87,23 @@ export default function DataModelDebugger(props: { dataModel: DataModel }) {
         }
     };
 
-    let selectedInstanceComponent: JSX.Element | null = null;
-    if (selectedInstance !== null) {
-        selectedInstanceComponent = 
-            <InstanceEditor
-                //style={{ height: '100%', width: '100%' }}
-                instance={selectedInstance}
-            />;
-    }
-
     return (
-        <div style={{ position: 'absolute', top: '32px', left: '32px', width: '400px', height: '800px', background: 'white' }}>
-            <div style={{ height: '60%', overflowY: 'auto', overflowX: 'hidden' }}>
-                <InstanceExplorer
-                    style={{ height: '100%', width: '100%' }}
-                    instance={dataModel}
-                    multiSelect={true}
-                    onInstanceSelect={onInstanceSelect}
-                />
-            </div>
+        <DndProvider backend={HTML5Backend}>
+            <div style={{ height: '100%' }}>
+                <div style={{ height: '60%', overflowY: 'auto', overflowX: 'hidden' }}>
+                    <InstanceExplorer
+                        style={{ height: '100%', width: '100%' }}
+                        instance={dataModel}
+                        showEditorHiddenInstances={true}
+                        multiSelect={true}
+                        onInstanceSelect={onInstanceSelect}
+                    />
+                </div>
 
-            <div style={{ height: '40%', overflowY: 'auto', overflowX: 'hidden' }}>
-                { selectedInstanceComponent }
+                <div style={{ height: '40%', overflowY: 'auto', overflowX: 'hidden' }}>
+                    { selectedInstance && <InstanceEditor instance={selectedInstance} /> }
+                </div>
             </div>
-        </div>
+        </DndProvider>
     );
 }

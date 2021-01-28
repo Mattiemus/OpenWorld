@@ -13,6 +13,16 @@ import { Signal, SignalConnection } from 'typed-signals';
     parent: Instance,
     attributes: [ 'Service', 'NotCreatable', 'NotReplicated', 'EditorHidden' ],
     properties: {
+        x: {
+            name: 'x',
+            type: PropertyType.number,
+            attributes: [ 'ReadOnly', 'NotReplicated' ]
+        },
+        y: {
+            name: 'y',
+            type: PropertyType.number,
+            attributes: [ 'ReadOnly', 'NotReplicated' ]
+        },
         isLeftButtonDown: {
             name: 'isLeftButtonDown',
             type: PropertyType.boolean,
@@ -31,16 +41,6 @@ import { Signal, SignalConnection } from 'typed-signals';
         isRightButtonUp: {
             name: 'isRightButtonUp',
             type: PropertyType.boolean,
-            attributes: [ 'ReadOnly', 'NotReplicated' ]
-        },
-        x: {
-            name: 'x',
-            type: PropertyType.number,
-            attributes: [ 'ReadOnly', 'NotReplicated' ]
-        },
-        y: {
-            name: 'y',
-            type: PropertyType.number,
             attributes: [ 'ReadOnly', 'NotReplicated' ]
         }
     }
@@ -129,6 +129,16 @@ export default class Mouse extends Instance
     // Properties
     //
 
+    public get x(): number {
+        this.throwIfDestroyed();
+        return this._impl.x;
+    }
+
+    public get y(): number {
+        this.throwIfDestroyed();
+        return this._impl.y;
+    }
+
     public get isLeftButtonDown(): boolean {
         this.throwIfDestroyed();
         return this._impl.isLeftButtonDown;
@@ -147,16 +157,6 @@ export default class Mouse extends Instance
     public get isRightButtonUp(): boolean {
         this.throwIfDestroyed();
         return this._impl.isRightButtonUp;
-    }
-
-    public get x(): number {
-        this.throwIfDestroyed();
-        return this._impl.x;
-    }
-
-    public get y(): number {
-        this.throwIfDestroyed();
-        return this._impl.y;
     }
 
     //
@@ -184,13 +184,13 @@ export default class Mouse extends Instance
     }
 
     private onLeftButtonDownOrUp(): void {
-        this.firePropertyChanged('leftButtonDown');
-        this.firePropertyChanged('leftButtonUp');
+        this.firePropertyChanged('isLeftButtonDown');
+        this.firePropertyChanged('isLeftButtonUp');
     }
 
     private onRightButtonDownOrUp(): void {
-        this.firePropertyChanged('leftButtonDown');
-        this.firePropertyChanged('leftButtonUp');
+        this.firePropertyChanged('isRightButtonDown');
+        this.firePropertyChanged('isRightButtonUp');
     }
 
     private onMove(deltaX: number, deltaY: number): void {
@@ -198,7 +198,7 @@ export default class Mouse extends Instance
             this.firePropertyChanged('x');
         }
 
-        if (!MathEx.isApproxZero(deltaX)) {
+        if (!MathEx.isApproxZero(deltaY)) {
             this.firePropertyChanged('y');
         }
     }

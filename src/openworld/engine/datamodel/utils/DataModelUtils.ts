@@ -18,6 +18,7 @@ import { Class } from '../../utils/types';
 import { getMetaData } from '../internals/metadata/metadata';
 import BaseScript from '../elements/base-script';
 import ClientScript from '../elements/client-script';
+import Folder from '../elements/folder';
 
 export default class DataModelUtils
 {
@@ -40,6 +41,7 @@ export default class DataModelUtils
             Camera,
             ClientScript,
             DataModel,
+            Folder,
             Instance,
             Light,
             PointLight,

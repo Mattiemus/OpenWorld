@@ -1,20 +1,19 @@
 import Instance from "../../../elements/instance";
-import { Constructor } from '../../../../utils/types';
-import InstanceContext from '../../instance-context';
+import { Class } from '../../../../utils/types';
 import { isString } from "../../../../utils/type-guards";
 import { getMetaData } from "../metadata";
 
 export default class PropertyType
 {
-    public static readonly number = new PropertyType();
-    public static readonly boolean = new PropertyType();
-    public static readonly string = new PropertyType();
-    public static readonly cframe = new PropertyType();
-    public static readonly color3 = new PropertyType();
-    public static readonly vector3 = new PropertyType();
-    public static readonly quaternion = new PropertyType();
-    public static readonly content = new PropertyType();
-    public static readonly material = new PropertyType();
+    public static readonly number = new PropertyType(undefined, undefined);
+    public static readonly boolean = new PropertyType(undefined, undefined);
+    public static readonly string = new PropertyType(undefined, undefined);
+    public static readonly cframe = new PropertyType(undefined, undefined);
+    public static readonly color3 = new PropertyType(undefined, undefined);
+    public static readonly vector3 = new PropertyType(undefined, undefined);
+    public static readonly quaternion = new PropertyType(undefined, undefined);
+    public static readonly content = new PropertyType(undefined, undefined);
+    public static readonly material = new PropertyType(undefined, undefined);
 
     private static _instanceRefPropertyTypeCache = new Map<string, PropertyType>();
     private static _enumPropertyTypeCache = new Map<object, PropertyType>();
@@ -26,7 +25,10 @@ export default class PropertyType
     // Constructor
     //
 
-    private constructor() {
+    private constructor(
+        private _enum: { [key: string]: string; } | undefined, 
+        private _instanceRefClassName: string | undefined
+    ) {
         // No-op
     }
 
@@ -42,11 +44,19 @@ export default class PropertyType
         return this._isEnum;
     }
 
+    public get enumValue(): { [key: string]: string; } | undefined {
+        return this._enum;
+    }
+
+    public get instanceRefClassName(): string | undefined {
+        return this._instanceRefClassName;
+    }
+
     //
     // Methods
     //
 
-    public static instanceRef<T extends Instance>(constructor: string | Constructor<T, [InstanceContext]>): PropertyType {
+    public static instanceRef<T extends Instance>(constructor: string | Class<T>): PropertyType {
         if (!isString(constructor)) {
             const metadata = getMetaData(constructor);
             constructor = metadata.className;
@@ -57,7 +67,7 @@ export default class PropertyType
             return existingPropertyType;
         }
 
-        const instanceRefPropertyType = new PropertyType();
+        const instanceRefPropertyType = new PropertyType(undefined, constructor);
         instanceRefPropertyType._isInstanceRef = true;
 
         PropertyType._instanceRefPropertyTypeCache.set(constructor, instanceRefPropertyType);
@@ -71,7 +81,7 @@ export default class PropertyType
             return existingPropertyType;
         }
 
-        const enumPropertyType = new PropertyType();
+        const enumPropertyType = new PropertyType(e, undefined);
         enumPropertyType._isEnum = true;
 
         PropertyType._enumPropertyTypeCache.set(e, enumPropertyType);

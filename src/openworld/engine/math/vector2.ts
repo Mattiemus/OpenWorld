@@ -1,7 +1,16 @@
+export interface IVector2 {
+    x: number;
+    y: number;
+}
+
 export default class Vector2
 {
     public static readonly zero = new Vector2(0, 0);
     public static readonly one = new Vector2(1, 1);
+
+    //
+    // Constructor
+    //
 
     constructor(
         public readonly x: number,
@@ -28,19 +37,23 @@ export default class Vector2
         return new Vector2(v.x / length, v.y / length);
     }
 
-    public static dot(a: Vector2, b: Vector2): number {
+    public static dot(a: IVector2, b: IVector2): number {
         return (a.x * b.x) + (a.y * b.y);        
     }
 
-    public static add(a: Vector2, b: Vector2): Vector2 {
+    public static add(a: IVector2, b: IVector2): Vector2 {
         return new Vector2(a.x + b.x, a.y + b.y);
     }
 
-    public static subtract(a: Vector2, b: Vector2): Vector2 {
+    public static subtract(a: IVector2, b: IVector2): Vector2 {
         return new Vector2(a.x - b.x, a.y - b.y);
     }
 
-    public equals(other: Vector2): boolean {
+    public clone(): Vector2 {
+        return new Vector2(this.x, this.y);
+    }
+
+    public equals(other: IVector2): boolean {
         if (this === other) {
             return true;
         }

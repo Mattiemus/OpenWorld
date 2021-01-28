@@ -29,4 +29,14 @@ export default class InstanceUtils
 
         return false;
     }
+
+    public static unsafeGetProperty<T>(instance: Instance, propertyName: string): T {
+        const unsafeInstance = instance as any;
+        return unsafeInstance[propertyName];
+    }
+
+    public static unsafeSetProperty(instance: Instance, propertyName: string, newValue: any): void {
+        const unsafeInstance = instance as any;
+        unsafeInstance[propertyName] = newValue;
+    }
 }

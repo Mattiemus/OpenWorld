@@ -75,6 +75,8 @@ export default class Camera extends Instance
 
         this._cframe = newValue;
         this.firePropertyChanged('cframe');
+        this.firePropertyChanged('position');
+        this.firePropertyChanged('rotation');
     }
 
     public get position(): Vector3 {

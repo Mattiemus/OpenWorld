@@ -1,7 +1,21 @@
 export default class MathEx 
 {
+    public static readonly piOverTwo = Math.PI / 2.0;
+    public static readonly piOverFour = Math.PI / 4.0;
+    public static readonly threePiOverFour = (3.0 * Math.PI) / 4.0;
+    public static readonly twoPi = Math.PI * 2.0;
+    public static readonly piSquared = Math.PI * Math.PI;
     public static readonly deg2rad = Math.PI / 180.0;
-
+    public static readonly rad2deg = 180.0 / Math.PI;
+    /*
+    public const float OneThird = (float) (1.0d / 3.0d);
+    public const float TwoThird = (float) (2.0d / 3.0d);
+    public const float FourThirds = (float)(2.0d / 3.0d);
+    public const float ZeroTolerance = 1E-06f;
+    public const float TightZeroTolerance = 1E-12f;
+    public const float Epsilon = float.Epsilon;
+    */
+   
     private constructor() {
         // No-op
     }
