@@ -13,9 +13,9 @@ import React, {
     useMemo,
     useState
     } from 'react';
-import useThrottle from '../hooks/use-throttle';
+import useThrottle from '../../../editor/core/hooks/use-throttle';
 import Vector3 from '../../../engine/math/vector3';
-import Vector3Input from './custom-form-inputs/vector3-input';
+import Vector3Input from '../../../editor/core/components/inputs/vector3-input';
 import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
 import {
     Button,
@@ -52,7 +52,8 @@ function createInstancePropertyEditor<T>(render: (renderProps: PropertyEditorRen
             const metadata = getMetaData(instance);
             const propMetadata = metadata.properties.get(propertyName);
             if (propMetadata === undefined) {
-                throw new Error(`Cannot create property editor for property "${propertyName}" as it does not exist on parent instance "${instance['_refId']}"`);
+                const instanceRefId = InstanceUtils.getRefId(instance);
+                throw new Error(`Cannot create property editor for property "${propertyName}" as it does not exist on parent instance "${instanceRefId}"`);
             }
             return propMetadata;
         }, [ instance, propertyName ]);
@@ -329,10 +330,10 @@ export const InstanceEnumPropertyEditor =
                 onBlur={() => setHasFocus(false)}
             >
                 {
-                    Object.keys(propertyMetadata.type.enumValue!).map(enumKey => {
+                    Object.entries(propertyMetadata.type.enumValue!).map(([ enumKey, enumValue ]) => {
                         return (
                             <MenuItem key={enumKey} value={enumKey}>
-                                {propertyMetadata.type.enumValue![enumKey]}
+                                {enumValue}
                             </MenuItem>
                         );
                     })                    
@@ -408,7 +409,8 @@ export default function InstancePropertyEditor(props: InstancePropertyEditorProp
         const metadata = getMetaData(instance);
         const propMetadata = metadata.properties.get(propertyName);
         if (propMetadata === undefined) {
-            throw new Error(`Cannot create property editor for property "${propertyName}" as it does not exist on parent instance "${instance['_refId']}"`);
+            const instanceRefId = InstanceUtils.getRefId(instance);
+            throw new Error(`Cannot create property editor for property "${propertyName}" as it does not exist on parent instance "${instanceRefId}"`);
         }
         return propMetadata;
     }, [ instance, propertyName ]);

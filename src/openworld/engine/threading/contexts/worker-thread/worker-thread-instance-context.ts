@@ -8,6 +8,7 @@ import { Container } from 'inversify';
 import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
 import { InstanceJson } from '../../../datamodel/serialization/json/json-instance-serializer';
 import { SignalConnection } from 'typed-signals';
+import InstanceUtils from '../../../datamodel/utils/InstanceUtils';
 
 export default abstract class WorkerThreadInstanceContext extends InstanceContext
 {
@@ -85,7 +86,7 @@ export default abstract class WorkerThreadInstanceContext extends InstanceContex
     }
 
     private onContextCreateInstance(instanceJson: InstanceJson): void {
-        const instance = JsonInstanceSerializer.deserializeObject(instanceJson, this, true);
+        const instance = JsonInstanceSerializer.deserializeObject(instanceJson, this, true, false);
 
         const propertyChangedConnection =
             instance.propertyChanged.connect(propertyName => this.onInstancePropertyChanged(instance, propertyName));
@@ -151,7 +152,7 @@ export default abstract class WorkerThreadInstanceContext extends InstanceContex
         this._comms.fireSignal(
             'Context:InstancePropertyChanged',
             {
-                refId: instance['_refId'],
+                refId: InstanceUtils.getRefId(instance),
                 propertyName,
                 value: JsonInstancePropertySerializer.serializeToObject(instance, propertyName)
             });

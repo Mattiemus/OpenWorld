@@ -9,6 +9,7 @@ import { Container } from 'inversify';
 import { getConstructor, getMetaData } from './metadata/metadata';
 import { isString } from '../../utils/type-guards';
 import { Signal } from 'typed-signals';
+import InstanceUtils from '../utils/InstanceUtils';
 
 export default abstract class InstanceContext extends Destroyable
 {
@@ -51,11 +52,6 @@ export default abstract class InstanceContext extends Destroyable
     //
     // Methods
     //
-
-    public findInstance(referenceId: string): Instance | undefined {
-        this.throwIfDestroyed();
-        return this._allInstances.get(referenceId);
-    }
     
     public registerInstance(instance: Instance, refId?: string): string {
         this.throwIfDestroyed();
@@ -67,7 +63,7 @@ export default abstract class InstanceContext extends Destroyable
             id = this.generateIdForInstance(instance);
         }
 
-        instance['_refId'] = id;
+        InstanceUtils.unsafeSetRefId(instance, id);
 
         this._allInstances.set(id, instance);
 
@@ -83,10 +79,37 @@ export default abstract class InstanceContext extends Destroyable
     public unregisterInstance(instance: Instance): void {
         this.throwIfDestroyed();
 
+        const instanceRefId = InstanceUtils.getRefId(instance);
+
         this._instanceUnregistered.emit(instance);
 
-        this._allInstances.delete(instance['_refId']);        
+        this._allInstances.delete(instanceRefId);        
         this._serviceInstances.delete(instance.className);
+    }
+
+    public getActiveInstances(): Instance[] {
+        return [ ...this._allInstances.values() ];
+    }
+
+    public hasInstance(referenceId: string): boolean {
+        this.throwIfDestroyed();
+        return this._allInstances.has(referenceId);
+    }
+
+    public hasServiceInstance(className: string | Class<Instance>): boolean {
+        this.throwIfDestroyed();
+
+        if (!isString(className)) {
+            const metadata = getMetaData(className);
+            className = metadata.className;
+        }
+
+        return this._serviceInstances.has(className);
+    }
+
+    public findInstance(referenceId: string): Instance | undefined {
+        this.throwIfDestroyed();
+        return this._allInstances.get(referenceId);
     }
 
     public findServiceInstance<TInstance extends Instance>(

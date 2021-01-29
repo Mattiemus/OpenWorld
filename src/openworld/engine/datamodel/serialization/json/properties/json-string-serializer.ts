@@ -1,4 +1,4 @@
-import { isString } from "../../../../utils/type-guards";
+import { isString } from '../../../../utils/type-guards';
 
 export default class JsonStringSerializer
 {

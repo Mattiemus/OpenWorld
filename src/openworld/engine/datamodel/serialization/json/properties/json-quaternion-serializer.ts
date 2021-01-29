@@ -1,5 +1,5 @@
 import Quaternion from '../../../../math/quaternion';
-import { isNumber, isArrayOf } from '../../../../utils/type-guards';
+import { isArrayOf, isNumber } from '../../../../utils/type-guards';
 
 export type QuaternionJson = [
     number,

@@ -1,20 +1,10 @@
 import Instance from '../../elements/instance';
 import InstanceContext from '../../internals/instance-context';
 import InstanceUtils from '../../utils/InstanceUtils';
-import JsonBooleanSerializer from './properties/json-boolean-serializer';
-import JsonCFrameSerializer from './properties/json-cframe-serializer';
-import JsonColor3Serializer from './properties/json-color3-serializer';
-import JsonContentSerializer from './properties/json-content-serializer';
-import JsonMaterialSerializer from './properties/json-material-serializer';
-import JsonNumberSerializer from './properties/json-number-serializer';
-import JsonQuaternionSerializer from './properties/json-quaternion-serializer';
-import JsonStringSerializer from './properties/json-string-serializer';
-import JsonVector3Serializer from './properties/json-vector3-serializer';
-import PropertyType from '../../internals/metadata/properties/property-type';
+import JsonInstancePropertySerializer, { InstanceJsonProperty } from './json-instance-property-serializer';
 import { Class } from '../../../utils/types';
 import { getConstructor, getMetaData } from '../../internals/metadata/metadata';
 import { hasFieldOfType, isObject, isString } from '../../../utils/type-guards';
-import JsonInstancePropertySerializer, { InstanceJsonProperty, InstanceRefJson } from './json-instance-property-serializer';
 
 export type InstanceJson = {
     className: string;
@@ -46,7 +36,6 @@ export default class JsonInstanceSerializer
         ) {
             for (const jsonPropertyName in json.properties) {
                 if (!JsonInstancePropertySerializer.verifyObject((json.properties as any)[jsonPropertyName])) {
-                    debugger;
                     return false;
                 }
             }
@@ -54,14 +43,13 @@ export default class JsonInstanceSerializer
             return true;
         }
 
-        debugger;
         return false;
     }
 
     public static serializeToObject(obj: Instance): InstanceJson {
         const json: InstanceJson = {
             className: obj.className,
-            refId: obj['_refId'],
+            refId: InstanceUtils.getRefId(obj),
             properties: {}
         };
 
@@ -75,61 +63,17 @@ export default class JsonInstanceSerializer
                 continue;
             }
 
-            const unsafeObj = obj as any;
-
-            if (unsafeObj[propertyName] === null) {
+            if (InstanceUtils.unsafeGetProperty(obj, propertyName) === null &&
+                !propertyType.isInstanceRef
+            ) {
                 json.properties[propertyName] = null;
                 continue;
             }
 
-            switch(propertyType) { 
-                case PropertyType.number:
-                    json.properties[propertyName] = JsonNumberSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.boolean:
-                    json.properties[propertyName] = JsonBooleanSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.string:
-                    json.properties[propertyName] = JsonStringSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.cframe:
-                    json.properties[propertyName] = JsonCFrameSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.color3:
-                    json.properties[propertyName] = JsonColor3Serializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.vector3:
-                    json.properties[propertyName] = JsonVector3Serializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.quaternion:
-                    json.properties[propertyName] = JsonQuaternionSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.content:
-                    json.properties[propertyName] = JsonContentSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                case PropertyType.material:
-                    json.properties[propertyName] = JsonMaterialSerializer.serializeToObject(unsafeObj[propertyName]);
-                    break;
-                default: {
-                    if (propertyType.isEnum) {
-                        json.properties[propertyName] = JsonStringSerializer.serializeToObject(unsafeObj[propertyName]);
-                    } else if (propertyType.isInstanceRef) {
-                        if (unsafeObj[propertyName] === null) {
-                            json.properties[propertyName] = {
-                                instanceRef: null
-                            };
-                        } else {
-                            json.properties[propertyName] = {
-                                instanceRef: unsafeObj[propertyName]['_refId']
-                            };
-                        }
-                    } else {
-                        throw new Error(`Property "${propertyName}" has an unknown property type`);
-                    }
-
-                    break;
-                }
-            }
+            json.properties[propertyName] =
+                JsonInstancePropertySerializer.serializeToObject(
+                    obj,
+                    propertyName);
         }
 
         return json;
@@ -139,19 +83,27 @@ export default class JsonInstanceSerializer
         instanceJson: unknown,
         context: InstanceContext,
         allowServiceConstruction: boolean,
+        skipInstanceRefs: boolean,
         instanceType?: Class<TInstance>
     ): TInstance {
         if (!JsonInstanceSerializer.verifyObject(instanceJson)) {
             throw new Error('Invalid json instance object');
         }
 
-        return JsonInstanceSerializer.deserializeObjectUnsafe(instanceJson, context, allowServiceConstruction, instanceType);
+        return JsonInstanceSerializer.deserializeObjectUnsafe(
+            instanceJson,
+            context,
+            allowServiceConstruction,
+            skipInstanceRefs,
+            instanceType
+        );
     }
 
     public static deserializeObjectUnsafe<TInstance extends Instance>(
         instanceJson: InstanceJson,
         context: InstanceContext,
         allowServiceConstruction: boolean,
+        skipInstanceRefs: boolean,
         instanceType?: Class<TInstance>
     ): TInstance {
         const metadata = getMetaData(instanceJson.className);
@@ -190,7 +142,7 @@ export default class JsonInstanceSerializer
                 }
             }
         }
-
+        
         for (const propertyName in instanceJson.properties) {
             const property = metadata.properties.get(propertyName)!;
             const propertyType = property.type;
@@ -199,62 +151,23 @@ export default class JsonInstanceSerializer
                 continue;
             }
 
-            const unsafeInstance = instance as any;
+            if (instanceJson.properties[propertyName] === null && !propertyType.isInstanceRef) {
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    null
+                );
 
-            if (instanceJson.properties[propertyName] === null) {
-                unsafeInstance[propertyName] = null;
                 continue; 
             }
 
-            switch(propertyType) { 
-                case PropertyType.number:
-                    unsafeInstance[propertyName] = JsonNumberSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.boolean:
-                    unsafeInstance[propertyName] = JsonBooleanSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.string:
-                    unsafeInstance[propertyName] = JsonStringSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.cframe:
-                    unsafeInstance[propertyName] = JsonCFrameSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.color3:
-                    unsafeInstance[propertyName] = JsonColor3Serializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.vector3:
-                    unsafeInstance[propertyName] = JsonVector3Serializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.quaternion:
-                    unsafeInstance[propertyName] = JsonQuaternionSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.content:
-                    unsafeInstance[propertyName] = JsonContentSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                case PropertyType.material:
-                    unsafeInstance[propertyName] = JsonMaterialSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    break;
-                default: {
-                    if (propertyType.isEnum) {
-                        unsafeInstance[propertyName] = JsonStringSerializer.deserializeObject(instanceJson.properties[propertyName]);
-                    } else if (propertyType.isInstanceRef) {
-                        const instanceRefJson = instanceJson.properties[propertyName] as InstanceRefJson;
-                        if (instanceRefJson.instanceRef === null) {
-                            unsafeInstance[propertyName] = null;
-                        } else {
-                            const instanceValue = context.findInstance(instanceRefJson.instanceRef);
-                            if (instanceValue === undefined) {
-                                throw new Error(`Could not find instance id "${instanceRefJson.instanceRef}" for property "${propertyName}" on "${instance.className}" instance "${instance['_refId']}"`);
-                            }
-                            
-                            unsafeInstance[propertyName] = instanceValue;
-                        }
-                    } else {
-                        throw new Error(`Property "${propertyName}" has an unknown property type`);
-                    }
-
-                    break;
-                }
+            if (!propertyType.isInstanceRef || !skipInstanceRefs) {
+                JsonInstancePropertySerializer.deserializeObjectUnsafe(
+                    instanceJson.properties[propertyName],
+                    propertyName,
+                    instance,
+                    context
+                );
             }
         }
         

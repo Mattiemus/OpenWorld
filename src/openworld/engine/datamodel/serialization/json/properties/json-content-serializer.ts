@@ -1,5 +1,5 @@
 import Content from '../../../data-types/content';
-import { hasFieldOfType, isString, isObject } from '../../../../utils/type-guards';
+import { hasFieldOfType, isObject, isString } from '../../../../utils/type-guards';
 
 export type ContentJson = {
     content: string;

@@ -1,4 +1,4 @@
-import { isNumber } from "../../../../utils/type-guards";
+import { isNumber } from '../../../../utils/type-guards';
 
 export default class JsonNumberSerializer
 {

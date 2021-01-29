@@ -30,6 +30,16 @@ export default class InstanceUtils
         return false;
     }
 
+    public static getRefId(instance: Instance): string {
+        const unsafeInstance = instance as any;
+        return unsafeInstance._refId;
+    }
+
+    public static unsafeSetRefId(instance: Instance, newRefId: string): void {
+        const unsafeInstance = instance as any;
+        unsafeInstance._refId = newRefId;
+    }
+
     public static unsafeGetProperty<T>(instance: Instance, propertyName: string): T {
         const unsafeInstance = instance as any;
         return unsafeInstance[propertyName];

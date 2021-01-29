@@ -1,5 +1,5 @@
 import Color3 from '../../../../math/color3';
-import { isNumber, isArrayOf } from '../../../../utils/type-guards';
+import { isArrayOf, isNumber } from '../../../../utils/type-guards';
 
 export type Color3Json = [
     number,

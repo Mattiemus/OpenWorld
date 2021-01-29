@@ -15,7 +15,6 @@ import Sky from '../elements/sky';
 import World from '../services/world';
 import WorldObject from '../elements/world-object';
 import { Class } from '../../utils/types';
-import { getMetaData } from '../internals/metadata/metadata';
 import BaseScript from '../elements/base-script';
 import ClientScript from '../elements/client-script';
 import Folder from '../elements/folder';
@@ -24,15 +23,7 @@ export default class DataModelUtils
 {
     public static initialiseMetaData(): void {
         const allTypes = this.getAllTypes();
-        
-        const consoleText = allTypes
-            .map(ty => {
-                const metadata = getMetaData(ty);
-                return metadata.className;
-            })
-            .join(', ');
-
-        console.log(`Initialised data model types: ${consoleText}`);        
+        console.log(`Initialised ${allTypes.length} data model types`);        
     }
 
     public static getAllTypes(): Class<Instance>[] {

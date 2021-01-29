@@ -1,8 +1,11 @@
 import Instance from '../../elements/instance';
+import InstanceContext from '../../internals/instance-context';
+import InstanceUtils from '../../utils/InstanceUtils';
 import JsonBooleanSerializer from './properties/json-boolean-serializer';
 import JsonCFrameSerializer, { CFrameJson } from './properties/json-cframe-serializer';
 import JsonColor3Serializer, { Color3Json } from './properties/json-color3-serializer';
 import JsonContentSerializer, { ContentJson } from './properties/json-content-serializer';
+import JsonInstanceRefSerializer, { InstanceRefJson } from './properties/json-instance-ref-serializer';
 import JsonMaterialSerializer, { MaterialJson } from './properties/json-material-serializer';
 import JsonNumberSerializer from './properties/json-number-serializer';
 import JsonQuaternionSerializer, { QuaternionJson } from './properties/json-quaternion-serializer';
@@ -10,10 +13,6 @@ import JsonStringSerializer from './properties/json-string-serializer';
 import JsonVector3Serializer, { Vector3Json } from './properties/json-vector3-serializer';
 import PropertyType from '../../internals/metadata/properties/property-type';
 import { getMetaData } from '../../internals/metadata/metadata';
-import { hasFieldOfType, isObject, isString } from '../../../utils/type-guards';
-import InstanceContext from '../../internals/instance-context';
-
-export type InstanceRefJson = { instanceRef: string | null };
 
 export type InstanceJsonProperty =
     null |
@@ -54,7 +53,7 @@ export default class JsonInstancePropertySerializer
                JsonMaterialSerializer.verifyObject(json) ||
                JsonQuaternionSerializer.verifyObject(json) ||
                JsonVector3Serializer.verifyObject(json) ||
-               (isObject(json) && hasFieldOfType('instanceRef', json, (f: unknown): f is null | string => f === null || isString(f)));
+               JsonInstanceRefSerializer.verifyObject(json);
     }
 
     public static serializeToObject(instance: Instance, propertyName: string): InstanceJsonProperty {
@@ -66,45 +65,53 @@ export default class JsonInstancePropertySerializer
 
         const propertyType = propertyMetaData.type;
 
-        const unsafeObj = instance as any;
+        const unsafePropertyValue =
+            InstanceUtils.unsafeGetProperty(instance, propertyName) as any;
 
-        if (unsafeObj[propertyName] === null) {
+        if (unsafePropertyValue === null && !propertyType.isInstanceRef) {
             return null;
         }
 
         switch(propertyType) { 
             case PropertyType.number:
-                return JsonNumberSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonNumberSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.boolean:
-                return JsonBooleanSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonBooleanSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.string:
-                return JsonStringSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonStringSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.cframe:
-                return JsonCFrameSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonCFrameSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.color3:
-                return JsonColor3Serializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonColor3Serializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.vector3:
-                return JsonVector3Serializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonVector3Serializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.quaternion:
-                return JsonQuaternionSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonQuaternionSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.content:
-                return JsonContentSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonContentSerializer.serializeToObject(unsafePropertyValue);
+
             case PropertyType.material:
-                return JsonMaterialSerializer.serializeToObject(unsafeObj[propertyName]);
+                return JsonMaterialSerializer.serializeToObject(unsafePropertyValue);
+
             default: {
                 if (propertyType.isEnum) {
-                    return JsonStringSerializer.serializeToObject(unsafeObj[propertyName]);
+                    return JsonStringSerializer.serializeToObject(unsafePropertyValue);
                 } else if (propertyType.isInstanceRef) {
-                    if (unsafeObj[propertyName] === null) {
-                        return { instanceRef: null };
-                    } else {
-                        return { instanceRef: unsafeObj[propertyName]['_refId'] };
-                    }
-                } else {
-                    throw new Error(`Property "${propertyName}" has an unknown property type`);
+                    return JsonInstanceRefSerializer.serializeToObject(unsafePropertyValue);
                 }
+                
+                break;
             }
         }
+
+        throw new Error(`Property "${propertyName}" has an unknown property type`);
     }
 
     public static deserializeObject(        
@@ -117,7 +124,11 @@ export default class JsonInstancePropertySerializer
             throw new Error('Invalid json instance property object');
         }
 
-        JsonInstancePropertySerializer.deserializeObjectUnsafe(propertyJson, propertyName, instance, context);
+        JsonInstancePropertySerializer.deserializeObjectUnsafe(
+            propertyJson,
+            propertyName,
+            instance,
+            context);
     }
 
     public static deserializeObjectUnsafe(        
@@ -138,62 +149,110 @@ export default class JsonInstancePropertySerializer
             return;
         }
 
-        const unsafeInstance = instance as any;
+        if (propertyJson === null && !propertyType.isInstanceRef) {
+            InstanceUtils.unsafeSetProperty(
+                instance,
+                propertyName,
+                null
+            );
 
-        if (propertyJson === null) {
-            unsafeInstance[propertyName] = null;
             return; 
         }
 
         switch(propertyType) { 
             case PropertyType.number:
-                unsafeInstance[propertyName] = JsonNumberSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonNumberSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.boolean:
-                unsafeInstance[propertyName] = JsonBooleanSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonBooleanSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.string:
-                unsafeInstance[propertyName] = JsonStringSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonStringSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.cframe:
-                unsafeInstance[propertyName] = JsonCFrameSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonCFrameSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.color3:
-                unsafeInstance[propertyName] = JsonColor3Serializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonColor3Serializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.vector3:
-                unsafeInstance[propertyName] = JsonVector3Serializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonVector3Serializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.quaternion:
-                unsafeInstance[propertyName] = JsonQuaternionSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonQuaternionSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.content:
-                unsafeInstance[propertyName] = JsonContentSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonContentSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             case PropertyType.material:
-                unsafeInstance[propertyName] = JsonMaterialSerializer.deserializeObject(propertyJson);
-                break;
+                InstanceUtils.unsafeSetProperty(
+                    instance,
+                    propertyName,
+                    JsonMaterialSerializer.deserializeObject(propertyJson)
+                );
+                return;
+
             default: {
                 if (propertyType.isEnum) {
-                    unsafeInstance[propertyName] = JsonStringSerializer.deserializeObject(propertyJson);
+                    InstanceUtils.unsafeSetProperty(
+                        instance,
+                        propertyName,
+                        JsonStringSerializer.deserializeObject(propertyJson)
+                    );
+                    return;
                 } else if (propertyType.isInstanceRef) {
-                    const instanceRefJson = propertyJson as InstanceRefJson;
-                    if (instanceRefJson.instanceRef === null) {
-                        unsafeInstance[propertyName] = null;
-                    } else {
-                        const instanceValue = context.findInstance(instanceRefJson.instanceRef);
-                        if (instanceValue === undefined) {
-                            throw new Error(`Could not find instance id "${instanceRefJson.instanceRef}" for property "${propertyName}" on "${instance.className}" instance "${instance['_refId']}"`);
-                        }
-                        
-                        unsafeInstance[propertyName] = instanceValue;
-                    }
-                } else {
-                    throw new Error(`Property "${propertyName}" has an unknown property type`);
+                    InstanceUtils.unsafeSetProperty(
+                        instance,
+                        propertyName,
+                        JsonInstanceRefSerializer.deserializeObject(propertyJson, context)
+                    );
+                    return;
                 }
 
                 break;
             }
         }
+        
+        throw new Error(`Property "${propertyName}" has an unknown property type`);
     }
 }

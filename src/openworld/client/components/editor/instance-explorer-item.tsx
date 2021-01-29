@@ -4,6 +4,7 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
 import InstanceLabel from './instance-label';
+import InstanceUtils from '../../../engine/datamodel/utils/InstanceUtils';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -33,7 +34,7 @@ function createChildExplorerItems(props: InstanceExplorerItemProps) {
         return (
             <InstanceExplorerItem
                 {...otherProps}
-                key={inst['_refId']}
+                key={InstanceUtils.getRefId(inst)}
                 instance={inst} />
         );
     });
@@ -67,8 +68,8 @@ export default function InstanceExplorerItem(props: InstanceExplorerItemProps) {
     return (
         <TreeItem
             onContextMenu={onContextMenu === undefined ? undefined : (e) => onContextMenu(e, instance)}
-            nodeId={instance['_refId']}
-            key={instance['_refId']}
+            nodeId={InstanceUtils.getRefId(instance)}
+            key={InstanceUtils.getRefId(instance)}
             label={<InstanceLabel instance={instance} />}
             classes={{
                 label: classes.label

@@ -1,5 +1,5 @@
 import CFrame from '../../../../math/cframe';
-import { isNumber, isArrayOf } from '../../../../utils/type-guards';
+import { isArrayOf, isNumber } from '../../../../utils/type-guards';
 
 export type CFrameJson = [
     number,

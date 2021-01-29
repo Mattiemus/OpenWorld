@@ -10,7 +10,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { isString } from '../../../engine/utils/type-guards';
 import SearchIcon from '@material-ui/icons/Search';
 import { Menu, MenuItem, ListItemIcon, ListItemText, SvgIcon, TextField, InputAdornment, IconButton } from '@material-ui/core';
-import CutIcon from '../icons/CutIcon';
+import CutIcon from '../../../editor/core/components/icons/cut-icon';
+import InstanceUtils from '../../../engine/datamodel/utils/InstanceUtils';
 
 export type InstanceExplorerProps = {
     style?: React.CSSProperties;
@@ -144,10 +145,10 @@ export default function InstanceExplorer(props: InstanceExplorerProps) {
             <TreeView 
                 style={style}
                 multiSelect={multiSelect as any}
-                defaultExpanded={[ instance['_refId'] ]}
+                defaultExpanded={[ InstanceUtils.getRefId(instance) ]}
                 defaultCollapseIcon={<ExpandMoreIcon />}
                 defaultExpandIcon={<ChevronRightIcon />}
-                selected={selectedInstances.map(i => i['_refId'])}
+                selected={selectedInstances.map(i => InstanceUtils.getRefId(i))}
                 onNodeSelect={onNodeSelect}
             >
                 <InstanceExplorerItem

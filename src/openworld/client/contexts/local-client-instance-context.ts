@@ -18,10 +18,12 @@ import MouseImpl from '../../engine/services/mouse-impl';
 import RunServiceImpl from '../../engine/services/run-service-impl';
 
 import { Container } from "inversify";
+import { WorkerThread } from "../../engine/threading/contexts/main-thread/worker-thread";
 
 export default class LocalClientInstanceContext extends InstanceContext
 {
     private _renderCanvas: RenderCanvas;
+    private _clientScriptWorkerThread: WorkerThread;
 
     //
     // Constructor
@@ -32,6 +34,15 @@ export default class LocalClientInstanceContext extends InstanceContext
         this.finishConstruction();
 
         this._renderCanvas = this.getServiceImpl<RenderCanvas>('RenderCanvas');
+
+        this._clientScriptWorkerThread = new WorkerThread(
+            this, 
+            new Worker(
+                '../worker-threads/client-script-thread-worker',
+                { 
+                    name: 'work',
+                    type: 'module'
+                }));
     }
 
     //
@@ -48,6 +59,11 @@ export default class LocalClientInstanceContext extends InstanceContext
     //
     // Methods
     //
+
+    protected onDestroy(): void {
+        super.onDestroy();
+        this._clientScriptWorkerThread.destroy();
+    }
 
     protected setupContainer(container: Container): void {
         container.bind('RenderCanvas').to(RenderCanvas).inSingletonScope();

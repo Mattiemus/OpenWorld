@@ -10,6 +10,7 @@ import WorkerRunServiceImplProxy from './proxies/worker-run-service-impl-proxy';
 import { SignalConnection } from 'typed-signals';
 import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
 import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../datamodel/serialization/json/json-instance-property-serializer';
+import InstanceUtils from '../../../datamodel/utils/InstanceUtils';
 
 export class WorkerThread extends Destroyable {
     private _ignoreChanges = false;
@@ -116,7 +117,7 @@ export class WorkerThread extends Destroyable {
         
         this._comms.fireSignal(
             'Context:DestroyInstance',
-            instance['_refId']);
+            InstanceUtils.getRefId(instance));
     }
 
     protected onInstanceRegistered(instance: Instance): void {
@@ -152,14 +153,14 @@ export class WorkerThread extends Destroyable {
         this._comms.fireSignal(
             'Context:InstancePropertyChanged',
             {
-                refId: instance['_refId'],
+                refId: InstanceUtils.getRefId(instance),
                 propertyName,
                 value: JsonInstancePropertySerializer.serializeToObject(instance, propertyName)
             });
     }
 
     private onContextCreateInstance(instanceJson: InstanceJson): void {
-        const instance = JsonInstanceSerializer.deserializeObject(instanceJson, this._parentContext, true);
+        const instance = JsonInstanceSerializer.deserializeObject(instanceJson, this._parentContext, true, false);
 
         const propertyChangedConnection =
             instance.propertyChanged.connect(propertyName => this.onInstancePropertyChanged(instance, propertyName));

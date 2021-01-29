@@ -1,5 +1,5 @@
 import Vector3 from '../../../../math/vector3';
-import { isNumber, isArrayOf } from '../../../../utils/type-guards';
+import { isArrayOf, isNumber } from '../../../../utils/type-guards';
 
 export type Vector3Json = [
     number,
