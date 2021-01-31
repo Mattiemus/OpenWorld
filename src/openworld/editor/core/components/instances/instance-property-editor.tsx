@@ -1,22 +1,23 @@
-import Color3 from '../../../engine/math/color3';
-import Content from '../../../engine/datamodel/data-types/content';
-import DataModelPropertyMetaData from '../../../engine/datamodel/internals/metadata/properties/data-model-property-metadata';
-import Instance from '../../../engine/datamodel/elements/instance';
+import Color3 from '../../../../engine/math/color3';
+import Content from '../../../../engine/datamodel/data-types/content';
+import DataModelPropertyMetaData from '../../../../engine/datamodel/internals/metadata/properties/data-model-property-metadata';
+import Instance from '../../../../engine/datamodel/elements/instance';
 import InstanceLabel from './instance-label';
-import InstanceUtils from '../../../engine/datamodel/utils/InstanceUtils';
-import MathEx from '../../../engine/math/mathex';
-import PropertyType from '../../../engine/datamodel/internals/metadata/properties/property-type';
-import Quaternion from '../../../engine/math/quaternion';
+import InstanceUtils from '../../../../engine/datamodel/utils/InstanceUtils';
+import MathEx from '../../../../engine/math/mathex';
+import PropertyType from '../../../../engine/datamodel/internals/metadata/properties/property-type';
+import Quaternion from '../../../../engine/math/quaternion';
 import ClearIcon from '@material-ui/icons/Clear';
+import ErrorIcon from '@material-ui/icons/Error';
 import React, {
     useEffect,
     useMemo,
     useState
     } from 'react';
-import useThrottle from '../../../editor/core/hooks/use-throttle';
-import Vector3 from '../../../engine/math/vector3';
-import Vector3Input from '../../../editor/core/components/inputs/vector3-input';
-import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
+import useThrottle from '../../hooks/use-throttle';
+import Vector3 from '../../../../engine/math/vector3';
+import Vector3Input from '../inputs/vector3-input';
+import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
 import {
     Button,
     Input,
@@ -25,8 +26,14 @@ import {
     Switch,
     TextField,
     IconButton,
+    InputAdornment,
     makeStyles,
+    Tooltip,
     } from '@material-ui/core';
+
+//
+// Property Editor Factory
+//
 
 export type PropertyEditorProps = {
     instance: Instance;
@@ -293,7 +300,9 @@ export const InstanceContentPropertyEditor =
         return (
             <TextField
                 fullWidth
-                disabled={propertyMetadata.hasAttribute('ReadOnly')}
+                error
+                helperText="Invalid content id"
+                disabled={propertyMetadata.hasAttribute('ReadOnly')}                
                 value={hasFocus ? value.toString() : throttledValue.toString()}
                 onChange={(e) => {
                     const newValue = new Content(e.target.value);
@@ -301,6 +310,12 @@ export const InstanceContentPropertyEditor =
                 }}
                 onFocus={() => setHasFocus(true)}
                 onBlur={() => setHasFocus(false)}
+                InputProps={{
+                    endAdornment:
+                        <InputAdornment position="end">
+                            <ErrorIcon color="error" />
+                        </InputAdornment>
+                }}
             />
         );
     });

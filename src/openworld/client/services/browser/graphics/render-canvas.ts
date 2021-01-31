@@ -1,5 +1,4 @@
 import ServiceBase from '../../../../engine/services/base/service-base';
-import getElementSize from "../../../utils/get-element-size";
 import SkyProxy from './proxies/sky-proxy';
 
 import * as THREE from 'three';
@@ -146,7 +145,7 @@ export default class RenderCanvas extends ServiceBase
             return;
         }
     
-        const [newWidth, newHeight] = getElementSize(parent);
+        const [newWidth, newHeight] = this.getElementSize(parent);
 
         if (newWidth !== this.width || newHeight !== this.height) {
             this.canvas.width = newWidth;
@@ -170,5 +169,39 @@ export default class RenderCanvas extends ServiceBase
             this._renderer.dispose();
             this._renderer = null;
         }
+    }
+
+    private getElementSize(el: Window | Element): [number, number] {
+        if (el instanceof Window || el === document.body) {
+            return [window.innerWidth, window.innerHeight];
+        }
+    
+        let temporary = false;
+        if (!el.parentNode && document.body) {
+            temporary = true;
+            document.body.appendChild(el);
+        }
+
+        const parseNumber = (prop: any): number => {
+            return parseFloat(prop) || 0;
+        };
+    
+        const rect = el.getBoundingClientRect();
+        const styles = getComputedStyle(el);
+        const height =
+            (rect.height | 0) +
+            parseNumber(styles.getPropertyValue('margin-top')) +
+            parseNumber(styles.getPropertyValue('margin-bottom'));
+    
+        const width =
+            (rect.width | 0) +
+            parseNumber(styles.getPropertyValue('margin-left')) +
+            parseNumber(styles.getPropertyValue('margin-right'));
+    
+        if (temporary && document.body) {
+            document.body.removeChild(el);
+        }
+    
+        return [width, height];
     }
 }

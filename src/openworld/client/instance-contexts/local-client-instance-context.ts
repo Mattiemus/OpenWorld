@@ -1,26 +1,26 @@
-import InstanceContext from "../../engine/datamodel/internals/instance-context";
-import RenderCanvas from "../services/browser/graphics/render-canvas";
-import BrowserContentProviderImpl from "../services/browser/browser-content-provider";
-import BrowserMouseImpl from "../services/browser/browser-mouse-impl";
-import BrowserRunServiceImpl from "../services/browser/browser-run-service-impl";
-import BrowserWorldImpl from "../services/browser/browser-world-impl";
-import BrowserLightingImpl from "../services/browser/browser-lighting-impl";
-import DataModel from "../../engine/datamodel/elements/datamodel";
-import World from "../../engine/datamodel/services/world";
-import Lighting from "../../engine/datamodel/services/lighting";
-import ContentProvider from "../../engine/datamodel/services/content-provider";
-import Mouse from "../../engine/datamodel/services/mouse";
-import RunService from "../../engine/datamodel/services/run-service";
+import BrowserContentProviderImpl from '../services/browser/browser-content-provider';
+import BrowserLightingImpl from '../services/browser/browser-lighting-impl';
+import BrowserMouseImpl from '../services/browser/browser-mouse-impl';
+import BrowserRunServiceImpl from '../services/browser/browser-run-service-impl';
+import BrowserWorldImpl from '../services/browser/browser-world-impl';
+import ContentProvider from '../../engine/datamodel/services/content-provider';
 import ContentProviderImpl from '../../engine/services/content-provider-impl';
-import WorldImpl from '../../engine/services/world-impl';
+import DataModel from '../../engine/datamodel/elements/datamodel';
+import IInstanceContextWithCanvas from '../../client-shared/instance-contexts/instance-context-with-canvas';
+import InstanceContext from '../../engine/datamodel/internals/instance-context';
+import Lighting from '../../engine/datamodel/services/lighting';
 import LightingImpl from '../../engine/services/lighting-impl';
+import Mouse from '../../engine/datamodel/services/mouse';
 import MouseImpl from '../../engine/services/mouse-impl';
+import RenderCanvas from '../services/browser/graphics/render-canvas';
+import RunService from '../../engine/datamodel/services/run-service';
 import RunServiceImpl from '../../engine/services/run-service-impl';
+import World from '../../engine/datamodel/services/world';
+import WorldImpl from '../../engine/services/world-impl';
+import { Container } from 'inversify';
+import { WorkerThread } from '../../engine/threading/contexts/main-thread/worker-thread';
 
-import { Container } from "inversify";
-import { WorkerThread } from "../../engine/threading/contexts/main-thread/worker-thread";
-
-export default class LocalClientInstanceContext extends InstanceContext
+export default class LocalClientInstanceContext extends InstanceContext implements IInstanceContextWithCanvas
 {
     private _renderCanvas: RenderCanvas;
     private _clientScriptWorkerThread: WorkerThread;
@@ -84,18 +84,5 @@ export default class LocalClientInstanceContext extends InstanceContext
 
         container.bind('BrowserRunServiceImpl').to(BrowserRunServiceImpl).inSingletonScope();
         container.bind(RunServiceImpl).toService('BrowserRunServiceImpl');
-    }
-
-    protected createDataModel(): DataModel {
-        const dataModel = new DataModel(this);
-
-        dataModel.getService(World);    
-        dataModel.getService(ContentProvider);
-        dataModel.getService(Lighting);
-        //datamodel.getService(ClientReplicator);
-        dataModel.getService(Mouse);
-        dataModel.getService(RunService);
-
-        return dataModel;
     }
 }

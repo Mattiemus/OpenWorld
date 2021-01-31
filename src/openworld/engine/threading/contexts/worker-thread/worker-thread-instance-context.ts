@@ -77,14 +77,6 @@ export default abstract class WorkerThreadInstanceContext extends InstanceContex
         container.bind(InterThreadCommunication).toConstantValue(this._comms);
     }
 
-    protected createDataModel(): DataModel {
-        const dataModel = new DataModel(this);
-
-        // TODO
-
-        return dataModel;
-    }
-
     private onContextCreateInstance(instanceJson: InstanceJson): void {
         const instance = JsonInstanceSerializer.deserializeObject(instanceJson, this, true, false);
 

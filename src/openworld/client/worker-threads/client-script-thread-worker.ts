@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import LocalClientScriptThreadContext from "../contexts/local-client-script-thread-context";
+import LocalClientScriptThreadContext from "../instance-contexts/local-client-script-thread-context";
 import DataModelUtils from "../../engine/datamodel/utils/DataModelUtils";
 import InterThreadCommunication from "../../engine/threading/inter-thread-communication";
 

@@ -3,13 +3,11 @@ import React, { useState, useEffect } from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
-import InstanceLabel from './instance-label';
+import InstanceLabel from '../../core/components/instances/instance-label';
 import InstanceUtils from '../../../engine/datamodel/utils/InstanceUtils';
 
 const useStyles = makeStyles((theme) => ({
     label: {
-      fontWeight: 'inherit',
-      color: 'inherit',
       padding: theme.spacing(0.5, 0)
     }
 }));

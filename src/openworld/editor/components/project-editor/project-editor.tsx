@@ -1,121 +1,118 @@
+import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import {
     AppBar,
     Divider,
     IconButton,
-    List,
-    ListItem,
-    Paper,
-    Tab,
-    Tabs,
-    Toolbar
+    Toolbar,
+    makeStyles
 } from '@material-ui/core';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import WorkIcon from '@material-ui/icons/Work';
-import MenuIcon from '@material-ui/icons/Menu';
-import CloseIcon from '@material-ui/icons/Close';
-import InstanceContext from '../../../engine/datamodel/internals/instance-context';
-import DataModelDebugger from '../../../client/components/data-model-debugger';
-import OpenWorldCanvas from '../../../client/components/openworld-canvas';
+import ProjectEditorPanels from './panels/project-editor-panels';
+import ProjectEditorTabs from './tabs/project-editor-tabs';
+import { ProjectEditorContextContainer, ProjectEditorContextProvider } from '../../core/contexts/project-editor-context';
+import useConstant from '../../core/hooks/use-constant';
+import Project from '../../core/models/project';
+import InstanceContextRenderCanvas from '../../../client-shared/components/instance-context-render-canvas';
 
 //
 // Components
 //
 
+type ToolbarItem = {
+    type: 'item';
+    icon: React.ReactElement;
+};
+
+type ToolbarDivider = {
+    type: 'divider';
+};
+
+function createToolbar(items: Array<ToolbarItem | ToolbarDivider>): JSX.Element {
+    const childItems: Array<JSX.Element> = [];
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        const hasDividerNext =
+            (i !== (items.length - 1)) && 
+            (items[i + 1].type === 'divider');
+
+        if (item.type === 'item') {
+            childItems.push(
+                <IconButton key={i} edge="start" style={{ marginRight: (hasDividerNext ? '10px' : '16px') }} color="inherit" size="small">
+                    {item.icon}
+                </IconButton>
+            );
+        } else if (item.type === 'divider') {            
+            childItems.push(
+                <Divider key={i} orientation='vertical' style={{ marginRight: '16px' }} />
+            );
+        }
+    }
+
+    return (
+        <AppBar position="static" color="default" elevation={3}>
+            <Toolbar variant="dense" children={childItems} />
+        </AppBar>
+    );
+}
+
+
+
+
+
+const useStyles = makeStyles(() => ({
+    body: {
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'row'
+    }
+}));
+
 export type ProjectEditorProps = {
-    instanceContext: InstanceContext
+    project: Project
 };
 
 export default function ProjectEditor(props: ProjectEditorProps) {
-    const { instanceContext } = props;
+    const { project } = props;
+
+    const classes = useStyles();
+
+    const editorContextContainer = useConstant(() => {
+        const container = new ProjectEditorContextContainer(project);
+
+        container.addTabAndSelect({
+            tabId: '1',
+            isClosable: false,
+            title: 'Scene',
+            onClose: () => {},
+            component: <InstanceContextRenderCanvas instanceContext={container.editorInstanceContext} />
+        });
+
+        return container;
+    });
 
     return (
-        <>
-            <AppBar position="static" color="default" elevation={3}>
-                <Toolbar variant="dense">
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
+        <ProjectEditorContextProvider value={editorContextContainer}>
+            {
+                createToolbar([
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'divider' },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'divider' },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> },
+                    { type: 'item', icon: <MenuIcon /> }
+                ]) 
+            }
 
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-
-                    <Divider orientation='vertical' style={{ marginRight: '16px' }} />
-
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-
-                    <IconButton edge="start" style={{ marginRight: '16px' }} color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
-
-            <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'row' }}>
-                <div style={{ width: '400px', display: 'flex', flexDirection: 'row' }}>
-                    <div>
-                        <List component="nav">
-                            <ListItem button selected>
-                                <AccountTreeIcon />
-                            </ListItem>
-                            <ListItem button>
-                                <WorkIcon />
-                            </ListItem>
-                        </List>
-                    </div>
-
-                    <div style={{ flexGrow: 1 }}>
-                        <DataModelDebugger dataModel={instanceContext.dataModel} />
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}>
-                    <Paper square elevation={0}>
-                        <Tabs value={0} indicatorColor='primary' textColor='primary' >
-                            <Tab label={
-                                <span>
-                                    Scene
-                                    <IconButton style={{ marginLeft: '8px' }} component="div" size='small'>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </span>
-                            } value={0} />
-
-                            <Tab label={
-                                <span>
-                                    Server Script
-                                    <IconButton style={{ marginLeft: '8px' }} component="div" size='small'>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </span>
-                            } value={1} />
-
-                            <Tab label={
-                                <span>
-                                    Client Script
-                                    <IconButton style={{ marginLeft: '8px' }} component="div" size='small'>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </span>
-                            } value={2} />
-                        </Tabs>
-                    </Paper>
-
-                    <div style={{ flexGrow: 1 }}>
-                        <OpenWorldCanvas instanceContext={instanceContext} />
-                    </div>
-                </div>
+            <div className={classes.body}>
+                <ProjectEditorPanels />                
+                <ProjectEditorTabs />
             </div>  
-        </>
+        </ProjectEditorContextProvider>
     );
 }

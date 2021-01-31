@@ -179,7 +179,9 @@ export default abstract class InstanceContext extends Destroyable
 
     protected abstract setupContainer(container: Container): void;
 
-    protected abstract createDataModel(): DataModel;
+    protected createDataModel(): DataModel {
+        return new DataModel(this);
+    }
 
     private generateIdForInstance(instance: Instance): string {
         const metadata = getMetaData(instance);

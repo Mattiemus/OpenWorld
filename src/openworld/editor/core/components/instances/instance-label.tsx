@@ -1,9 +1,9 @@
-import Instance from '../../../engine/datamodel/elements/instance';
+import Instance from '../../../../engine/datamodel/elements/instance';
 import InstanceIcon from './instance-icon';
 import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
 
 const useStyles = makeStyles((theme) => ({
     labelRoot: {
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     hiddenLabelRoot: {
       display: 'flex',
       alignItems: 'center',
-      color: theme.palette.text.disabled
+      color: theme.palette.text.secondary
     },
     labelIcon: {
       marginRight: theme.spacing(0.5)
@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-type Props = {
+export type InstanceLabelProps = {
     style?: React.CSSProperties;
     instance: Instance | null;
 };
 
-const InstanceLabel = forwardRef<HTMLDivElement, Props>((props, ref) => {
+const InstanceLabel = forwardRef<HTMLDivElement, InstanceLabelProps>((props, ref) => {
     const { style, instance } = props;
 
     const classes = useStyles();

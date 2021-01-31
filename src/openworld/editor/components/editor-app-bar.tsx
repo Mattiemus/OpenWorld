@@ -2,29 +2,47 @@ import React from 'react';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
+import UndoIcon from '@material-ui/icons/Undo';
+import RedoIcon from '@material-ui/icons/Redo';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import StopIcon from '@material-ui/icons/Stop';
 import {
     AppBar,
     IconButton,
     Toolbar,
     Typography,
-    makeStyles
+    makeStyles,
+    ButtonGroup,
+    Button
 } from '@material-ui/core';
-import { useEditorContext } from '../core/contexts/editor-context';
-import useObservable from '../core/hooks/use-observable';
 
 //
 // Styles
 //
 
 const useStyles = makeStyles((theme) => ({
-    leftSideButton: {
-        marginRight: theme.spacing(2)
+    toolbar: {
+        justifyContent: 'space-between'
     },
-    rightSideButton: {
+    toolbarLeft: {
+        display: 'flex',
+        flex: '1'
+    },
+    toolbarMiddle: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'center'
+    },
+    toolbarRight: {
+        display: 'flex',
+        flex: '1',
+        justifyContent: 'flex-end'
+    },
+    buttonLeftMargin: {
         marginLeft: theme.spacing(2)
     },
-    titleText: {
-        flexGrow: 1
+    buttonRightMargin: {
+        marginRight: theme.spacing(2)
     }
 }));
 
@@ -38,27 +56,71 @@ export type EditorAppBarProps = {
 export default function EditorAppBar(props: EditorAppBarProps) {
     const classes = useStyles();
 
-    const { accountDataService } = useEditorContext();
-    const currentAccount = useObservable(accountDataService.getCurrentAccount$());
-
     return (
         <AppBar position="static" color="primary" elevation={3}>
-            <Toolbar variant="dense">
-                <IconButton className={classes.leftSideButton} edge="start" color="inherit">
-                    <MenuIcon />
-                </IconButton>
+            <Toolbar variant="dense" className={classes.toolbar}>
+                <div className={classes.toolbarLeft}>
+                    <IconButton
+                        className={classes.buttonRightMargin}
+                        edge="start"
+                        color="inherit"
+                        size="small"
+                    >
+                        <MenuIcon />
+                    </IconButton>
 
-                <Typography className={classes.titleText} variant="h6">
-                    OpenWorld Editor
-                </Typography>
+                    <Typography variant="h6">
+                        OpenWorld Editor
+                    </Typography>
+                </div>
 
-                <IconButton className={classes.rightSideButton} edge="end" color="inherit">
-                    <SettingsIcon />
-                </IconButton>
+                <div className={classes.toolbarMiddle}>
+                    <ButtonGroup
+                        disableElevation
+                        variant="contained"
+                        color="default"
+                        size="small"
+                    >
+                        <Button>
+                            <UndoIcon />
+                        </Button>
 
-                <IconButton className={classes.rightSideButton} edge="end" color="inherit">
-                    <PersonIcon />
-                </IconButton>
+                        <Button>
+                            <RedoIcon />
+                        </Button>
+                    </ButtonGroup>
+
+                    <ButtonGroup
+                        disableElevation
+                        className={classes.buttonLeftMargin}
+                        variant="contained"
+                        color="default"
+                        size="small"
+                    >
+                        <Button>
+                            <PlayArrowIcon />
+                        </Button>
+
+                        <Button>
+                            <StopIcon />
+                        </Button>
+                    </ButtonGroup>
+                </div>
+
+                <div className={classes.toolbarRight}>
+                    <IconButton color="inherit" size="small">
+                        <SettingsIcon />
+                    </IconButton>
+
+                    <IconButton
+                        className={classes.buttonLeftMargin}
+                        edge="end"
+                        color="inherit"
+                        size="small"
+                    >
+                        <PersonIcon />
+                    </IconButton>
+                </div>
             </Toolbar>
         </AppBar>
     );
