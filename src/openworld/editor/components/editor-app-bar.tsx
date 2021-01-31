@@ -1,20 +1,24 @@
-import React from 'react';
+import ArrowExpandIcon from '../core/components/icons/arrow-expand-icon';
+import ArrowMoveIcon from '../core/components/icons/arrow-move-icon';
+import CursorIcon from '../core/components/icons/cursor-icon';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
-import SettingsIcon from '@material-ui/icons/Settings';
-import UndoIcon from '@material-ui/icons/Undo';
-import RedoIcon from '@material-ui/icons/Redo';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import React from 'react';
+import RedoIcon from '@material-ui/icons/Redo';
+import RotateRightIcon from '@material-ui/icons/RotateRight';
+import SettingsIcon from '@material-ui/icons/Settings';
 import StopIcon from '@material-ui/icons/Stop';
+import UndoIcon from '@material-ui/icons/Undo';
 import {
     AppBar,
-    IconButton,
-    Toolbar,
-    Typography,
-    makeStyles,
+    Button,
     ButtonGroup,
-    Button
-} from '@material-ui/core';
+    IconButton,
+    makeStyles,
+    Toolbar,
+    Typography
+    } from '@material-ui/core';
 
 //
 // Styles
@@ -26,11 +30,11 @@ const useStyles = makeStyles((theme) => ({
     },
     toolbarLeft: {
         display: 'flex',
-        flex: '1'
+        flex: '1',
     },
     toolbarMiddle: {
         display: 'flex',
-        flex: '1',
+        flex: '3',
         justifyContent: 'center'
     },
     toolbarRight: {
@@ -68,7 +72,6 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                     >
                         <MenuIcon />
                     </IconButton>
-
                     <Typography variant="h6">
                         OpenWorld Editor
                     </Typography>
@@ -84,7 +87,6 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                         <Button>
                             <UndoIcon />
                         </Button>
-
                         <Button>
                             <RedoIcon />
                         </Button>
@@ -98,9 +100,29 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                         size="small"
                     >
                         <Button>
+                            <CursorIcon />
+                        </Button>
+                        <Button>
+                            <ArrowMoveIcon color="disabled" />
+                        </Button>
+                        <Button>
+                            <ArrowExpandIcon color="disabled" />
+                        </Button>
+                        <Button>
+                            <RotateRightIcon color="disabled" />
+                        </Button>
+                    </ButtonGroup>
+
+                    <ButtonGroup
+                        disableElevation
+                        className={classes.buttonLeftMargin}
+                        variant="contained"
+                        color="default"
+                        size="small"
+                    >
+                        <Button>
                             <PlayArrowIcon />
                         </Button>
-
                         <Button>
                             <StopIcon />
                         </Button>
@@ -110,8 +132,7 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                 <div className={classes.toolbarRight}>
                     <IconButton color="inherit" size="small">
                         <SettingsIcon />
-                    </IconButton>
-
+                    </IconButton>                    
                     <IconButton
                         className={classes.buttonLeftMargin}
                         edge="end"

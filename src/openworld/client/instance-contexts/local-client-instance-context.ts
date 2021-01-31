@@ -1,21 +1,15 @@
-import BrowserContentProviderImpl from '../services/browser/browser-content-provider';
-import BrowserLightingImpl from '../services/browser/browser-lighting-impl';
-import BrowserMouseImpl from '../services/browser/browser-mouse-impl';
-import BrowserRunServiceImpl from '../services/browser/browser-run-service-impl';
-import BrowserWorldImpl from '../services/browser/browser-world-impl';
-import ContentProvider from '../../engine/datamodel/services/content-provider';
+import BrowserContentProviderImpl from '../../client-shared/services/browser/browser-content-provider';
+import BrowserLightingImpl from '../../client-shared/services/browser/browser-lighting-impl';
+import BrowserMouseImpl from '../../client-shared/services/browser/browser-mouse-impl';
+import BrowserRunServiceImpl from '../../client-shared/services/browser/browser-run-service-impl';
+import BrowserWorldImpl from '../../client-shared/services/browser/browser-world-impl';
 import ContentProviderImpl from '../../engine/services/content-provider-impl';
-import DataModel from '../../engine/datamodel/elements/datamodel';
 import IInstanceContextWithCanvas from '../../client-shared/instance-contexts/instance-context-with-canvas';
 import InstanceContext from '../../engine/datamodel/internals/instance-context';
-import Lighting from '../../engine/datamodel/services/lighting';
 import LightingImpl from '../../engine/services/lighting-impl';
-import Mouse from '../../engine/datamodel/services/mouse';
 import MouseImpl from '../../engine/services/mouse-impl';
-import RenderCanvas from '../services/browser/graphics/render-canvas';
-import RunService from '../../engine/datamodel/services/run-service';
+import RenderCanvas from '../../client-shared/services/browser/graphics/render-canvas';
 import RunServiceImpl from '../../engine/services/run-service-impl';
-import World from '../../engine/datamodel/services/world';
 import WorldImpl from '../../engine/services/world-impl';
 import { Container } from 'inversify';
 import { WorkerThread } from '../../engine/threading/contexts/main-thread/worker-thread';
@@ -38,7 +32,7 @@ export default class LocalClientInstanceContext extends InstanceContext implemen
         this._clientScriptWorkerThread = new WorkerThread(
             this, 
             new Worker(
-                '../worker-threads/client-script-thread-worker',
+                '../../client-shared/worker-threads/client-script-thread-worker',
                 { 
                     name: 'work',
                     type: 'module'

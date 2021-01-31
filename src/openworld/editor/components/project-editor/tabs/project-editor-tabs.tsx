@@ -9,6 +9,7 @@ import {
     Tabs
     } from '@material-ui/core';
 import { ProjectEditorTab, useProjectEditorContext } from '../../../core/contexts/project-editor-context';
+import { ProjectEditorTabContextProvider } from '../../../core/contexts/project-editor-tab-context';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -35,26 +36,35 @@ export default function ProjectEditorTabs(props: ProjectEditorTabsProps) {
     const classes = useStyles();
 
     const editorContext = useProjectEditorContext();
+    const selectedTabId = useObservable(editorContext.selectedTabId$, editorContext.selectedTabId);
     const activeTabs = useObservable(editorContext.activeTabs$, editorContext.activeTabs);
-    const selectedTab = useObservable(editorContext.selectedTab$, editorContext.selectedTab);
 
-    const setSelectedTab = (newTab: ProjectEditorTab | null) => {
+    const setSelectedTab = (newTabId: number | undefined) => {
         return () => {
-            editorContext.selectedTab = newTab;
+            editorContext.selectedTabId = newTabId;
         }
     }
+
+    const closeTab = (tab: ProjectEditorTab) => {
+        return (event: React.MouseEvent) => {
+            event.stopPropagation();
+            if (tab.onClose !== undefined) {
+                tab.onClose();
+            }
+        }
+    };
 
     return (
         <div className={classes.root}>
             <Paper square elevation={0}>
-                <Tabs indicatorColor='primary' textColor='primary' value={selectedTab}>
+                <Tabs indicatorColor='primary' textColor='primary' value={selectedTabId}>
                     {
                         activeTabs.map(tab => {
                             return (
                                 <Tab 
-                                    key={tab.tabId}
-                                    onClick={setSelectedTab(tab)}
-                                    value={tab} 
+                                    key={tab.id}
+                                    value={tab.id} 
+                                    onClick={setSelectedTab(tab.id)}
                                     label={
                                         <div>
                                             {tab.title}
@@ -64,7 +74,7 @@ export default function ProjectEditorTabs(props: ProjectEditorTabsProps) {
                                                     className={classes.tabCloseButton}
                                                     component="div"
                                                     size='small'
-                                                    onClick={tab.onClose}
+                                                    onClick={closeTab(tab)}
                                                 >
                                                     <CloseIcon />
                                                 </IconButton>
@@ -81,8 +91,10 @@ export default function ProjectEditorTabs(props: ProjectEditorTabsProps) {
             {
                 activeTabs.map(tab => {
                     return (
-                        <div key={tab.tabId} className={selectedTab === tab ? classes.openedTab : classes.closedTab}>
-                            {tab.component}
+                        <div key={tab.id} className={selectedTabId === tab.id ? classes.openedTab : classes.closedTab}>
+                            <ProjectEditorTabContextProvider value={tab}>
+                                {tab.component}
+                            </ProjectEditorTabContextProvider>
                         </div>
                     );
                 })

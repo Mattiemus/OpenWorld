@@ -3,22 +3,24 @@ import EditIcon from '@material-ui/icons/Edit';
 import Instance from '../../../../engine/datamodel/elements/instance';
 import InstancePropertyEditor from './instance-property-editor';
 import React, { useMemo } from 'react';
+import ScriptEditorTab from '../../../components/project-editor/tabs/script-editor-tab';
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import { camel2title } from '../../../../engine/utils/text-utils';
 import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
 import { useProjectEditorContext } from '../../contexts/project-editor-context';
-import SimpleBar from 'simplebar-react';
 
 const useStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+        flex: '1',
+        flexDirection: 'column'
+    },
     propertyTable: {
         tableLayout: 'fixed',
         width: '100%'
     },
     propertyNameColumn: {
         width: '38%'
-    },
-    rightButton: {
-        float: 'right'
     }
 }));
 
@@ -41,28 +43,33 @@ export default function InstanceEditor(props: InstanceEditorProps) {
     if (instance instanceof BaseScript) {
         extraButtons = (
             <Button
-                className={classes.rightButton}
                 size='small'
                 variant="contained"
                 color="default"
                 startIcon={<EditIcon />}
                 onClick={() => {
+                    for (const tab of editorContext.activeTabs) {
+                        if (tab.data === instance) {
+                            editorContext.selectedTabId = tab.id;
+                            return;
+                        }
+                    }
+
                     editorContext.addTabAndSelect({
-                        tabId: Math.random().toString(),
-                        isClosable: true,
                         title: instance.name,
-                        onClose: () => {},
-                        component: <SimpleBar style={{ display: 'flex', flex: '1' }}><pre>{instance.source}</pre></SimpleBar>
+                        isClosable: true,
+                        component: <ScriptEditorTab script={instance} />,
+                        data: instance
                     });                    
                 }}
             >
-                Edit Script
+                Edit
             </Button>
         );
     }
     
     return (
-        <>
+        <div className={classes.root}>
             <table className={classes.propertyTable}>
                 <tbody>
                     { 
@@ -92,6 +99,6 @@ export default function InstanceEditor(props: InstanceEditorProps) {
             </table>
 
             { extraButtons }
-        </>
+        </div>
     );
 }

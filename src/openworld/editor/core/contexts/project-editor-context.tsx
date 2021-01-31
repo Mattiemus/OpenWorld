@@ -1,8 +1,9 @@
 import JsonInstanceContextSerializer from '../../../engine/datamodel/serialization/json/json-instance-context-serializer';
 import LocalClientInstanceContext from '../../../client/instance-contexts/local-client-instance-context';
 import Project from '../models/project';
+import React, { createContext, useContext } from 'react';
+import SceneEditorTab from '../../components/project-editor/tabs/scene-editor-tab';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { createContext, useContext } from 'react';
 
 export enum ProjectEditorPanel {
     Explorer,
@@ -10,18 +11,20 @@ export enum ProjectEditorPanel {
 }
 
 export interface ProjectEditorTab {
-    tabId: string;
-    isClosable: boolean;
+    id?: number;
     title: string;
-    onClose: () => void;
+    isClosable: boolean;
     component: React.ReactElement;
+    data?: any;
+    onClose?: () => void;    
 }
 
 export class ProjectEditorContextContainer {
+    private _tabIdCounter: number = 0;
     private _editorInstanceContext: LocalClientInstanceContext;
     private _selectedPanel$ = new BehaviorSubject<ProjectEditorPanel>(ProjectEditorPanel.Explorer);
     private _activeTabs$ = new BehaviorSubject<Array<ProjectEditorTab>>([]);
-    private _selectedTab$ = new BehaviorSubject<ProjectEditorTab | null>(null);
+    private _selectedTabId$ = new BehaviorSubject<number | undefined>(undefined);
 
     public constructor(project: Project) {
         this._editorInstanceContext = new LocalClientInstanceContext();
@@ -29,6 +32,12 @@ export class ProjectEditorContextContainer {
             project.data,
             this._editorInstanceContext
         );
+
+        this.addTabAndSelect({
+            title: 'Scene',
+            isClosable: false,
+            component: <SceneEditorTab />
+        });
     }
 
     public get editorInstanceContext(): LocalClientInstanceContext {
@@ -51,40 +60,60 @@ export class ProjectEditorContextContainer {
     public get activeTabs$(): Observable<Array<ProjectEditorTab>> {
         return this._activeTabs$.asObservable();
     }
-
     public addTab(tab: ProjectEditorTab): void {
+        if (tab.id === undefined) {
+            tab.id = this._tabIdCounter++;
+        }
+
         const newTabs = [ ...this.activeTabs, tab ];
         this._activeTabs$.next(newTabs);
 
-        if (this.selectedTab === null) {
-            this.selectedTab = tab;
+        if (this.selectedTabId === undefined) {
+            this.selectedTabId = tab.id;
         }
     }
-
     public addTabAndSelect(tab: ProjectEditorTab): void {
         this.addTab(tab);
-        this.selectedTab = tab;
+        this.selectedTabId = tab.id;
     }
-
-    public removeTab(tab: ProjectEditorTab): void {
-        const newTabs = this.activeTabs.filter(t => t !== tab);
-        this._activeTabs$.next(newTabs);
-
-        if (this.selectedTab === tab) {
-            this.selectedTab = this.activeTabs.length === 0 
-                ? null
-                : this.activeTabs[this.activeTabs.length - 1];
+    public updateTab(tab: ProjectEditorTab): void {
+        const tabIndex = this.activeTabs.findIndex(t => t.id === tab.id);
+        if (tabIndex === -1) {
+            return;
         }
+
+        const newTabs = [ ...this.activeTabs ];
+        newTabs[tabIndex] = tab;
+
+        this._activeTabs$.next(newTabs);
+    }
+    public removeTab(tab: ProjectEditorTab): void {
+        const tabIndex = this.activeTabs.findIndex(t => t.id === tab.id);
+        if (tabIndex === -1) {
+            return;
+        }
+
+        if (this.selectedTabId === tab.id) {
+            const nextTab = 
+                this.activeTabs[tabIndex - 1] ||
+                this.activeTabs[tabIndex + 1] ||
+                undefined;
+
+            this.selectedTabId = nextTab === undefined ? undefined : nextTab.id;
+        }
+        
+        const newTabs = this.activeTabs.filter(t => t.id !== tab.id);
+        this._activeTabs$.next(newTabs);
     }
 
-    public get selectedTab(): ProjectEditorTab | null {
-        return this._selectedTab$.value;
+    public get selectedTabId(): number | undefined {
+        return this._selectedTabId$.value;
     }
-    public set selectedTab(newValue: ProjectEditorTab | null) {
-        this._selectedTab$.next(newValue);
+    public set selectedTabId(newValue: number | undefined) {
+        this._selectedTabId$.next(newValue);
     }
-    public get selectedTab$(): Observable<ProjectEditorTab | null> {
-        return this._selectedTab$.asObservable();
+    public get selectedTabId$(): Observable<number | undefined> {
+        return this._selectedTabId$.asObservable();
     }
 }
 

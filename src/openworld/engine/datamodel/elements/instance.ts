@@ -418,7 +418,7 @@ export default abstract class Instance implements IDestroyable
     ): [Instance, number] | undefined {
         for (const child of this._children) {
             if (predicate(child)) {
-                return [child, depthCounter];
+                return [ child, depthCounter ];
             }
         }
 
@@ -456,7 +456,7 @@ export default abstract class Instance implements IDestroyable
         depthCounter: number
     ): [Instance, number] | undefined {
         if (predicate(this)) {
-            return [this, depthCounter];
+            return [ this, depthCounter ];
         }
 
         if (this._parent === null) {            
