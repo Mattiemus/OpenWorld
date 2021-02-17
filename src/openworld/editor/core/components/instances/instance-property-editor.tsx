@@ -1,35 +1,30 @@
+import ClearIcon from '@material-ui/icons/Clear';
 import Color3 from '../../../../engine/math/color3';
 import Content from '../../../../engine/datamodel/data-types/content';
 import DataModelPropertyMetaData from '../../../../engine/datamodel/internals/metadata/properties/data-model-property-metadata';
+import ErrorIcon from '@material-ui/icons/Error';
 import Instance from '../../../../engine/datamodel/elements/instance';
 import InstanceLabel from './instance-label';
 import InstanceUtils from '../../../../engine/datamodel/utils/InstanceUtils';
 import MathEx from '../../../../engine/math/mathex';
 import PropertyType from '../../../../engine/datamodel/internals/metadata/properties/property-type';
 import Quaternion from '../../../../engine/math/quaternion';
-import ClearIcon from '@material-ui/icons/Clear';
-import ErrorIcon from '@material-ui/icons/Error';
-import React, {
-    useEffect,
-    useMemo,
-    useState
-    } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import useThrottle from '../../hooks/use-throttle';
 import Vector3 from '../../../../engine/math/vector3';
 import Vector3Input from '../inputs/vector3-input';
-import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
 import {
     Button,
+    IconButton,
     Input,
+    InputAdornment,
+    makeStyles,
     MenuItem,
     Select,
     Switch,
-    TextField,
-    IconButton,
-    InputAdornment,
-    makeStyles,
-    Tooltip,
+    TextField
     } from '@material-ui/core';
+import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
 
 //
 // Property Editor Factory
@@ -231,11 +226,8 @@ export const InstanceVector3PropertyEditor =
     createInstancePropertyEditor<Vector3>((renderProps) => {
         const {
             propertyMetadata,
-            value,
             setValue,
             throttledValue,
-            hasFocus,
-            setHasFocus
         } = renderProps;
 
         // TODO: Add focus handling!
@@ -257,11 +249,8 @@ export const InstanceQuaternionPropertyEditor =
     createInstancePropertyEditor<Quaternion>((renderProps) => {
         const {
             propertyMetadata,
-            value,
             setValue,
             throttledValue,
-            hasFocus,
-            setHasFocus
         } = renderProps;
 
         // TODO: Add focus handling!
@@ -379,9 +368,6 @@ export const InstanceInstanceRefPropertyEditor =
             propertyMetadata,
             value,
             setValue,
-            throttledValue,
-            hasFocus,
-            setHasFocus
         } = renderProps;
 
         const classes = useInstanceRefPropertyEditorStyles();

@@ -1,8 +1,7 @@
-import { IDestroyable } from '../../../../../engine/utils/interfaces';
+import * as THREE from 'three';
 import Camera from '../../../../../engine/datamodel/elements/camera';
 import RenderCanvas from '../render-canvas';
-
-import * as THREE from 'three';
+import { IDestroyable } from '../../../../../engine/utils/interfaces';
 import { SignalConnection } from 'typed-signals';
 
 export default class PerspectiveCameraProxy extends THREE.PerspectiveCamera implements IDestroyable
@@ -75,12 +74,5 @@ export default class PerspectiveCameraProxy extends THREE.PerspectiveCamera impl
             this._camera.cframe.qy,
             this._camera.cframe.qz,
             this._camera.cframe.qw);
-
-        if (this._renderCanvas.skybox !== null) {
-            this._renderCanvas.skybox.position.set(
-                this._camera.cframe.x,
-                this._camera.cframe.y,
-                this._camera.cframe.z);
-        }
     }
 }

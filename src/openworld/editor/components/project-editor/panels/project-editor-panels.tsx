@@ -11,6 +11,10 @@ import {
     makeStyles,
     } from '@material-ui/core';
 
+//
+// Styles
+//
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: theme.spacing(50),
@@ -25,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
         flex: '1'
     }
 }));
+
+//
+// Component
+//
 
 export type ProjectEditorPanelsProps = {
 };

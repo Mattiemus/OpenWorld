@@ -120,6 +120,10 @@ export default class RenderCanvas extends ServiceBase
         }
 
         if (this._camera !== null) {
+            if (this._skybox !== null) {
+                this._skybox.position.copy(this._camera.position);
+            }
+
             this._renderer.render(this._scene, this._camera);
         } else {
             this._renderer.clear();

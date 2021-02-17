@@ -37,6 +37,9 @@ export default abstract class Instance implements IDestroyable
 {
     private static _allowCreateService = false;
 
+    // TODO: Refactor out _refId so it has to be grabbed from InstanceContext
+    // TODO: Add security context stuff
+
     private _metadata: DataModelClassMetaData;
     private _refId: string = '<!UNSET!>';
     private _name: string;
@@ -123,7 +126,6 @@ export default abstract class Instance implements IDestroyable
         }
 
         this._name = newName;
-        this.onNameChanged(newName);
         this.firePropertyChanged('name');
     }
 
@@ -150,17 +152,15 @@ export default abstract class Instance implements IDestroyable
         if (oldParent !== null) {
             oldParent._children.delete(this);
             oldParent.fireChildRemoved(this);
-            oldParent.fireAncestroyChangedRecursive(this, newParent);
+            oldParent.fireAncestryChangedRecursive(this, newParent);
         }
 
         if (newParent !== null) {
             newParent._children.add(this);
             newParent.fireChildAdded(this);
             newParent.fireDescendantAddedRecursive(this);
-            newParent.fireAncestroyChangedRecursive(this, newParent);
+            newParent.fireAncestryChangedRecursive(this, newParent);
         }
-
-        this.onParentChanged(newParent);
     }
 
     //
@@ -357,38 +357,6 @@ export default abstract class Instance implements IDestroyable
         }
     }
 
-    protected onParentChanged(newParent: Instance | null): void {
-        // No-op
-    }
-
-    protected onNameChanged(newName: string): void {
-        // No-op
-    }
-
-    protected onPropertyChanged(propertyName: string): void {
-        // No-op
-    }
-
-    protected onChildRemoved(child: Instance): void {
-        // No-op
-    }
-
-    protected onChildAdded(child: Instance): void {
-        // No-op
-    }
-
-    protected onAncestroyChanged(child: Instance, parent: Instance | null): void {
-        // No-op
-    }
-
-    protected onDescendantRemoving(descendant: Instance): void {
-        // No-op
-    }
-
-    protected onDescendantAdded(descendant: Instance): void {
-        // No-op  
-    }
-
     protected onDestroy(): void {
         this._ancestryChanged.disconnectAll();
         this._propertyChanged.disconnectAll();
@@ -398,7 +366,10 @@ export default abstract class Instance implements IDestroyable
         this._descendantRemoving.disconnectAll();
     }
 
-    private findFirstChildInternal(predicate: (inst: Instance) => boolean, isRecursive: boolean = true): Instance | undefined {
+    private findFirstChildInternal(
+        predicate: (inst: Instance) => boolean,
+        isRecursive: boolean = true
+    ): Instance | undefined {
         this.throwIfDestroyed();
 
         const maxDepth = isRecursive ? undefined : 1;
@@ -439,7 +410,9 @@ export default abstract class Instance implements IDestroyable
         return nearestResult;
     }
 
-    private findFirstAncestorInternal(predicate: (inst: Instance) => boolean): Instance | undefined {
+    private findFirstAncestorInternal(
+        predicate: (inst: Instance) => boolean
+    ): Instance | undefined {
         this.throwIfDestroyed();
         
         const result = this.findFirstAncestorRecursiveInternal(predicate, undefined, 0);
@@ -472,8 +445,6 @@ export default abstract class Instance implements IDestroyable
     }
 
     protected firePropertyChanged(propertyName: string): void {
-        this.onPropertyChanged(propertyName);
-
         if (this._propertyChangedSignals !== null) {
             const signal = this._propertyChangedSignals.get(propertyName);
             if (signal !== undefined) {
@@ -484,40 +455,35 @@ export default abstract class Instance implements IDestroyable
         this._propertyChanged.emit(propertyName);
     }
 
-    private fireChildRemoved(child: Instance): void {
-        this.onChildRemoved(child);
-        this._childRemoved.emit(child);
-    }
-
     private fireChildAdded(child: Instance): void {
-        this.onChildAdded(child);
         this._childAdded.emit(child);
     }
 
-    private fireAncestroyChangedRecursive(child: Instance, parent: Instance | null): void {
-        this.onAncestroyChanged(child, parent);
+    private fireChildRemoved(child: Instance): void {
+        this._childRemoved.emit(child);
+    }
+
+    private fireAncestryChangedRecursive(child: Instance, parent: Instance | null): void {
         this._ancestryChanged.emit(child, parent);
 
         this._children.forEach(child => {
-            child.fireAncestroyChangedRecursive(child, parent);
+            child.fireAncestryChangedRecursive(child, parent);
         });
     }
 
-    private fireDescendantRemovingRecursive(descendant: Instance): void {
-        this.onDescendantRemoving(descendant);
-        this._descendantRemoving.emit(descendant);
-
-        if (this._parent !== null) {
-            this._parent.fireDescendantRemovingRecursive(descendant);
-        }
-    }
-
     private fireDescendantAddedRecursive(descendant: Instance): void {
-        this.onDescendantAdded(descendant);
         this._descendantAdded.emit(descendant);
 
         if (this._parent !== null) {
             this._parent.fireDescendantAddedRecursive(descendant);
         }        
+    }
+
+    private fireDescendantRemovingRecursive(descendant: Instance): void {
+        this._descendantRemoving.emit(descendant);
+
+        if (this._parent !== null) {
+            this._parent.fireDescendantRemovingRecursive(descendant);
+        }
     }
 }

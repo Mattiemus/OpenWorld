@@ -1,6 +1,6 @@
-import ArrowExpandIcon from '../core/components/icons/arrow-expand-icon';
-import ArrowMoveIcon from '../core/components/icons/arrow-move-icon';
-import CursorIcon from '../core/components/icons/cursor-icon';
+import ArrowExpandIcon from '../../core/components/icons/arrow-expand-icon';
+import ArrowMoveIcon from '../../core/components/icons/arrow-move-icon';
+import CursorIcon from '../../core/components/icons/cursor-icon';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -10,6 +10,7 @@ import RotateRightIcon from '@material-ui/icons/RotateRight';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StopIcon from '@material-ui/icons/Stop';
 import UndoIcon from '@material-ui/icons/Undo';
+import useObservable from '../../core/hooks/use-observable';
 import {
     AppBar,
     Button,
@@ -19,6 +20,7 @@ import {
     Toolbar,
     Typography
     } from '@material-ui/core';
+import { ProjectEditorTool, useProjectEditorContext } from '../../core/contexts/project-editor-context';
 
 //
 // Styles
@@ -54,11 +56,47 @@ const useStyles = makeStyles((theme) => ({
 // Component
 //
 
-export type EditorAppBarProps = {
+export type ProjectEditorAppBarProps = {
 };
 
-export default function EditorAppBar(props: EditorAppBarProps) {
+export default function ProjectEditorAppBar(props: ProjectEditorAppBarProps) {
     const classes = useStyles();
+
+    const editorContext = useProjectEditorContext();
+
+    const selectedTool = useObservable(editorContext.selectedTool$, editorContext.selectedTool);
+
+    const onUndoClick = () => {
+        // TODO
+    };
+
+    const onRedoClick = () => {
+        // TODO
+    };
+
+    const onCursorToolClick = () => {
+        editorContext.selectedTool = ProjectEditorTool.Pointer;
+    };
+
+    const onMoveToolClick = () => {
+        editorContext.selectedTool = ProjectEditorTool.Move;
+    };
+
+    const onScaleToolClick = () => {
+        editorContext.selectedTool = ProjectEditorTool.Scale;
+    };
+
+    const onRotateToolClick = () => {
+        editorContext.selectedTool = ProjectEditorTool.Rotate;
+    };
+
+    const onPlayClick = () => {
+        // TODO
+    };
+
+    const onStopClick = () => {
+        // TODO
+    };
 
     return (
         <AppBar position="static" color="primary" elevation={3}>
@@ -84,10 +122,10 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                         color="default"
                         size="small"
                     >
-                        <Button>
+                        <Button onClick={onUndoClick}>
                             <UndoIcon />
                         </Button>
-                        <Button>
+                        <Button onClick={onRedoClick}>
                             <RedoIcon />
                         </Button>
                     </ButtonGroup>
@@ -99,17 +137,17 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                         color="default"
                         size="small"
                     >
-                        <Button>
-                            <CursorIcon />
+                        <Button onClick={onCursorToolClick}>
+                            <CursorIcon color={selectedTool === ProjectEditorTool.Pointer ? 'inherit' : 'disabled'} />
                         </Button>
-                        <Button>
-                            <ArrowMoveIcon color="disabled" />
+                        <Button onClick={onMoveToolClick}>
+                            <ArrowMoveIcon color={selectedTool === ProjectEditorTool.Move ? 'inherit' : 'disabled'} />
                         </Button>
-                        <Button>
-                            <ArrowExpandIcon color="disabled" />
+                        <Button onClick={onScaleToolClick}>
+                            <ArrowExpandIcon color={selectedTool === ProjectEditorTool.Scale ? 'inherit' : 'disabled'} />
                         </Button>
-                        <Button>
-                            <RotateRightIcon color="disabled" />
+                        <Button onClick={onRotateToolClick}>
+                            <RotateRightIcon color={selectedTool === ProjectEditorTool.Rotate ? 'inherit' : 'disabled'} />
                         </Button>
                     </ButtonGroup>
 
@@ -120,10 +158,10 @@ export default function EditorAppBar(props: EditorAppBarProps) {
                         color="default"
                         size="small"
                     >
-                        <Button>
+                        <Button onClick={onPlayClick}>
                             <PlayArrowIcon />
                         </Button>
-                        <Button>
+                        <Button onClick={onStopClick}>
                             <StopIcon />
                         </Button>
                     </ButtonGroup>

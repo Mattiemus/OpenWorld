@@ -1,14 +1,22 @@
-import PanelHeader from '../../../core/components/panels/panel-header';
+import PanelHeader from './shared/panel-header';
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
+//
+// Styles
+//
+
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         flex: '1',
         flexDirection: 'column'
     }
 }));
+
+//
+// Component
+//
 
 export type ContentPanelProps = {
 };

@@ -1,6 +1,10 @@
 import React from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 
+//
+// Styles
+//
+
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
@@ -12,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(2)
     }
 }));
+
+//
+// Component
+//
 
 export type PanelHeaderProps = {
 };

@@ -1,34 +1,24 @@
-import EditorAppBar from './editor-app-bar';
-import EditorBody from './editor-body';
+import Project from '../core/models/project';
+import ProjectEditor from './project-editor/project-editor';
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import useConstant from '../core/hooks/use-constant';
+import { testInstanceData } from '../../../testdata';
 
 //
-// Styles
-//
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        flexBasis: '100%',
-        flexDirection: 'column'
-    }
-}));
-
-//
-// Component
+// Components
 //
 
 export type EditorAppProps = {
 };
 
 export default function EditorApp(props: EditorAppProps) {
-    const classes = useStyles();
+    const project = useConstant(() => {
+        const proj = new Project();
+        proj.data = testInstanceData;
+        return proj;
+    });
 
     return (
-        <div className={classes.root} onContextMenu={(e)=> e.preventDefault()}>
-            <EditorAppBar />
-            <EditorBody />
-        </div>
+        <ProjectEditor project={project} />
     );
 }

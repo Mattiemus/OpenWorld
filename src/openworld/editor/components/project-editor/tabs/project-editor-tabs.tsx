@@ -11,6 +11,10 @@ import {
 import { ProjectEditorTab, useProjectEditorContext } from '../../../core/contexts/project-editor-context';
 import { ProjectEditorTabContextProvider } from '../../../core/contexts/project-editor-tab-context';
 
+//
+// Styles
+//
+
 const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
@@ -28,6 +32,10 @@ const useStyles = makeStyles(() => ({
         flex: '1'
     }
 }));
+
+//
+// Component
+//
 
 export type ProjectEditorTabsProps = {
 };

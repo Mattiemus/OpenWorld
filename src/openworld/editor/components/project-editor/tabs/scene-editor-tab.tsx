@@ -2,6 +2,10 @@ import InstanceContextRenderCanvas from '../../../../client-shared/components/in
 import React from 'react';
 import { useProjectEditorInstanceContext } from '../../../core/contexts/project-editor-context';
 
+//
+// Component
+//
+
 export type SceneEditorTabProps = {
 };
 

@@ -1,13 +1,14 @@
-import Instance from '../../../../engine/datamodel/elements/instance';
-import InstanceContext from '../../../../engine/datamodel/internals/instance-context';
-import InstanceEditor from '../../../core/components/instances/instance-editor';
-import InstanceExplorer from '../../_to-organise/instance-explorer';
-import React, { useState } from 'react';
-import SimpleBar from 'simplebar-react';
-import { isArray } from '../../../../engine/utils/type-guards';
+import InstanceEditor from './explorer/instance-editor';
+import InstanceExplorer from './explorer/instance-explorer';
+import PanelHeader from './shared/panel-header';
+import React from 'react';
+import useObservable from '../../../core/hooks/use-observable';
 import { makeStyles } from '@material-ui/core';
-import PanelHeader from '../../../core/components/panels/panel-header';
-import { useProjectEditorInstanceContext } from '../../../core/contexts/project-editor-context';
+import { useProjectEditorContext, useProjectEditorInstanceContext } from '../../../core/contexts/project-editor-context';
+
+//
+// Styles
+//
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -24,12 +25,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flex: '1',
         padding: theme.spacing(1)
-    },
-    instancePropertiesSimpleBar: {
-        display: 'flex',
-        flex: '1'
     }
 }));
+
+//
+// Component
+//
 
 export type ExplorerPanelProps = {
 };
@@ -37,21 +38,10 @@ export type ExplorerPanelProps = {
 export default function ExplorerPanel(props: ExplorerPanelProps) {
     const classes = useStyles();
 
+    const editorContext = useProjectEditorContext();
     const editorInstanceContext = useProjectEditorInstanceContext();
 
-    const [ selectedInstance, setSelectedInstance ] = useState<Instance | null>(null);
-
-    const onInstanceSelect = (_event: React.ChangeEvent<{}>, instances: Instance | Instance[]) => {
-        if (isArray(instances)) {
-            if (instances.length === 0) {                
-                setSelectedInstance(null);
-            } else {
-                setSelectedInstance(instances[0]);
-            }
-        } else {
-            setSelectedInstance(instances);
-        }
-    };
+    const selectedInstances = useObservable(editorContext.selectedInstaces$, editorContext.selectedInstaces);
 
     return (
         <div className={classes.root}>
@@ -62,9 +52,7 @@ export default function ExplorerPanel(props: ExplorerPanelProps) {
             <div className={classes.instanceExplorer}>
                 <InstanceExplorer
                     instance={editorInstanceContext.dataModel}
-                    showEditorHiddenInstances={true}
                     multiSelect={true}
-                    onInstanceSelect={onInstanceSelect}
                 />
             </div>
             
@@ -74,12 +62,10 @@ export default function ExplorerPanel(props: ExplorerPanelProps) {
 
             <div className={classes.instanceProperties}>
                 { 
-                    selectedInstance &&
-                    <SimpleBar className={classes.instancePropertiesSimpleBar}>
-                        <InstanceEditor
-                            instance={selectedInstance} 
-                        />
-                    </SimpleBar>
+                    selectedInstances.length !== 0 &&
+                    <InstanceEditor
+                        instance={selectedInstances[0]} 
+                    />
                 }
             </div>
         </div>

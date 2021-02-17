@@ -2,7 +2,6 @@ import BrowserContentProviderImpl from '../../client-shared/services/browser/bro
 import BrowserLightingImpl from '../../client-shared/services/browser/browser-lighting-impl';
 import BrowserMouseImpl from '../../client-shared/services/browser/browser-mouse-impl';
 import BrowserRunServiceImpl from '../../client-shared/services/browser/browser-run-service-impl';
-import BrowserWorldImpl from '../../client-shared/services/browser/browser-world-impl';
 import ContentProviderImpl from '../../engine/services/content-provider-impl';
 import IInstanceContextWithCanvas from '../../client-shared/instance-contexts/instance-context-with-canvas';
 import InstanceContext from '../../engine/datamodel/internals/instance-context';
@@ -12,12 +11,13 @@ import RenderCanvas from '../../client-shared/services/browser/graphics/render-c
 import RunServiceImpl from '../../engine/services/run-service-impl';
 import WorldImpl from '../../engine/services/world-impl';
 import { Container } from 'inversify';
-import { WorkerThread } from '../../engine/threading/contexts/main-thread/worker-thread';
+import EditorCamera from './editor-camera';
+import BrowserWorldImpl from '../../client-shared/services/browser/browser-world-impl';
 
-export default class LocalClientInstanceContext extends InstanceContext implements IInstanceContextWithCanvas
+export default class EditorInstanceContext extends InstanceContext implements IInstanceContextWithCanvas
 {
     private _renderCanvas: RenderCanvas;
-    private _clientScriptWorkerThread: WorkerThread;
+    private _editorCamera: EditorCamera;
 
     //
     // Constructor
@@ -28,15 +28,10 @@ export default class LocalClientInstanceContext extends InstanceContext implemen
         this.finishConstruction();
 
         this._renderCanvas = this.getServiceImpl<RenderCanvas>('RenderCanvas');
+        const runService = this.getServiceImpl<RunServiceImpl>(RunServiceImpl);
 
-        this._clientScriptWorkerThread = new WorkerThread(
-            this, 
-            new Worker(
-                '../../client-shared/worker-threads/client-script-thread-worker',
-                { 
-                    name: 'work',
-                    type: 'module'
-                }));
+        this._editorCamera = new EditorCamera(this._renderCanvas, runService);
+        this._renderCanvas.camera = this._editorCamera;
     }
 
     //
@@ -44,10 +39,17 @@ export default class LocalClientInstanceContext extends InstanceContext implemen
     //
 
     public get canvas(): HTMLCanvasElement | null {
+        this.throwIfDestroyed();
         return this._renderCanvas.canvas;
     }
     public set canvas(newCanvas: HTMLCanvasElement | null) {
+        this.throwIfDestroyed();
         this._renderCanvas.canvas = newCanvas;
+    }
+
+    public get editorCamera(): EditorCamera {
+        this.throwIfDestroyed();
+        return this._editorCamera;
     }
 
     //
@@ -56,7 +58,7 @@ export default class LocalClientInstanceContext extends InstanceContext implemen
 
     protected onDestroy(): void {
         super.onDestroy();
-        this._clientScriptWorkerThread.destroy();
+        this._editorCamera.destroy();
     }
 
     protected setupContainer(container: Container): void {

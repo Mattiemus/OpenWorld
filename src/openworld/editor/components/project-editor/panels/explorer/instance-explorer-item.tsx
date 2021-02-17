@@ -1,16 +1,24 @@
-import Instance from '../../../engine/datamodel/elements/instance';
+import Instance from '../../../../../engine/datamodel/elements/instance';
 import React, { useState, useEffect } from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
-import { getMetaData } from '../../../engine/datamodel/internals/metadata/metadata';
-import InstanceLabel from '../../core/components/instances/instance-label';
-import InstanceUtils from '../../../engine/datamodel/utils/InstanceUtils';
+import { getMetaData } from '../../../../../engine/datamodel/internals/metadata/metadata';
+import InstanceLabel from '../../../../core/components/instances/instance-label';
+import InstanceUtils from '../../../../../engine/datamodel/utils/InstanceUtils';
+
+//
+// Styles
+//
 
 const useStyles = makeStyles((theme) => ({
     label: {
       padding: theme.spacing(0.5, 0)
     }
 }));
+
+//
+// Component
+//
 
 export type InstanceExplorerItemProps = {
     instance: Instance;

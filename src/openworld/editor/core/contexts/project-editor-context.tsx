@@ -1,9 +1,17 @@
 import JsonInstanceContextSerializer from '../../../engine/datamodel/serialization/json/json-instance-context-serializer';
-import LocalClientInstanceContext from '../../../client/instance-contexts/local-client-instance-context';
 import Project from '../models/project';
 import React, { createContext, useContext } from 'react';
 import SceneEditorTab from '../../components/project-editor/tabs/scene-editor-tab';
 import { BehaviorSubject, Observable } from 'rxjs';
+import EditorInstanceContext from '../../instance-contexts/editor-instance-context';
+import Instance from '../../../engine/datamodel/elements/instance';
+
+export enum ProjectEditorTool {
+    Pointer,
+    Move,
+    Scale,
+    Rotate
+}
 
 export enum ProjectEditorPanel {
     Explorer,
@@ -21,13 +29,15 @@ export interface ProjectEditorTab {
 
 export class ProjectEditorContextContainer {
     private _tabIdCounter: number = 0;
-    private _editorInstanceContext: LocalClientInstanceContext;
+    private _editorInstanceContext: EditorInstanceContext;
     private _selectedPanel$ = new BehaviorSubject<ProjectEditorPanel>(ProjectEditorPanel.Explorer);
     private _activeTabs$ = new BehaviorSubject<Array<ProjectEditorTab>>([]);
     private _selectedTabId$ = new BehaviorSubject<number | undefined>(undefined);
+    private _selectedInstaces$ = new BehaviorSubject<Instance[]>([]);
+    private _selectedTool$ = new BehaviorSubject<ProjectEditorTool>(ProjectEditorTool.Pointer);
 
     public constructor(project: Project) {
-        this._editorInstanceContext = new LocalClientInstanceContext();
+        this._editorInstanceContext = new EditorInstanceContext();
         JsonInstanceContextSerializer.deserializeObject(
             project.data,
             this._editorInstanceContext
@@ -40,7 +50,7 @@ export class ProjectEditorContextContainer {
         });
     }
 
-    public get editorInstanceContext(): LocalClientInstanceContext {
+    public get editorInstanceContext(): EditorInstanceContext {
         return this._editorInstanceContext;
     }
 
@@ -114,6 +124,26 @@ export class ProjectEditorContextContainer {
     }
     public get selectedTabId$(): Observable<number | undefined> {
         return this._selectedTabId$.asObservable();
+    }
+
+    public get selectedInstaces(): Instance[] {
+        return this._selectedInstaces$.value;
+    }
+    public set selectedInstaces(newValue: Instance[]) {
+        this._selectedInstaces$.next(newValue);
+    }
+    public get selectedInstaces$(): Observable<Instance[]> {
+        return this._selectedInstaces$.asObservable();
+    }
+
+    public get selectedTool(): ProjectEditorTool {
+        return this._selectedTool$.value;
+    }
+    public set selectedTool(newValue: ProjectEditorTool) {
+        this._selectedTool$.next(newValue);
+    }
+    public get selectedTool$(): Observable<ProjectEditorTool> {
+        return this._selectedTool$.asObservable();
     }
 }
 

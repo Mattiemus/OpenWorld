@@ -12,7 +12,7 @@ export default function InstanceContextRenderCanvas(props: InstanceContextRender
         return () => {
             instanceContext.canvas = null;
         }
-    }, []);
+    }, [ instanceContext ]);
 
     const setCanvas = (canvas: HTMLCanvasElement) => {
         instanceContext.canvas = canvas;

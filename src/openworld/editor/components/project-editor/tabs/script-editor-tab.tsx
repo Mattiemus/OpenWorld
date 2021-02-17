@@ -1,8 +1,23 @@
 import BaseScript from '../../../../engine/datamodel/elements/base-script';
-import React, { useEffect } from 'react';
+import React from 'react';
 import SimpleBar from 'simplebar-react';
-import { useProjectEditorTabContext } from '../../../core/contexts/project-editor-tab-context';
-import { useProjectEditorContext } from '../../../core/contexts/project-editor-context';
+import { useEditorTabCloseEffect } from '../../../core/contexts/project-editor-tab-context';
+import { makeStyles } from '@material-ui/core';
+
+//
+// Styles
+//
+
+const useStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+        flex: '1'
+    }
+}));
+
+//
+// Component
+//
 
 export type ScriptEditorTabProps = {
     script: BaseScript
@@ -11,24 +26,14 @@ export type ScriptEditorTabProps = {
 export default function ScriptEditorTab(props: ScriptEditorTabProps) {
     const { script } = props;
 
-    const projectEditorContext = useProjectEditorContext();
-    const tab = useProjectEditorTabContext();
+    const classes = useStyles();
 
-    useEffect(() => {
-        tab.onClose = () => {
-            projectEditorContext.removeTab(tab);
-        }
-        projectEditorContext.updateTab(tab);
-
-        return () => {
-            tab.onClose = undefined;
-            projectEditorContext.updateTab(tab);
-        };
-
-    }, [ projectEditorContext, tab ]);
+    useEditorTabCloseEffect((projectEditorContext, tab) => {
+        projectEditorContext.removeTab(tab);
+    });
 
     return (
-        <SimpleBar style={{ display: 'flex', flex: '1' }}>
+        <SimpleBar className={classes.root}>
             <pre>{script.source}</pre>
         </SimpleBar>
     );
