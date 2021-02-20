@@ -1,7 +1,7 @@
-import InstanceContext from '../internals/instance-context';
+import InstanceContext from '../context/instance-context';
 import Light from './light';
-import PropertyType from '../internals/metadata/properties/property-type';
-import { DataModelClass } from '../internals/metadata/metadata';
+import PropertyType from '../metadata/properties/property-type';
+import { DataModelClass } from '../metadata/metadata';
 
 @DataModelClass({
     className: 'PointLight',

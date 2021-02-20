@@ -1,8 +1,8 @@
-import { DataModelClass } from "../internals/metadata/metadata";
+import { DataModelClass } from "../metadata/metadata";
 import Instance from '../elements/instance';
-import RunServiceImpl from '../../services/run-service-impl';
-import ForwardingSignal from '../internals/forwarding-signal';
-import InstanceContext from "../internals/instance-context";
+import RunServiceImpl from './impl/run-service-impl';
+import ForwardingSignal from '../utils/forwarding-signal';
+import InstanceContext from "../context/instance-context";
 
 import { Signal } from 'typed-signals';
 

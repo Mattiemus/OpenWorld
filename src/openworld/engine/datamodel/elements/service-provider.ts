@@ -1,5 +1,5 @@
 import Instance from './instance';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 import { Class } from '../../utils/types';
 
 @DataModelClass({

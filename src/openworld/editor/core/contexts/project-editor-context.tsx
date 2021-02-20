@@ -3,7 +3,7 @@ import Project from '../models/project';
 import React, { createContext, useContext } from 'react';
 import SceneEditorTab from '../../components/project-editor/tabs/scene-editor-tab';
 import { BehaviorSubject, Observable } from 'rxjs';
-import EditorInstanceContext from '../../instance-contexts/editor-instance-context';
+import EditorInstanceContext from '../../datamodel/context/editor-instance-context';
 import Instance from '../../../engine/datamodel/elements/instance';
 
 export enum ProjectEditorTool {

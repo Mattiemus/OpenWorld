@@ -1,9 +1,9 @@
 import Instance from '../../elements/instance';
-import InstanceContext from '../../internals/instance-context';
-import InstanceUtils from '../../utils/InstanceUtils';
+import InstanceContext from '../../context/instance-context';
+import InstanceUtils from '../../utils/instance-utils';
 import JsonInstancePropertySerializer, { InstanceJsonProperty } from './json-instance-property-serializer';
 import { Class } from '../../../utils/types';
-import { getConstructor, getMetaData } from '../../internals/metadata/metadata';
+import { getConstructor, getMetaData } from '../../metadata/metadata';
 import { hasFieldOfType, isObject, isString } from '../../../utils/type-guards';
 
 export type InstanceJson = {

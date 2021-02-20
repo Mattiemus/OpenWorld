@@ -1,6 +1,6 @@
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 import Instance from './instance';
-import PropertyType from '../internals/metadata/properties/property-type';
+import PropertyType from '../metadata/properties/property-type';
 
 export enum ScriptLanguage {
     javascript = 'JavaScript'

@@ -1,9 +1,9 @@
 import Instance from '../elements/instance';
-import { DataModelClass } from "../internals/metadata/metadata";
-import PropertyType from "../internals/metadata/properties/property-type";
-import WorldImpl from '../../services/world-impl';
+import { DataModelClass } from "../metadata/metadata";
+import PropertyType from "../metadata/properties/property-type";
+import WorldImpl from './impl/world-impl';
 import Camera from '../elements/camera';
-import InstanceContext from '../internals/instance-context';
+import InstanceContext from '../context/instance-context';
 
 @DataModelClass({
     className: 'World',

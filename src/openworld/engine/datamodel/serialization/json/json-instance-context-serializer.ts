@@ -1,5 +1,5 @@
-import InstanceContext from '../../internals/instance-context';
-import InstanceUtils from '../../utils/InstanceUtils';
+import InstanceContext from '../../context/instance-context';
+import InstanceUtils from '../../utils/instance-utils';
 import JsonInstanceSerializer, { InstanceJson } from './json-instance-serializer';
 import { isObject } from '../../../utils/type-guards';
 

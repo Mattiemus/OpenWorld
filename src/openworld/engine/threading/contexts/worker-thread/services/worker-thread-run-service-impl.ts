@@ -1,4 +1,4 @@
-import RunServiceImpl from '../../../../services/run-service-impl';
+import RunServiceImpl from '../../../../datamodel/services/impl/run-service-impl';
 import { injectable, inject } from 'inversify';
 import { Signal, SignalConnection } from 'typed-signals';
 import InterThreadCommunication from '../../../inter-thread-communication';

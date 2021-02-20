@@ -1,4 +1,4 @@
-import MouseImpl from '../../../../services/mouse-impl';
+import MouseImpl from '../../../../datamodel/services/impl/mouse-impl';
 import { injectable, inject } from 'inversify';
 import { Signal, SignalConnection } from 'typed-signals';
 import InterThreadCommunication from '../../../inter-thread-communication';

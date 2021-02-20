@@ -1,7 +1,7 @@
-import { DataModelClass } from "../internals/metadata/metadata";
+import { DataModelClass } from "../metadata/metadata";
 import Instance from "../elements/instance";
-import ContentProviderImpl from "../../services/content-provider-impl";
-import InstanceContext from '../internals/instance-context';
+import ContentProviderImpl from "./impl/content-provider-impl";
+import InstanceContext from '../context/instance-context';
 
 @DataModelClass({
     className: 'ContentProvider',

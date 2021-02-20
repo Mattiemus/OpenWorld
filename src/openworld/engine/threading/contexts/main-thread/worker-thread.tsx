@@ -1,16 +1,16 @@
 import Destroyable from '../../../utils/destroyable';
 import Instance from '../../../datamodel/elements/instance';
-import InstanceContext from '../../../datamodel/internals/instance-context';
+import InstanceContext from '../../../datamodel/context/instance-context';
 import InterThreadCommunication from '../../inter-thread-communication';
 import JsonInstanceSerializer, { InstanceJson } from '../../../datamodel/serialization/json/json-instance-serializer';
-import MouseImpl from '../../../services/mouse-impl';
-import RunServiceImpl from '../../../services/run-service-impl';
+import MouseImpl from '../../../datamodel/services/impl/mouse-impl';
+import RunServiceImpl from '../../../datamodel/services/impl/run-service-impl';
 import WorkerMouseImplProxy from './proxies/worker-mouse-impl-proxy';
 import WorkerRunServiceImplProxy from './proxies/worker-run-service-impl-proxy';
 import { SignalConnection } from 'typed-signals';
-import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../datamodel/metadata/metadata';
 import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../datamodel/serialization/json/json-instance-property-serializer';
-import InstanceUtils from '../../../datamodel/utils/InstanceUtils';
+import InstanceUtils from '../../../datamodel/utils/instance-utils';
 
 export class WorkerThread extends Destroyable {
     private _ignoreChanges = false;

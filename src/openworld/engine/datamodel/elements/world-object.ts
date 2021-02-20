@@ -1,9 +1,9 @@
 import CFrame from '../../math/cframe';
 import Instance from './instance';
-import PropertyType from '../internals/metadata/properties/property-type';
+import PropertyType from '../metadata/properties/property-type';
 import Quaternion from '../../math/quaternion';
 import Vector3 from '../../math/vector3';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 
 @DataModelClass({
     className: 'WorldObject',

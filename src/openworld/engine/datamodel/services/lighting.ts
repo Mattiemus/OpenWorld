@@ -1,9 +1,9 @@
 import Instance from '../elements/instance';
-import { DataModelClass } from "../internals/metadata/metadata";
-import LightingImpl from '../../services/lighting-impl';
+import { DataModelClass } from "../metadata/metadata";
+import LightingImpl from './impl/lighting-impl';
 import Color3 from '../../math/color3';
-import PropertyType from '../internals/metadata/properties/property-type';
-import InstanceContext from '../internals/instance-context';
+import PropertyType from '../metadata/properties/property-type';
+import InstanceContext from '../context/instance-context';
 
 @DataModelClass({
     className: 'Lighting',

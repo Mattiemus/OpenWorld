@@ -1,4 +1,4 @@
-import InstanceContext from '../datamodel/internals/instance-context';
+import InstanceContext from '../datamodel/context/instance-context';
 import Destroyable from '../utils/destroyable';
 
 export default abstract class ScriptRunner extends Destroyable

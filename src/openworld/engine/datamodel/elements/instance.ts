@@ -1,15 +1,15 @@
 import { IDestroyable } from '../../utils/interfaces';
 import { Class } from '../../utils/types';
-import { getMetaData } from "../internals/metadata/metadata";
-import { DataModelClass } from '../internals/metadata/metadata';
-import DataModelClassMetaData from "../internals/metadata/classes/data-model-class-metadata";
-import PropertyType from "../internals/metadata/properties/property-type";
-import InstanceContext from '../internals/instance-context';
+import { getMetaData } from "../metadata/metadata";
+import { DataModelClass } from '../metadata/metadata';
+import DataModelClassMetaData from "../metadata/classes/data-model-class-metadata";
+import PropertyType from "../metadata/properties/property-type";
+import InstanceContext from '../context/instance-context';
 import { isString } from '../../utils/type-guards';
 
 import { Signal } from "typed-signals";
 import * as _ from "lodash";
-import InstanceUtils from '../utils/InstanceUtils';
+import InstanceUtils from '../utils/instance-utils';
 
 @DataModelClass({
     className: 'Instance',

@@ -1,14 +1,14 @@
 import DataModel from '../../../datamodel/elements/datamodel';
 import Instance from '../../../datamodel/elements/instance';
-import InstanceContext from '../../../datamodel/internals/instance-context';
+import InstanceContext from '../../../datamodel/context/instance-context';
 import InterThreadCommunication from '../../inter-thread-communication';
 import JsonInstancePropertySerializer, { InstanceJsonProperty } from '../../../datamodel/serialization/json/json-instance-property-serializer';
 import JsonInstanceSerializer from '../../../datamodel/serialization/json/json-instance-serializer';
 import { Container } from 'inversify';
-import { getMetaData } from '../../../datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../datamodel/metadata/metadata';
 import { InstanceJson } from '../../../datamodel/serialization/json/json-instance-serializer';
 import { SignalConnection } from 'typed-signals';
-import InstanceUtils from '../../../datamodel/utils/InstanceUtils';
+import InstanceUtils from '../../../datamodel/utils/instance-utils';
 
 export default abstract class WorkerThreadInstanceContext extends InstanceContext
 {

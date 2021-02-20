@@ -1,8 +1,8 @@
 import Content from '../data-types/content';
 import Instance from './instance';
-import InstanceContext from '../internals/instance-context';
-import PropertyType from '../internals/metadata/properties/property-type';
-import { DataModelClass } from '../internals/metadata/metadata';
+import InstanceContext from '../context/instance-context';
+import PropertyType from '../metadata/properties/property-type';
+import { DataModelClass } from '../metadata/metadata';
 
 @DataModelClass({
     className: 'Sky',

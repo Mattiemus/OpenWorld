@@ -1,6 +1,6 @@
 import Destroyable from "../../../../utils/destroyable";
 import InterThreadCommunication from "../../../inter-thread-communication";
-import RunServiceImpl from "../../../../services/run-service-impl";
+import RunServiceImpl from "../../../../datamodel/services/impl/run-service-impl";
 import { SignalConnection } from "typed-signals";
 
 export default class WorkerRunServiceImplProxy extends Destroyable

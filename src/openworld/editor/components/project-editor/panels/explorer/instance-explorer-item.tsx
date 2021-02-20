@@ -2,9 +2,10 @@ import Instance from '../../../../../engine/datamodel/elements/instance';
 import React, { useState, useEffect } from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { makeStyles } from '@material-ui/core/styles';
-import { getMetaData } from '../../../../../engine/datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../../../engine/datamodel/metadata/metadata';
 import InstanceLabel from '../../../../core/components/instances/instance-label';
-import InstanceUtils from '../../../../../engine/datamodel/utils/InstanceUtils';
+import InstanceUtils from '../../../../../engine/datamodel/utils/instance-utils';
+import useSignalCallback from '../../../../core/hooks/use-signal-callback';
 
 //
 // Styles
@@ -54,22 +55,15 @@ export default function InstanceExplorerItem(props: InstanceExplorerItemProps) {
     const [ childExplorerItems, setChildExplorerItems ] = useState(createChildExplorerItems(props));
     useEffect(() => setChildExplorerItems(createChildExplorerItems(props)), [ props ]);
 
-    useEffect(() => {
-        const instanceChildAddedConnection =
-            instance.childAdded.connect(() => {
-                setChildExplorerItems(createChildExplorerItems(props));
-            });
+    useSignalCallback(instance.childAdded,
+        () => {
+            setChildExplorerItems(createChildExplorerItems(props));
+        }, [ props ]);
 
-        const instanceChildRemovedConnection =
-            instance.childRemoved.connect(() => {
-                setChildExplorerItems(createChildExplorerItems(props));
-            });
-
-        return () => {
-            instanceChildAddedConnection.disconnect();
-            instanceChildRemovedConnection.disconnect();
-        };
-    }, [ instance, props ]);
+    useSignalCallback(instance.childAdded,
+        () => {
+            setChildExplorerItems(createChildExplorerItems(props));
+        }, [ props ]);
 
     return (
         <TreeItem

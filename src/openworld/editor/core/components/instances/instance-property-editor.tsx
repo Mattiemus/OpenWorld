@@ -1,13 +1,13 @@
 import ClearIcon from '@material-ui/icons/Clear';
 import Color3 from '../../../../engine/math/color3';
 import Content from '../../../../engine/datamodel/data-types/content';
-import DataModelPropertyMetaData from '../../../../engine/datamodel/internals/metadata/properties/data-model-property-metadata';
+import DataModelPropertyMetaData from '../../../../engine/datamodel/metadata/properties/data-model-property-metadata';
 import ErrorIcon from '@material-ui/icons/Error';
 import Instance from '../../../../engine/datamodel/elements/instance';
 import InstanceLabel from './instance-label';
-import InstanceUtils from '../../../../engine/datamodel/utils/InstanceUtils';
+import InstanceUtils from '../../../../engine/datamodel/utils/instance-utils';
 import MathEx from '../../../../engine/math/mathex';
-import PropertyType from '../../../../engine/datamodel/internals/metadata/properties/property-type';
+import PropertyType from '../../../../engine/datamodel/metadata/properties/property-type';
 import Quaternion from '../../../../engine/math/quaternion';
 import React, { useEffect, useMemo, useState } from 'react';
 import useThrottle from '../../hooks/use-throttle';
@@ -24,7 +24,7 @@ import {
     Switch,
     TextField
     } from '@material-ui/core';
-import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../../engine/datamodel/metadata/metadata';
 
 //
 // Property Editor Factory

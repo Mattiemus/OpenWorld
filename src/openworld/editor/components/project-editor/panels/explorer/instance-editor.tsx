@@ -17,7 +17,7 @@ import {
     Typography
     } from '@material-ui/core';
 import { camel2title } from '../../../../../engine/utils/text-utils';
-import { getMetaData } from '../../../../../engine/datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../../../engine/datamodel/metadata/metadata';
 import { useProjectEditorContext } from '../../../../core/contexts/project-editor-context';
 
 //

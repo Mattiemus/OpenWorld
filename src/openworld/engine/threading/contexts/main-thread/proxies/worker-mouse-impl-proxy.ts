@@ -1,5 +1,5 @@
 import Destroyable from "../../../../utils/destroyable";
-import MouseImpl from "../../../../services/mouse-impl";
+import MouseImpl from "../../../../datamodel/services/impl/mouse-impl";
 import InterThreadCommunication from "../../../inter-thread-communication";
 import { SignalConnection } from "typed-signals";
 

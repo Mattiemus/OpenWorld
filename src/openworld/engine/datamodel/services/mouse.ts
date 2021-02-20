@@ -1,10 +1,10 @@
-import { DataModelClass } from "../internals/metadata/metadata";
+import { DataModelClass } from "../metadata/metadata";
 import Instance from '../elements/instance';
-import PropertyType from '../internals/metadata/properties/property-type';
-import MouseImpl from '../../services/mouse-impl';
-import ForwardingSignal from '../internals/forwarding-signal';
+import PropertyType from '../metadata/properties/property-type';
+import MouseImpl from './impl/mouse-impl';
+import ForwardingSignal from '../utils/forwarding-signal';
 import MathEx from '../../math/mathex';
-import InstanceContext from "../internals/instance-context";
+import InstanceContext from "../context/instance-context";
 
 import { Signal, SignalConnection } from 'typed-signals';
 

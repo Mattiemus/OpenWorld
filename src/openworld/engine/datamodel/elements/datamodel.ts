@@ -1,6 +1,6 @@
-import InstanceContext from '../internals/instance-context';
+import InstanceContext from '../context/instance-context';
 import ServiceProvider from './service-provider';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 
 @DataModelClass({
     className: 'DataModel',

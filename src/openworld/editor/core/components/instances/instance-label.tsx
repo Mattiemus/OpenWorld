@@ -3,7 +3,7 @@ import InstanceIcon from './instance-icon';
 import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { getMetaData } from '../../../../engine/datamodel/internals/metadata/metadata';
+import { getMetaData } from '../../../../engine/datamodel/metadata/metadata';
 
 const useStyles = makeStyles((theme) => ({
     labelRoot: {

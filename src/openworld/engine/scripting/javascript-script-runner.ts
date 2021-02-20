@@ -1,6 +1,6 @@
 import { SignalConnection } from 'typed-signals';
 import ScriptRunner from './script-runner';
-import InstanceContext from '../datamodel/internals/instance-context';
+import InstanceContext from '../datamodel/context/instance-context';
 import CFrame from '../math/cframe';
 import Color3 from '../math/color3';
 import MathEx from '../math/mathex';

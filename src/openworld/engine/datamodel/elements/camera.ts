@@ -1,11 +1,11 @@
 import CFrame from '../../math/cframe';
 import Instance from './instance';
-import InstanceContext from '../internals/instance-context';
+import InstanceContext from '../context/instance-context';
 import MathEx from '../../math/mathex';
-import PropertyType from '../internals/metadata/properties/property-type';
+import PropertyType from '../metadata/properties/property-type';
 import Quaternion from '../../math/quaternion';
 import Vector3 from '../../math/vector3';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 
 @DataModelClass({
     className: 'Camera',

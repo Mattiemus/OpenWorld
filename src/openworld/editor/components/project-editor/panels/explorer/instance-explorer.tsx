@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import Instance from '../../../../../engine/datamodel/elements/instance';
 import InstanceExplorerItem from './instance-explorer-item';
-import InstanceUtils from '../../../../../engine/datamodel/utils/InstanceUtils';
+import InstanceUtils from '../../../../../engine/datamodel/utils/instance-utils';
 import React, { useCallback, useMemo, useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import SimpleBar from 'simplebar-react';

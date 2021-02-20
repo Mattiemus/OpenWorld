@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from "react";
-import IInstanceContextWithCanvas from "../instance-contexts/instance-context-with-canvas";
+import IInstanceContextWithCanvas from "../datamodel/context/instance-context-with-canvas";
 
 export type InstanceContextRenderCanvasProps = {
     instanceContext: IInstanceContextWithCanvas;

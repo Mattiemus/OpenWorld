@@ -1,4 +1,4 @@
-import WorldImpl from "../../../../services/world-impl";
+import WorldImpl from "../../../../datamodel/services/impl/world-impl";
 
 import { injectable } from "inversify";
 

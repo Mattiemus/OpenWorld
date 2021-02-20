@@ -1,10 +1,10 @@
 import Color3 from '../../math/color3';
-import InstanceContext from '../internals/instance-context';
+import InstanceContext from '../context/instance-context';
 import Material from '../data-types/material';
-import PropertyType from '../internals/metadata/properties/property-type';
+import PropertyType from '../metadata/properties/property-type';
 import Vector3 from '../../math/vector3';
 import WorldObject from './world-object';
-import { DataModelClass } from '../internals/metadata/metadata';
+import { DataModelClass } from '../metadata/metadata';
 
 export enum PrimitiveType {
     Cube = 'Cube',

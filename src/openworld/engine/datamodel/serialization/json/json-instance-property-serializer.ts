@@ -1,6 +1,6 @@
 import Instance from '../../elements/instance';
-import InstanceContext from '../../internals/instance-context';
-import InstanceUtils from '../../utils/InstanceUtils';
+import InstanceContext from '../../context/instance-context';
+import InstanceUtils from '../../utils/instance-utils';
 import JsonBooleanSerializer from './properties/json-boolean-serializer';
 import JsonCFrameSerializer, { CFrameJson } from './properties/json-cframe-serializer';
 import JsonColor3Serializer, { Color3Json } from './properties/json-color3-serializer';
@@ -11,8 +11,8 @@ import JsonNumberSerializer from './properties/json-number-serializer';
 import JsonQuaternionSerializer, { QuaternionJson } from './properties/json-quaternion-serializer';
 import JsonStringSerializer from './properties/json-string-serializer';
 import JsonVector3Serializer, { Vector3Json } from './properties/json-vector3-serializer';
-import PropertyType from '../../internals/metadata/properties/property-type';
-import { getMetaData } from '../../internals/metadata/metadata';
+import PropertyType from '../../metadata/properties/property-type';
+import { getMetaData } from '../../metadata/metadata';
 
 export type InstanceJsonProperty =
     null |

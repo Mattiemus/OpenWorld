@@ -1,7 +1,7 @@
 import Instance from '../../../elements/instance';
-import InstanceContext from '../../../internals/instance-context';
+import InstanceContext from '../../../context/instance-context';
 import { hasFieldOfType, isObject, isString } from '../../../../utils/type-guards';
-import InstanceUtils from '../../../utils/InstanceUtils';
+import InstanceUtils from '../../../utils/instance-utils';
 
 export type InstanceRefJson = { 
     instanceRef: string | null

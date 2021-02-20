@@ -1,6 +1,6 @@
-import PropertyType from "../internals/metadata/properties/property-type";
+import PropertyType from "../metadata/properties/property-type";
 import WorldObject from './world-object';
-import { DataModelClass } from "../internals/metadata/metadata";
+import { DataModelClass } from "../metadata/metadata";
 import Color3 from '../../math/color3';
 
 @DataModelClass({

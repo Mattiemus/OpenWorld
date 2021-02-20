@@ -1,7 +1,7 @@
-import { DataModelClass } from "../internals/metadata/metadata";
+import { DataModelClass } from "../metadata/metadata";
 import NetworkReplicator from './network-replicator';
-import ClientReplicatorImpl from '../../services/client-replicator-impl';
-import InstanceContext from '../internals/instance-context';
+import ClientReplicatorImpl from './impl/client-replicator-impl';
+import InstanceContext from '../context/instance-context';
 
 @DataModelClass({
     className: 'ClientReplicator',

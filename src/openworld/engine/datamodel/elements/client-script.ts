@@ -1,5 +1,5 @@
-import InstanceContext from '../internals/instance-context';
-import { DataModelClass } from '../internals/metadata/metadata';
+import InstanceContext from '../context/instance-context';
+import { DataModelClass } from '../metadata/metadata';
 import BaseScript from './base-script';
 
 @DataModelClass({
